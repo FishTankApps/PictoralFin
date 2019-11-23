@@ -1,15 +1,16 @@
 package objectBinders;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import globalValues.Constants;
 
 public class Frame {
-	private ArrayList<BufferedImage> layers;
+	private ArrayList<Image> layers;
 	
-	public Frame(BufferedImage image) {
+	public Frame(Image image) {
 		layers = new ArrayList<>();
 		layers.add(image);
 	}
@@ -26,7 +27,7 @@ public class Frame {
 		layers.add(layer);
 	}
 	
-	public BufferedImage getLayer(int index) {
+	public Image getLayer(int index) {
 		return layers.get(index);
 	}
 	

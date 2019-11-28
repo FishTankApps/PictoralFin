@@ -64,7 +64,7 @@ public class JFrameButton extends JComponent implements MouseListener{
 	public void paint(Graphics g) {		
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setStroke(new BasicStroke(thumbnailSize / 40));
-		g2d.setColor(currentColor);
+		g2d.setColor((selected) ? selectedFrameBoarderColor : currentColor);
 		
 		int index;		
 		for(index = frame.getNumberOfLayers() - 1; index >= 0; index--) {

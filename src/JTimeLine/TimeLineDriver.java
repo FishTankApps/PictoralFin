@@ -1,5 +1,5 @@
 package JTimeLine;
-import java.awt.image.BufferedImage;
+
 import java.io.File;
 
 import javax.imageio.ImageIO;
@@ -8,7 +8,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import objectBinders.Frame;
-import tools.BufferedImageTools;
 
 public class TimeLineDriver {
 
@@ -48,7 +47,6 @@ public class TimeLineDriver {
 			f.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));
 			timeLine.addFrame(f);
 			
-			int count = 0;
 			for(File picture : pictureFolder.listFiles()) {
 				timeLine.addFrame(new Frame(ImageIO.read(picture)));
 			}

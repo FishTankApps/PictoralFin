@@ -1,16 +1,9 @@
 package JTimeLine;
 
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import objectBinders.AudioInfo;
 import objectBinders.Frame;
 
 public class JTimeLine extends JPanel {

@@ -28,14 +28,4 @@ public class JTimeLine extends JPanel {
 	public void addFrame(Frame frame) {
 		frameTimeLine.addFrame(frame);
 	}
-	
-	
-	
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponents(g);
-		
-		
-	}
 }

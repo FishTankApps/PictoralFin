@@ -25,6 +25,7 @@ public class FrameTimeLine extends JPanel {
 		
 		buttonsPanel = new JPanel();
 		scrollPane = new JScrollPane(buttonsPanel);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(50);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);	
 		scrollPane.setPreferredSize(new Dimension(1000, 700));
@@ -47,5 +48,9 @@ public class FrameTimeLine extends JPanel {
 	public void removeFrame(int index) {
 		frames.remove(index);	
 		buttonsPanel.remove(index);
+	}
+	
+	public void onJFrameButtonClicked() {
+		System.out.println("Clicked");
 	}
 }

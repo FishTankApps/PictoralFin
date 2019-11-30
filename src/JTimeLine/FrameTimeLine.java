@@ -35,7 +35,7 @@ public class FrameTimeLine extends JPanel {
 		frames.add(frame);
 		
 		JFrameButton newButton = new JFrameButton(frame);
-		newButton.setPreferredSize(new Dimension(600, 600));
+		newButton.setPreferredHeight(300);
 		buttonsPanel.add(newButton);
 	}
 

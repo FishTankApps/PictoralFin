@@ -17,7 +17,7 @@ public class JFrameButton extends JComponent implements MouseListener{
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	
-	private final Dimension minSize = new Dimension(100, 100);
+	private final Dimension minSize = new Dimension(50, 50);
 	private final Dimension maxSize = new Dimension(500, 500);
 	private Frame frame;
 	
@@ -58,6 +58,11 @@ public class JFrameButton extends JComponent implements MouseListener{
 	}
 	public Dimension getMaximumSize() {
 		return maxSize;
+	}
+	public void setPreferredHeight(int height) {		
+		thumbnailSize = (4 * height) / (frame.getNumberOfLayers() + 4);
+		xOverhang = (height) / ((frame.getNumberOfLayers() + 4)*2);
+		yOverhang = (height) / (frame.getNumberOfLayers() + 4);
 	}
 	
 	@Override

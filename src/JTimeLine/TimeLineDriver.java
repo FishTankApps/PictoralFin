@@ -42,10 +42,15 @@ public class TimeLineDriver {
 		
 		try {
 			Frame f = new Frame(ImageIO.read(pictureFolder.listFiles()[0]));
+			Frame f2 = new Frame(ImageIO.read(pictureFolder.listFiles()[0]));
 			f.addLayer(ImageIO.read(pictureFolder.listFiles()[10]));
 			f.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));
-			f.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));
+			f.addLayer(ImageIO.read(pictureFolder.listFiles()[30]));			
 			timeLine.addFrame(f);
+			
+			f2.addLayer(ImageIO.read(pictureFolder.listFiles()[10]));
+			f2.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));			
+			timeLine.addFrame(f2);
 			
 			for(File picture : pictureFolder.listFiles()) {
 				timeLine.addFrame(new Frame(ImageIO.read(picture)));

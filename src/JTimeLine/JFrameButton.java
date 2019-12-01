@@ -1,6 +1,5 @@
 package JTimeLine;
 
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,35 +10,35 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JComponent;
 
+import interfaces.Themed;
 import objectBinders.Frame;
+import objectBinders.Theme;
 
-public class JFrameButton extends JComponent implements MouseListener{
+public class JFrameButton extends JComponent implements MouseListener, Themed {
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	
 	private final Dimension minSize = new Dimension(50, 50);
-	private final Dimension maxSize = new Dimension(500, 500);
+	private final Dimension maxSize = new Dimension(2000, 2000);
 	private Frame frame;
+	private Theme theme;
 	
-	private int thumbnailSize = 100;
-	private int xOverhang = (thumbnailSize / 8);
-	private int yOverhang = (thumbnailSize / 4);
+	private int thumbnailSize;
+	private int xOverhang;
+	private int yOverhang;
 	
 	private boolean selected = false;
+	private boolean highlighted = false;
 	
-	private Color selectedFrameBoarderColor = Color.RED;
-	private Color hoverFrameBoarderColor = Color.BLUE;
-	private Color frameBoarderColor = Color.BLUE.darker().darker();
-	
-	private Color currentColor = frameBoarderColor;
-	
-	public JFrameButton(Frame frame) {
-		super();		
+	public JFrameButton(Frame frame, Theme theme) {
 		this.frame = frame;
+		this.theme = theme;
 		
 		enableInputMethods(true);   
 		addMouseListener(this);
 		setFocusable(true);
+		
+		setPreferredHeight(10);
 	}
 	
 	public void setThumbnailSize(int newSize) {
@@ -60,39 +59,63 @@ public class JFrameButton extends JComponent implements MouseListener{
 		return maxSize;
 	}
 	public void setPreferredHeight(int height) {		
-		thumbnailSize = (4 * height) / (frame.getNumberOfLayers() + 4);
-		xOverhang = (height) / ((frame.getNumberOfLayers() + 4)*2);
-		yOverhang = (height) / (frame.getNumberOfLayers() + 4);
+		yOverhang = (height / 10);
+		xOverhang = yOverhang;
+		thumbnailSize = height - (frame.getNumberOfLayers() * yOverhang);
 	}
 	
 	@Override
 	public void paint(Graphics g) {		
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setStroke(new BasicStroke(thumbnailSize / 40));
-		g2d.setColor((selected) ? selectedFrameBoarderColor : currentColor);
 		
-		int index;		
-		for(index = frame.getNumberOfLayers() - 1; index >= 0; index--) {
-			
-			g2d.drawImage(frame.getLayer(index), (index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize, null);
-			g2d.drawRect((index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize);
-		}
+		g2d.setColor((selected) ? theme.getSecondaryHighlightColor() : theme.getPrimaryHighlightColor());
+		
+		if(highlighted) 
+			g2d.setColor(g2d.getColor().brighter().brighter());		
+		
+		if(theme.isSharp()) {
+			int index;		
+						for(index = frame.getNumberOfLayers() - 1; index >= 0; index--) {
+				
+				g2d.drawImage(frame.getLayer(index), (index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize, null);
+				g2d.drawRect((index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize);
+			}
+		} else {
+			int index;	
+			Color boarderColor = g2d.getColor();
+			for(index = frame.getNumberOfLayers() - 1; index >= 0; index--) {				
+				g2d.drawImage(frame.getLayer(index), (index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize, null);	
+				
+				g2d.setColor(theme.getPrimaryBaseColor());
+				g2d.drawRect((index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize);	
+				
+				g2d.setColor(boarderColor);
+				g2d.drawRoundRect((index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize, thumbnailSize / 7, thumbnailSize / 7);	
+				
+				
+			}
+		}		
 	}
 	
-	public void mouseClicked(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent mouseEvent) {
 		FrameTimeLine ftl = (FrameTimeLine) getParent().getParent().getParent().getParent();
-		ftl.onJFrameButtonClicked();
+		ftl.onJFrameButtonClicked(mouseEvent, this);
+		repaint();
 	}
 	public void mouseEntered(MouseEvent arg0) {
-		currentColor = hoverFrameBoarderColor; 
+		highlighted = true;
 		repaint();		
 	}
 	public void mouseExited(MouseEvent arg0) {
-		currentColor = frameBoarderColor; 
+		highlighted = false;
 		repaint();		
 	}	
-	public void mousePressed(MouseEvent arg0) {
+	public void mousePressed(MouseEvent arg0) {}
+	public void mouseReleased(MouseEvent arg0) {}
+
+	public void setTheme(Theme theme) {
+		this.theme = theme;
 		
 	}
-	public void mouseReleased(MouseEvent arg0) {}
 }

@@ -1,18 +1,22 @@
 package objectBinders;
 
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import globalValues.Constants;
+import tools.BufferedImageTools;
 
 public class Frame {
-	private ArrayList<Image> layers;
+	private ArrayList<BufferedImage> layers;
 	
-	public Frame(Image image) {
+	public Frame(BufferedImage image) {
 		layers = new ArrayList<>();
-		layers.add(image);
+		
+		if(image.getType() != BufferedImage.TYPE_4BYTE_ABGR)
+			layers.add(BufferedImageTools.setBufferedImageType(image, BufferedImage.TYPE_4BYTE_ABGR));
+		else
+			layers.add(image);
 	}
 	
 	public int getNumberOfLayers() {
@@ -27,7 +31,7 @@ public class Frame {
 		layers.add(layer);
 	}
 	
-	public Image getLayer(int index) {
+	public BufferedImage getLayer(int index) {
 		return layers.get(index);
 	}
 	

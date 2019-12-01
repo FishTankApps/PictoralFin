@@ -1,6 +1,7 @@
 package JTimeLine;
 
 import java.io.File;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -8,6 +9,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import objectBinders.Frame;
+import objectBinders.Theme;
 
 public class TimeLineDriver {
 
@@ -23,7 +25,6 @@ public class TimeLineDriver {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		frame = new JFrame();
@@ -34,7 +35,7 @@ public class TimeLineDriver {
 		
 		
 		
-		timeLine = new JTimeLine();
+		timeLine = new JTimeLine(Theme.OCEAN_THEME);
 		frame.add(timeLine);
 		
 		
@@ -61,6 +62,15 @@ public class TimeLineDriver {
 		
 		
 		frame.setVisible(true);	
+		
+		Scanner keyIn = new Scanner(System.in);
+		int h = 100;
+		while(h != 0) {
+			h = keyIn.nextInt();
+			timeLine.setHeight(h);
+		
+		}
+		keyIn.close();
 	}
 	
 }

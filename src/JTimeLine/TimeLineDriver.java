@@ -31,8 +31,7 @@ public class TimeLineDriver {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		frame.setSize(1000, 750);
-		frame.setLocationRelativeTo(null);
-		
+		frame.setLocationRelativeTo(null);		
 		
 		
 		timeLine = new JTimeLine(Theme.OCEAN_THEME);

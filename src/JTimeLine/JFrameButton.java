@@ -17,7 +17,7 @@ import interfaces.Themed;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
-public class JFrameButton extends JComponent implements MouseListener, Themed, KeyListener{
+class JFrameButton extends JComponent implements MouseListener, Themed, KeyListener{
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	

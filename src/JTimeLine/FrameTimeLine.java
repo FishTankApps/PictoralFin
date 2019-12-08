@@ -10,7 +10,7 @@ import interfaces.Themed;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
-public class FrameTimeLine extends JPanel implements Themed {
+class FrameTimeLine extends JPanel implements Themed {
 	
 	private static final long serialVersionUID = -8764321615928981018L;
 	private JFrameButton previousSelection;

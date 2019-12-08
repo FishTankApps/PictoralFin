@@ -16,6 +16,7 @@ import java.io.IOException;
 public class Launcher {
 	
 	public static void main(String[] filePaths) {
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			

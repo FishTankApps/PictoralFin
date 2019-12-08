@@ -1,24 +1,32 @@
 package JTimeLine;
 
+import java.awt.event.ActionListener;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-public class FramePopUpMenu{
+class FramePopUpMenu{
 	
-	public FramePopUpMenu(JFrameButton button, int x, int y){				
-		JPopupMenu menu = new JPopupMenu();
+	private JPopupMenu menu;
+	private JFrameButton button;
+	
+	private final ActionListener REMOVE_FRAME = e -> {
+		FrameTimeLine frameTimeLine = (FrameTimeLine) button.getParent();
+		frameTimeLine.remove(button);
+		menu.setVisible(false);
+		
+		JTimeLine timeLine = (JTimeLine) frameTimeLine.getParent().getParent().getParent().getParent();
+		
+		timeLine.revalidate();			
+		timeLine.repaint();
+	};
+	
+	public FramePopUpMenu(JFrameButton button, int x, int y){		
+		this.button = button;		
+		menu = new JPopupMenu();
 		
 		JMenuItem removeFrame = new JMenuItem("Remove");
-		removeFrame.addActionListener(e -> {
-			FrameTimeLine frameTimeLine = (FrameTimeLine) button.getParent();
-			frameTimeLine.remove(button);
-			menu.setVisible(false);
-			
-			JTimeLine timeLine = (JTimeLine) frameTimeLine.getParent().getParent().getParent().getParent();
-			
-			timeLine.revalidate();			
-			timeLine.repaint();
-		});
+		removeFrame.addActionListener(REMOVE_FRAME);
 
 		menu.add(removeFrame);
 		menu.show(button, x, y);

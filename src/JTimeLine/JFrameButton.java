@@ -3,8 +3,11 @@ package JTimeLine;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -14,7 +17,7 @@ import interfaces.Themed;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
-public class JFrameButton extends JComponent implements MouseListener, Themed {
+public class JFrameButton extends JComponent implements MouseListener, Themed, KeyListener{
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	
@@ -37,6 +40,7 @@ public class JFrameButton extends JComponent implements MouseListener, Themed {
 		enableInputMethods(true);   
 		addMouseListener(this);
 		setFocusable(true);
+		addKeyListener(this);
 		
 		setPreferredHeight(10);
 	}
@@ -49,6 +53,10 @@ public class JFrameButton extends JComponent implements MouseListener, Themed {
 		this.selected = selected;
 	}
 	
+	public Frame getFrame() {
+		return frame;
+	}
+	
 	public Dimension getPreferredSize() {
 		return new Dimension(thumbnailSize + (xOverhang * frame.getNumberOfLayers()), thumbnailSize + (yOverhang * frame.getNumberOfLayers()));
 	}
@@ -58,7 +66,7 @@ public class JFrameButton extends JComponent implements MouseListener, Themed {
 	public Dimension getMaximumSize() {
 		return maxSize;
 	}
-	public void setPreferredHeight(int height) {		
+	public void setPreferredHeight(int height) {
 		yOverhang = (height / 10);
 		xOverhang = yOverhang;
 		thumbnailSize = height - (frame.getNumberOfLayers() * yOverhang);
@@ -91,16 +99,39 @@ public class JFrameButton extends JComponent implements MouseListener, Themed {
 				g2d.drawRect((index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize);	
 				
 				g2d.setColor(boarderColor);
-				g2d.drawRoundRect((index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize, thumbnailSize / 7, thumbnailSize / 7);	
-				
-				
+				g2d.drawRoundRect((index * xOverhang), (index * yOverhang), thumbnailSize, thumbnailSize, thumbnailSize / 7, thumbnailSize / 7);				
 			}
-		}		
+		}	
+		
+		g2d.setColor(Color.BLACK);
+		g2d.setFont(new Font("LCD", Font.PLAIN, 20));
+		g2d.drawString(formatFrameLength(), 22, 22);
+		
+		g2d.setColor(Color.WHITE);
+		g2d.drawString(formatFrameLength(), 20, 20);
+	}
+	
+	private String formatFrameLength() {
+		int hours = frame.getDuration() / 3_600_000;
+		int minutes = (frame.getDuration() - (3_600_000 * hours)) / 60_000;
+		int seconds = (frame.getDuration() - (3_600_000 * hours) - (60_000 * minutes)) / 1_000;
+		int millis = (frame.getDuration() - (3_600_000 * hours) - (60_000 * minutes) - (1_000 * seconds));
+		
+		return hours + ":" + ((minutes < 10) ? "0" : "") + minutes + ":"
+		+ ((seconds < 10) ? "0" : "") + seconds + "."
+		+  ((millis < 100) ? ((millis < 10) ? "00" : "0") : "") + millis;
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {
-		FrameTimeLine ftl = (FrameTimeLine) getParent().getParent().getParent().getParent();
-		ftl.onJFrameButtonClicked(mouseEvent, this);
+		FrameTimeLine ftl = (FrameTimeLine) getParent();
+		
+		if(mouseEvent.getButton() == MouseEvent.BUTTON3) 
+			new FramePopUpMenu(this, mouseEvent.getX(), mouseEvent.getY());
+		else
+			ftl.onJFrameButtonClicked(mouseEvent, this);
+		
+		requestFocus();
+		
 		repaint();
 	}
 	public void mouseEntered(MouseEvent arg0) {
@@ -118,4 +149,18 @@ public class JFrameButton extends JComponent implements MouseListener, Themed {
 		this.theme = theme;
 		
 	}
+
+	
+	public void keyPressed(KeyEvent arg0) {
+		if(selected && highlighted) 
+			if(arg0.getKeyCode() == KeyEvent.VK_LEFT || arg0.getKeyCode() == KeyEvent.VK_RIGHT) {
+				((FrameTimeLine) getParent()).onMoveRequest(arg0.getKeyCode() == KeyEvent.VK_LEFT, this);				
+				requestFocus();
+			}
+				
+	}
+
+
+	public void keyReleased(KeyEvent arg0) {}
+	public void keyTyped(KeyEvent arg0) {}
 }

@@ -1,7 +1,6 @@
 package JTimeLine;
 
 import java.io.File;
-import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -31,17 +30,14 @@ public class TimeLineDriver {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		frame.setSize(1000, 750);
-		frame.setLocationRelativeTo(null);		
-		
-		
+		frame.setLocationRelativeTo(null);				
 		timeLine = new JTimeLine(Theme.OCEAN_THEME);
-		frame.add(timeLine);
-		
+		frame.add(timeLine);		
 		
 		File pictureFolder = new File("C:\\Users\\Robots\\Pictures\\Lego Movies\\Parts of Videos\\Flying Dove");
 		
 		try {
-			Frame f = new Frame(ImageIO.read(pictureFolder.listFiles()[0]));
+			Frame f = new Frame();
 			Frame f2 = new Frame(ImageIO.read(pictureFolder.listFiles()[0]));
 			f.addLayer(ImageIO.read(pictureFolder.listFiles()[10]));
 			f.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));
@@ -55,21 +51,15 @@ public class TimeLineDriver {
 			for(File picture : pictureFolder.listFiles()) {
 				timeLine.addFrame(new Frame(ImageIO.read(picture)));
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 		
 		}
 		
 		
 		frame.setVisible(true);	
 		
-		Scanner keyIn = new Scanner(System.in);
-		int h = 100;
-		while(h != 0) {
-			h = keyIn.nextInt();
-			timeLine.setHeight(h);
-		
-		}
-		keyIn.close();
+		timeLine.updateSizes();
+
 	}
 	
 }

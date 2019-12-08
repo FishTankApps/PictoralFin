@@ -1,9 +1,7 @@
 package JTimeLine;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,53 +13,82 @@ import objectBinders.Theme;
 public class FrameTimeLine extends JPanel implements Themed {
 	
 	private static final long serialVersionUID = -8764321615928981018L;
-	private ArrayList<Frame> frames;
-	private JScrollPane scrollPane;
-	private JPanel buttonsPanel;
 	private JFrameButton previousSelection;
 	private Theme theme;
 
-	int index = 0;	
+	private int frameDimension = 200;
 	
 	public FrameTimeLine(Theme theme) {
-		this.theme = theme;
+		this.theme = theme;		
 		
-		frames = new ArrayList<>();
-		
-		buttonsPanel = new JPanel();
-		buttonsPanel.setBackground(theme.getPrimaryBaseColor());
-		
-		scrollPane = new JScrollPane(buttonsPanel);
-		scrollPane.getHorizontalScrollBar().setUnitIncrement(50);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);	
-		scrollPane.setPreferredSize(new Dimension(1000, 700));
-		scrollPane.setBackground(theme.getPrimaryBaseColor());
-		
-		setPreferredSize(new Dimension(1000, 700));		
-		add(scrollPane);		
-		
-		this.setBackground(theme.getPrimaryBaseColor());
+		setBackground(theme.getPrimaryBaseColor());
+		setHeight(100);
 	}
 	
 	public void addFrame(Frame frame) {
-		frames.add(frame);
-		
 		JFrameButton newButton = new JFrameButton(frame, theme);
-		newButton.setPreferredHeight(200);
-		buttonsPanel.add(newButton);
+		newButton.setPreferredHeight(frameDimension);
+		add(newButton);		
 	}
-
-	public Frame getFrame(int index) {
-		return frames.get(index);
+		
+	public Frame getFrameAt(int index) {
+		return ((JFrameButton) getComponent(index)).getFrame();
+	}
+	public Frame getSelectedFrame() {
+		return previousSelection.getFrame();
+	}
+	public int getSelectedIndex() {
+		return 0;
 	}
 	
-	public void removeFrame(int index) {
-		frames.remove(index);	
-		buttonsPanel.remove(index);
+	public void setSelectedFrame(int index) {
+		if(getComponentCount() == 0)
+			return;
+		
+		if(previousSelection != null) {
+			previousSelection.setSelected(false);
+			previousSelection.repaint();			
+		}
+		
+		if(index == -1) {
+			if(getIndexOfJFrameButton(previousSelection) < getComponentCount() - 1 && previousSelection != null) {
+				index = getIndexOfJFrameButton(previousSelection) + 1;				
+			} else 
+				index = 0;
+		}
+		
+		JFrameButton button = (JFrameButton) getComponent(index);
+		
+		button.setSelected(true);
+		previousSelection = button;
+	}
+	public int getIndexOfJFrameButton(JFrameButton button) {
+		for(int count = 0; count < getComponents().length; count++)
+			if(getComponents()[count] == button)
+				return count;
+		
+		return -1;
 	}
 	
-	public void onJFrameButtonClicked(MouseEvent mouseEvent, JFrameButton button) {
+	
+	public void setTheme(Theme theme) {
+		this.theme = theme;
+	}
+	public void setHeight(int height) {
+		frameDimension = height;
+		
+		 for(Component c : getComponents())
+			 if(c instanceof JFrameButton)
+				 ((JFrameButton) c).setPreferredHeight(height);		 
+		
+			
+		 
+			
+		revalidate();
+		repaint();
+	}
+		
+	void onJFrameButtonClicked(MouseEvent mouseEvent, JFrameButton button) {
 		if(previousSelection != null) {
 			previousSelection.setSelected(false);
 			previousSelection.repaint();
@@ -69,19 +96,28 @@ public class FrameTimeLine extends JPanel implements Themed {
 		
 		button.setSelected(true);
 		previousSelection = button;
-		System.out.println((mouseEvent.getButton() == 1) ? "Left Clicked" : "Right Clicked");
 	}
 
-	
-	public void setTheme(Theme theme) {
-		this.theme = theme;
-	}
-	
-	public void setHeight(int height) {
-		 for(Component c : buttonsPanel.getComponents())
-			 if(c instanceof JFrameButton)
-				 ((JFrameButton) c).setPreferredHeight(height);
-		 
-		 buttonsPanel.revalidate();
+	void onMoveRequest(boolean leftOrRight, JFrameButton button) {
+		int index;
+		if(leftOrRight) { // LEFT			
+			if((index = getIndexOfJFrameButton(button)) != 0) {
+				remove(button);
+				add(button, index - 1);
+				
+				JScrollPane sp = (JScrollPane) this.getParent().getParent().getParent();
+				sp.getHorizontalScrollBar().setValue(sp.getHorizontalScrollBar().getValue() + 10);
+				repaint();
+			}
+		} else { // RIGHT
+			if((index = getIndexOfJFrameButton(button)) != getComponentCount() - 1) {
+				remove(button);
+				add(button, index + 1);
+				
+				JScrollPane sp = (JScrollPane) this.getParent().getParent().getParent();
+				sp.getHorizontalScrollBar().setValue(sp.getHorizontalScrollBar().getValue() - 10);
+				repaint();
+			}
+		}		
 	}
 }

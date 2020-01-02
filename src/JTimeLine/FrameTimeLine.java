@@ -5,7 +5,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+
 import javax.swing.JPanel;
+
 import interfaces.Themed;
 import objectBinders.Frame;
 import objectBinders.Theme;
@@ -16,15 +18,14 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 	private JFrameButton selectedJFrameButton;
 	private JFrameButton highlightedJFrameButton;
 	private ArrayList<OnFrameSelectionChangedListener> listeners;
-	private OnComponentDraggedListener dragListener;
-	private Theme theme;
+	//private OnComponentDraggedListener dragListener;
 
+	boolean hasFrames = false;;
 	private int frameDimension = 100;
 	
-	public FrameTimeLine(Theme theme) {		
-		this.theme = theme;		
+	public FrameTimeLine(Theme theme) {			
 		listeners = new ArrayList<>();
-		dragListener = new OnComponentDraggedListener(this);
+		//dragListener = new OnComponentDraggedListener(this);
 		
 		setBackground(theme.getPrimaryBaseColor());
 		setHeight(100);		
@@ -35,7 +36,9 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 	}
 	
 	public void addFrame(Frame frame) {
-		JFrameButton newButton = new JFrameButton(frame, theme);
+		hasFrames = true;
+		
+		JFrameButton newButton = new JFrameButton(frame);
 		newButton.setPreferredHeight(frameDimension);
 		
 		newButton.addMouseListener(this);
@@ -89,14 +92,7 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		
 		return -1;
 	}
-	
-	
-	public void setTheme(Theme theme) {
-		this.theme = theme;
-	}
-	public Theme getTheme() {
-		return theme;
-	}
+
 	public void setHeight(int height) {
 		frameDimension = height;
 		
@@ -151,4 +147,10 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}	
 	public void mouseMoved(MouseEvent event) {}
+
+	@Override
+	public void applyTheme(Theme theme) {
+		// TODO Auto-generated method stub
+		
+	}
 }

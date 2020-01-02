@@ -26,8 +26,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
-import tools.BufferedImageTools;
-import tools.MiscTools;
+import utilities.BufferedImageUtil;
+import utilities.Utilities;
 
 public class FrameChooser {
 	private OnFrameClickedListener ofcl = new OnFrameClickedListener();
@@ -50,7 +50,7 @@ public class FrameChooser {
 		resizedFrames = new ArrayList<>();
 		choosen = new boolean[frames.size()];
 		
-		MiscTools.fillArray(choosen, false);
+		Utilities.fillArray(choosen, false);
 		
 		
 		buttons = new ArrayList<>();
@@ -136,7 +136,7 @@ public class FrameChooser {
 			public void windowActivated(WindowEvent arg0) {}
 			public void windowClosed(WindowEvent arg0) {}
 			public void windowClosing(WindowEvent arg0) {
-				MiscTools.fillArray(choosen, false);
+				Utilities.fillArray(choosen, false);
 				finished = true;
 			}
 			public void windowDeactivated(WindowEvent arg0) {}
@@ -148,7 +148,7 @@ public class FrameChooser {
 		
 		int index = 0;
 		for(BufferedImage bi : frames.toArray(new BufferedImage[frames.size()])) {			
-			bi = BufferedImageTools.resizeBufferedImage(bi, 100, 100, BufferedImage.SCALE_FAST);
+			bi = BufferedImageUtil.resizeBufferedImage(bi, 100, 100, BufferedImage.SCALE_FAST);
 			resizedFrames.add(bi);
 			
 			JButton button = new JButton();
@@ -210,7 +210,7 @@ public class FrameChooser {
 	private class OnButtonClickedListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			if(arg0.getSource() == cancel) 
-				MiscTools.fillArray(choosen, false);			
+				Utilities.fillArray(choosen, false);			
 			
 			frame.setVisible(false);
 			finished = true;

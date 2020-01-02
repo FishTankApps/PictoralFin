@@ -1,60 +1,48 @@
 package jComponents.videoEditor;
 
-import static globalValues.GlobalVariables.*;
+
 
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import interfaces.Themed;
 import objectBinders.Theme;
 import objectBinders.VideoSettings;
 
-public class VideoEditor extends JPanel {
+public class VideoEditor extends JPanel implements Themed {
 	private static final long serialVersionUID = -3316034116785566254L;
 	private JPanel videoPreviewPanel, settingsPanel;
 	private JSplitPane videoPreviewAndSettingsPane;
 	private VideoPreview videoPreview;
 	private VideoPreviewSettings videoPreviewSettings;
 	
-	private Theme theme;
-	
-	public VideoEditor(Theme theme) {	
-		this.theme = theme;
+	public VideoEditor() {		
+		setLayout(new GridLayout(1,0));
 		
-		setLayout(new GridLayout(1,1,1,1));
-		setBackground(settings.getTheme().getPrimaryHighlightColor());
-		
-		setUpPanels();
-		setUpPanes();
-	}
-
-	public void setUpPanels() {
-		videoPreviewPanel = new JPanel();
-		videoPreviewPanel.setBackground(theme.getSecondaryHighlightColor());
-		settingsPanel = new JPanel(new GridLayout(1,1,1,1));
-		settingsPanel.setBackground(theme.getPrimaryBaseColor());
-
-		videoPreview = new VideoPreview(theme);
-		videoPreviewPanel.add(videoPreview);
 		videoPreviewSettings = new VideoPreviewSettings();
+		videoPreview = new VideoPreview();
+		
+		settingsPanel = new JPanel(new GridLayout(1,0));
+		videoPreviewPanel = new JPanel();
+		
+		videoPreviewPanel.add(videoPreview);
 		settingsPanel.add(videoPreviewSettings);
-	}
-	public void setUpPanes() {
+		
+		
 		videoPreviewAndSettingsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, videoPreviewPanel, settingsPanel);
 		videoPreviewAndSettingsPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, e -> refresh());
 		videoPreviewAndSettingsPane.setOneTouchExpandable(false);
-		videoPreviewAndSettingsPane.setBackground(theme.getPrimaryHighlightColor());
-	}	
+	}
 
 	public VideoPreview getVideoPreview() {
 		return this.videoPreview;
 	}
-	
 
 	public VideoSettings generateSettings(){
 		VideoSettings toReturn = new VideoSettings();
-		toReturn.setFrameRate(framesPerSecond);
+		toReturn.setFrameRate(10);
 		toReturn.setVideoFormat(VideoSettings.MP4);
 		toReturn.setVideoQuality(0);
 		toReturn.setVideoBitRate(9000);
@@ -73,5 +61,12 @@ public class VideoEditor extends JPanel {
 		
 		videoPreview.refresh();	
 		videoPreviewSettings.refresh();					
+	}
+
+	public void applyTheme(Theme theme) {
+		setBackground(theme.getPrimaryBaseColor());
+		settingsPanel.setBackground(theme.getPrimaryBaseColor());
+		videoPreviewPanel.setBackground(theme.getSecondaryHighlightColor());
+		videoPreviewAndSettingsPane.setBackground(theme.getPrimaryHighlightColor());		
 	}
 }

@@ -22,7 +22,7 @@ import listeners.GlobalFocusListener;
 import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
 import objectBinders.Picture;
-import tools.MiscTools;
+import utilities.Utilities;
 
 public class PictoralFinKinetic {
 
@@ -72,7 +72,7 @@ public class PictoralFinKinetic {
 		frame.setVisible(true);
 		
 		GlobalFocusListener gfl = new GlobalFocusListener();
-		for(Component c : MiscTools.getAllSubComponents(frame)) {
+		for(Component c : Utilities.getAllSubComponents(frame)) {
 			c.setFocusable(true);
 			c.addFocusListener(gfl);			
 		}

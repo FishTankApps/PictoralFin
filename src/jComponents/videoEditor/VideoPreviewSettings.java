@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SpringLayout;
 
-import tools.MiscTools;
+import utilities.Utilities;
 
 public class VideoPreviewSettings extends JPanel {
 
@@ -33,8 +33,8 @@ public class VideoPreviewSettings extends JPanel {
 
 		setUpFramesPerSecondStuff();
 
-		this.add(framesPerSecondPanel, MiscTools.generateGBC(0, 0, 1, 1));
-		this.add(audioBoard, MiscTools.generateGBC(0, 1, 1, 1));
+		this.add(framesPerSecondPanel, Utilities.generateGBC(0, 0, 1, 1));
+		this.add(audioBoard, Utilities.generateGBC(0, 1, 1, 1));
 	}
 
 	public void setUpFramesPerSecondStuff() {

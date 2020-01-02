@@ -3,7 +3,7 @@ package objectBinders;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import tools.BufferedImageTools;
+import utilities.BufferedImageUtil;
 
 public class Frame {
 	private ArrayList<BufferedImage> layers;
@@ -32,7 +32,7 @@ public class Frame {
 		layers = new ArrayList<>();
 		
 		if(image.getType() != BufferedImage.TYPE_4BYTE_ABGR)
-			layers.add(BufferedImageTools.setBufferedImageType(image, BufferedImage.TYPE_4BYTE_ABGR));
+			layers.add(BufferedImageUtil.setBufferedImageType(image, BufferedImage.TYPE_4BYTE_ABGR));
 		else
 			layers.add(image);
 	}

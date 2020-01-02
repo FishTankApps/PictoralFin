@@ -18,7 +18,7 @@ import jComponents.JProgressDialog;
 import objectBinders.AudioInfo;
 import objectBinders.Picture;
 import objectBinders.VideoSettings;
-import tools.MiscTools;
+import utilities.Utilities;
 
 import static globalValues.GlobalVariables.pfk;
 import static globalValues.GlobalVariables.dataFile;
@@ -122,23 +122,23 @@ public class VideoTools {
 							
 						} catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
 							System.out.println("EMPTY CATCH BLOCK: VideoTools.imagesToMp4(ArrayList<BufferedImage>, String, String), FrameGrabber");
-							MiscTools.showMessage("ERROR\nFrameGrabber", "ERROR", true);
+							Utilities.showMessage("ERROR\nFrameGrabber", "ERROR", true);
 							e.printStackTrace(System.out);
 							
 						} catch (org.bytedeco.javacv.FrameRecorder.Exception e) {
 							System.out.println("EMPTY CATCH BLOCK: VideoTools.imagesToMp4(ArrayList<BufferedImage>, String, String), FrameRecorder");
-							MiscTools.showMessage("ERROR\nFrameRecorder", "ERROR", true);
+							Utilities.showMessage("ERROR\nFrameRecorder", "ERROR", true);
 							e.printStackTrace(System.out);
 						}
 						
 					}catch(CanceledException e) {
 						System.out.println("CANCELED");
-						MiscTools.showMessage("ERROR\nCANCELED", "ERROR", true);
+						Utilities.showMessage("ERROR\nCANCELED", "ERROR", true);
 					}				
 						
 				
 				}catch(Exception e) {
-					MiscTools.showMessage(e.getMessage(), "ERROR", true);
+					Utilities.showMessage(e.getMessage(), "ERROR", true);
 				}
 			}
 			

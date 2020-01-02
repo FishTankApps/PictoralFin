@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import tools.BufferedImageTools;
+import utilities.BufferedImageUtil;
 
 public class Picture {
 
@@ -12,7 +12,7 @@ public class Picture {
 	private int currentLayer = 0;
 
 	public Picture(BufferedImage start) {
-		start = BufferedImageTools.setBufferedImageType(start, BufferedImage.TYPE_4BYTE_ABGR);
+		start = BufferedImageUtil.setBufferedImageType(start, BufferedImage.TYPE_4BYTE_ABGR);
 
 		history = new ArrayList<>();
 		history.add(start);
@@ -24,7 +24,7 @@ public class Picture {
 				history.remove(currentLayer + 1);
 
 			currentLayer++;
-			history.add(BufferedImageTools.copyBufferedImage(history.get(history.size() - 1)));
+			history.add(BufferedImageUtil.copyBufferedImage(history.get(history.size() - 1)));
 		}
 
 		return history.get(currentLayer);

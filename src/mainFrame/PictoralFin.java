@@ -1,12 +1,13 @@
 package mainFrame;
 
-import static globalValues.GlobalVariables.orca;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.io.File;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -17,22 +18,25 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 import JTimeLine.JTimeLine;
+import interfaces.Themed;
 import jComponents.videoEditor.VideoEditor;
+import jComponents.videoEditor.VideoTopBar;
 import listeners.GlobalFocusListener;
 import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
-import objectBinders.Frame;
 import objectBinders.Settings;
-import tools.MiscTools;
+import objectBinders.Theme;
+import utilities.Utilities;
 
-public class PictoralFin {
-
+public class PictoralFin extends JFrame {
+	
+	private static final long serialVersionUID = 6656205076381846860L;
+	
 	// =======[ TABS ]---------
 	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
 	private Settings settings;
 
-	private JFrame frame;
 	private JPanel mainPanel;
 	private JTabbedPane tabbedPane;
 	private JTimeLine timeLine;
@@ -40,66 +44,84 @@ public class PictoralFin {
 
 	public PictoralFin() {
 		settings = new Settings();
+		settings.setTheme(Theme.RED_METAL_THEME);
 		setUpFrame();
+		
+		this.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+            	refreshSizes();
+            }
+        });
 	}
 
-	// ----------{ SET-UP
-	// }-------------------------------------------------------------------------
-	public void setUpFrame() {
-		frame = new JFrame();
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.setTitle("PictoralFin");
-		frame.setSize(800, 600);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.setIconImage(orca);
-		frame.setLocationRelativeTo(null);
-		frame.addWindowListener(new OnMainFrameClosed());
-		frame.addComponentListener(new OnWindowResizedListener());
+	void launch() {
+		setVisible(true);
 
-		mainPanel = getMainPanel();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				horizontalSplitPane.setDividerLocation(0.75);
+			}
+		});		
+	}
+	
+	// ----------{ SET-UP }-------------------------------------------------------------------------
+	private void setUpFrame() {
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setTitle("PictoralFin");
+		setSize(800, 600);
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		setIconImage(getOrcaIcon());
+		setLocationRelativeTo(null);
+		addWindowListener(new OnMainFrameClosed());
+		addComponentListener(new OnWindowResizedListener());
 
-		frame.add(mainPanel);
+		this.setJMenuBar(new VideoTopBar());
+		
+		mainPanel = createMainPanel();
+
+		add(mainPanel);
 
 		GlobalFocusListener gfl = new GlobalFocusListener();
-		for (Component c : MiscTools.getAllSubComponents(frame)) {
+		for (Component c : Utilities.getAllSubComponents(this)) {
 			c.setFocusable(true);
 			c.addFocusListener(gfl);
+			
+			if(c instanceof Themed)
+				((Themed) c).applyTheme(settings.getTheme());
 		}
 
 	}
 
-	public JPanel getMainPanel() {
+	private JPanel createMainPanel() {
 		JPanel mainPanel;
 
 		mainPanel = new JPanel(new GridLayout(1, 0, 1, 1));
 
-		timeLine = new JTimeLine(settings.getTheme());
-
-		for (int count = 0; count < 20; count++)
-			timeLine.addFrame(new Frame(orca));
+		timeLine = new JTimeLine(settings.getTheme());			
 
 		horizontalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
-				e -> onDividerLocationChange());
+				e -> refreshSizes());
 
-		horizontalSplitPane.setTopComponent(getTabbedPane());
+		horizontalSplitPane.setTopComponent(createTabbedPane());
 		horizontalSplitPane.setBottomComponent(timeLine);
 
 		horizontalSplitPane.setOneTouchExpandable(false);
 		horizontalSplitPane.setBackground(settings.getTheme().getSecondaryHighlightColor());
-
+		horizontalSplitPane.setForeground(Color.RED);
+		
 		mainPanel.add(horizontalSplitPane);
 
 		return mainPanel;
 	}
 
-	public JTabbedPane getTabbedPane() {
+	private JTabbedPane createTabbedPane() {
 
 		tabbedPane = new JTabbedPane();
 		tabbedPane.setFont(new Font(settings.getTheme().getTitleFont(), Font.PLAIN, 20));
 		tabbedPane.setBackground(settings.getTheme().getPrimaryBaseColor());
 
-		videoEditor = new VideoEditor(settings.getTheme());
+		videoEditor = new VideoEditor();
 
 		ImageIcon kineticIcon = null, staticIcon = null;
 		try {
@@ -132,20 +154,32 @@ public class PictoralFin {
 		return tabbedPane;
 	}
 
-	public void launch() {
-		frame.setVisible(true);
-
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				horizontalSplitPane.setDividerLocation(0.75);
-			}
-		});		
+	public JTimeLine getTimeLine() {
+		return timeLine;
+	}
+	public PictureImporter getPictureImporter() {
+		return new PictureImporter(this);
+	}
+	public Settings getSettings() {
+		return settings;
 	}
 
-	public void onDividerLocationChange() {
+	private void refreshSizes() {
 		timeLine.updateSizes();
 
 		horizontalSplitPane.revalidate();
 		horizontalSplitPane.repaint();
+	}
+
+
+
+	public static BufferedImage getOrcaIcon() {	
+
+		try {
+			return ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("Kinetic Icon.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		};
+		return null;
 	}
 }

@@ -1,4 +1,4 @@
-package tools;
+package utilities;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -8,8 +8,10 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-public class MiscTools {
-	private MiscTools(){}
+import mainFrame.PictoralFin;
+
+public class Utilities {
+	private Utilities(){}
 	
 	public static final String getFileName(String filePath){
 		int startIndex = filePath.lastIndexOf("\\") + 1;
@@ -103,6 +105,17 @@ public class MiscTools {
 		gbc.fill   = GridBagConstraints.BOTH;
 		
 		return gbc;
+	}
+
+	public static PictoralFin getPictoralFin(Component childComponent) {		
+		Container container = childComponent.getParent();
+		
+		while(true)
+			if(container instanceof PictoralFin)
+				return (PictoralFin) container;
+		
+			else 
+				container = container.getParent();
 	}
 }
 

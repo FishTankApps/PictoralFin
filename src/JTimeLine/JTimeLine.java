@@ -2,6 +2,7 @@ package JTimeLine;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,7 +31,7 @@ public class JTimeLine extends JPanel {
 		
 		scrollPane = new JScrollPane(timeLinePanel);		
 		scrollPane.getHorizontalScrollBar().setUnitIncrement(50);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBackground(theme.getPrimaryBaseColor());
 		
@@ -76,5 +77,11 @@ public class JTimeLine extends JPanel {
 	
 	public void addFrame(Frame frame) {
 		frameTimeLine.addFrame(frame);
+	}
+	public void addFrame(BufferedImage image) {
+		frameTimeLine.addFrame(new Frame(image));
+	}
+	public void removeFrame(int index) {
+		frameTimeLine.remove(index);
 	}
 }

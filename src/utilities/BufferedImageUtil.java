@@ -1,11 +1,11 @@
-package tools;
+package utilities;
 
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-public class BufferedImageTools {
-	private BufferedImageTools(){}
+public class BufferedImageUtil {
+	private BufferedImageUtil(){}
 	
 	public static BufferedImage copyBufferedImage(BufferedImage toCopy){
 		BufferedImage target = new BufferedImage(toCopy.getWidth(), toCopy.getHeight(), toCopy.getType());

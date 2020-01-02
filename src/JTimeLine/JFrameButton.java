@@ -32,9 +32,8 @@ public class JFrameButton extends JComponent implements MouseListener, Themed{
 	private boolean selected = false;
 	private boolean highlighted = false;
 	
-	public JFrameButton(Frame frame, Theme theme) {
+	public JFrameButton(Frame frame) {
 		this.frame = frame;
-		this.theme = theme;
 		
 		enableInputMethods(true);   
 		addMouseListener(this);
@@ -107,12 +106,14 @@ public class JFrameButton extends JComponent implements MouseListener, Themed{
 			}
 		}	
 		
-		g2d.setColor(Color.BLACK);
-		g2d.setFont(new Font("LCD", Font.ITALIC, (int) (getHeight() * 0.16)));
-		g2d.drawString(formatFrameLength(), (int) (getHeight() * 0.08) + 2, (int) (getHeight() * 0.16) + 2);
-		
-		g2d.setColor(Color.WHITE);
-		g2d.drawString(formatFrameLength(), (int) (getHeight() * 0.08), (int) (getHeight() * 0.16));
+		if(frame.getDuration() >= 1) {
+			g2d.setColor(Color.BLACK);
+			g2d.setFont(new Font("LCD", Font.ITALIC, (int) (getHeight() * 0.16)));
+			g2d.drawString(formatFrameLength(), (int) (getHeight() * 0.08) + 2, (int) (getHeight() * 0.16) + 2);
+			
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(formatFrameLength(), (int) (getHeight() * 0.08), (int) (getHeight() * 0.16));
+		}		
 	}
 	
 	private String formatFrameLength() {
@@ -155,11 +156,9 @@ public class JFrameButton extends JComponent implements MouseListener, Themed{
 	public void mousePressed(MouseEvent arg0) {}
 	public void mouseReleased(MouseEvent arg0) {}
 
-	public void setTheme(Theme theme) {
-		this.theme = theme;
-		
+	
+	public void applyTheme(Theme theme) {
+		this.theme = theme;		
 	}
-	public Theme getTheme() {
-		return theme;
-	}
+
 }

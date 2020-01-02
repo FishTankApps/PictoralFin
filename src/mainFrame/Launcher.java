@@ -1,17 +1,9 @@
 package mainFrame;
 
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import objectBinders.DataFile;
-import pictureTools.PictureImporter;
-
-import static globalValues.GlobalVariables.*;
-
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 public class Launcher {
 	
@@ -20,19 +12,17 @@ public class Launcher {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			
-			orca = generateOrcaIcon();
-
-			dataFile = new DataFile();
-			
 			PictoralFin pfk = new PictoralFin();
 
-//			if (filePaths.length > 0) {
-//				File[] files = new File[filePaths.length];
-//				for (int index = 0; index < files.length; index++)
-//					files[index] = new File(filePaths[index]);
-//
-//				PictureImporter.importPictures(files, pfk.getFrameTimeLine());
-//			}
+			if (filePaths.length > 0) {
+				PictureImporter pictureImporter = pfk.getPictureImporter();
+				
+				File[] files = new File[filePaths.length];
+				for (int index = 0; index < files.length; index++)
+					files[index] = new File(filePaths[index]);
+
+				pictureImporter.importPictures(files);
+			}
 			
 			pfk.launch();
 
@@ -43,13 +33,5 @@ public class Launcher {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	public static BufferedImage generateOrcaIcon() {	
-
-		try {
-			return ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("Kinetic Icon.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		};
-		return null;
-	}
+	
 }

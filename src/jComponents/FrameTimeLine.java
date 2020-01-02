@@ -18,7 +18,7 @@ import javax.swing.JScrollPane;
 
 import listeners.OnFrameSelectedListener;
 import objectBinders.Picture;
-import tools.BufferedImageTools;
+import utilities.BufferedImageUtil;
 
 public class FrameTimeLine extends JPanel{
 
@@ -120,7 +120,7 @@ public class FrameTimeLine extends JPanel{
 					for(int index = 0; index < buttons.size(); index++) {		
 						Thread.sleep(0,1);
 						
-						BufferedImage bi = BufferedImageTools.imageToBufferedImage(BufferedImageTools.resizeBufferedImage(frames.get(index).getImage(false), framePreviewSize, framePreviewSize, Image.SCALE_FAST));
+						BufferedImage bi = BufferedImageUtil.imageToBufferedImage(BufferedImageUtil.resizeBufferedImage(frames.get(index).getImage(false), framePreviewSize, framePreviewSize, Image.SCALE_FAST));
 						Graphics2D g = bi.createGraphics();
 						g.setStroke(new BasicStroke(5));
 						g.setColor((buttons.get(index).hasFocus()) ? settings.getTheme().getSecondaryHighlightColor() : settings.getTheme().getPrimaryBaseColor());
@@ -142,7 +142,7 @@ public class FrameTimeLine extends JPanel{
 	
 	public void paintSelectedButton() {
 		if(buttons.size() != 0) {
-			BufferedImage bi2 = BufferedImageTools.imageToBufferedImage(BufferedImageTools.resizeBufferedImage(frames.get(indexOfPreviousSelection).getImage(false), framePreviewSize, framePreviewSize, Image.SCALE_FAST));
+			BufferedImage bi2 = BufferedImageUtil.imageToBufferedImage(BufferedImageUtil.resizeBufferedImage(frames.get(indexOfPreviousSelection).getImage(false), framePreviewSize, framePreviewSize, Image.SCALE_FAST));
 			Graphics2D g2 = bi2.createGraphics();
 			g2.setStroke(new BasicStroke(5));
 			g2.setColor(settings.getTheme().getPrimaryBaseColor());
@@ -151,7 +151,7 @@ public class FrameTimeLine extends JPanel{
 			
 			buttons.get(indexOfPreviousSelection).setIcon(new ImageIcon(bi2));
 			
-			BufferedImage bi = BufferedImageTools.imageToBufferedImage(BufferedImageTools.resizeBufferedImage(frames.get(currentFrame).getImage(false), framePreviewSize, framePreviewSize, Image.SCALE_FAST));
+			BufferedImage bi = BufferedImageUtil.imageToBufferedImage(BufferedImageUtil.resizeBufferedImage(frames.get(currentFrame).getImage(false), framePreviewSize, framePreviewSize, Image.SCALE_FAST));
 			Graphics2D g = bi.createGraphics();
 			g.setStroke(new BasicStroke(5));
 			g.setColor(settings.getTheme().getSecondaryHighlightColor());

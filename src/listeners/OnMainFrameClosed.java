@@ -8,7 +8,7 @@ import static globalValues.GlobalVariables.*;
 public class OnMainFrameClosed implements WindowListener{
 	
 	public void windowClosing(WindowEvent arg0) {
-		dataFile.saveToFile();
+		//dataFile.saveToFile();
 		currentlyRunning = false;
 		System.exit(0);
 	}

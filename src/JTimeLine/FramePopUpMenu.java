@@ -11,7 +11,7 @@ class FramePopUpMenu{
 	private JFrameButton button;
 	
 	private final ActionListener REMOVE_FRAME = e -> {
-		FrameTimeLine frameTimeLine = (FrameTimeLine) button.getParent().getParent();
+		FrameTimeLine frameTimeLine = (FrameTimeLine) button.getParent();
 		frameTimeLine.remove(button);
 		menu.setVisible(false);
 		

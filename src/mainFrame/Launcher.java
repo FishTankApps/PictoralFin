@@ -24,15 +24,15 @@ public class Launcher {
 
 			dataFile = new DataFile();
 			
-			PictoralFinKinetic pfk = new PictoralFinKinetic();
+			PictoralFin pfk = new PictoralFin();
 
-			if (filePaths.length > 0) {
-				File[] files = new File[filePaths.length];
-				for (int index = 0; index < files.length; index++)
-					files[index] = new File(filePaths[index]);
-
-				PictureImporter.importPictures(files, pfk.getFrameTimeLine());
-			}
+//			if (filePaths.length > 0) {
+//				File[] files = new File[filePaths.length];
+//				for (int index = 0; index < files.length; index++)
+//					files[index] = new File(filePaths[index]);
+//
+//				PictureImporter.importPictures(files, pfk.getFrameTimeLine());
+//			}
 			
 			pfk.launch();
 

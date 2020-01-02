@@ -6,18 +6,17 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import interfaces.Themed;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
-class JFrameButton extends JComponent implements MouseListener, Themed, KeyListener{
+public class JFrameButton extends JComponent implements MouseListener, Themed{
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	
@@ -40,8 +39,6 @@ class JFrameButton extends JComponent implements MouseListener, Themed, KeyListe
 		enableInputMethods(true);   
 		addMouseListener(this);
 		setFocusable(true);
-		addKeyListener(this);
-		
 		setPreferredHeight(10);
 	}
 	
@@ -55,6 +52,13 @@ class JFrameButton extends JComponent implements MouseListener, Themed, KeyListe
 	
 	public Frame getFrame() {
 		return frame;
+	}
+	public JLabel getCopy() {
+		JLabel label = new JLabel("TEST");
+		
+		label.setPreferredSize(getSize());
+		
+		return label;
 	}
 	
 	public Dimension getPreferredSize() {
@@ -104,11 +108,11 @@ class JFrameButton extends JComponent implements MouseListener, Themed, KeyListe
 		}	
 		
 		g2d.setColor(Color.BLACK);
-		g2d.setFont(new Font("LCD", Font.PLAIN, 20));
-		g2d.drawString(formatFrameLength(), 22, 22);
+		g2d.setFont(new Font("LCD", Font.ITALIC, (int) (getHeight() * 0.16)));
+		g2d.drawString(formatFrameLength(), (int) (getHeight() * 0.08) + 2, (int) (getHeight() * 0.16) + 2);
 		
 		g2d.setColor(Color.WHITE);
-		g2d.drawString(formatFrameLength(), 20, 20);
+		g2d.drawString(formatFrameLength(), (int) (getHeight() * 0.08), (int) (getHeight() * 0.16));
 	}
 	
 	private String formatFrameLength() {
@@ -128,17 +132,23 @@ class JFrameButton extends JComponent implements MouseListener, Themed, KeyListe
 		if(mouseEvent.getButton() == MouseEvent.BUTTON3) 
 			new FramePopUpMenu(this, mouseEvent.getX(), mouseEvent.getY());
 		else
-			ftl.onJFrameButtonClicked(mouseEvent, this);
+			ftl.onJFrameButtonClicked(this);
 		
 		requestFocus();
 		
 		repaint();
 	}
 	public void mouseEntered(MouseEvent arg0) {
+		if(getParent() instanceof FrameTimeLine)
+			((FrameTimeLine) getParent()).onJFrameButtonHighlighted(this);
+		
 		highlighted = true;
 		repaint();		
 	}
 	public void mouseExited(MouseEvent arg0) {
+		if(getParent() instanceof FrameTimeLine)
+			((FrameTimeLine) getParent()).onJFrameButtonUnHighlighted(this);
+		
 		highlighted = false;
 		repaint();		
 	}	
@@ -149,18 +159,7 @@ class JFrameButton extends JComponent implements MouseListener, Themed, KeyListe
 		this.theme = theme;
 		
 	}
-
-	
-	public void keyPressed(KeyEvent arg0) {
-		if(selected && highlighted) 
-			if(arg0.getKeyCode() == KeyEvent.VK_LEFT || arg0.getKeyCode() == KeyEvent.VK_RIGHT) {
-				((FrameTimeLine) getParent()).onMoveRequest(arg0.getKeyCode() == KeyEvent.VK_LEFT, this);				
-				requestFocus();
-			}
-				
+	public Theme getTheme() {
+		return theme;
 	}
-
-
-	public void keyReleased(KeyEvent arg0) {}
-	public void keyTyped(KeyEvent arg0) {}
 }

@@ -16,6 +16,7 @@ import javax.swing.JSlider;
 import javax.swing.JTextPane;
 
 import objectBinders.Picture;
+import objectBinders.Theme;
 
 
 public class VideoPreview extends JPanel{
@@ -30,32 +31,35 @@ public class VideoPreview extends JPanel{
 	private JTextPane  frameNumber;
 	private ImageIcon playIcon, pauseIcon, stopIcon, skipLeftIcon, skipRightIcon;
 	
-	public VideoPreview(JPanel panelContainedIn) {
-		this.panelContainedIn = panelContainedIn;
+	private Theme theme;
+	
+	public VideoPreview(Theme theme) {
+		panelContainedIn = (JPanel) getParent();
+		this.theme = theme;
 		
 		playPause = new JButton();
 		playPause.addActionListener(e -> {previewIsPlaying = !previewIsPlaying && pfk.getFrameTimeLine().length() != 0; repaint();});
-		playPause.setBackground(settings.getTheme().getSecondaryBaseColor().darker().darker());
+		playPause.setBackground(theme.getSecondaryBaseColor().darker().darker());
 		stop = new JButton();
 		stop.addActionListener(e-> {previewIsPlaying = false; videoTimeLine.setValue(0); repaint();});
-		stop.setBackground(settings.getTheme().getSecondaryBaseColor().darker().darker());
+		stop.setBackground(theme.getSecondaryBaseColor().darker().darker());
 		skipLeft = new JButton();
 		skipLeft.addActionListener(e-> {videoTimeLine.setValue(videoTimeLine.getValue() - 1); repaint();});
-		skipLeft.setBackground(settings.getTheme().getSecondaryBaseColor().darker().darker());
+		skipLeft.setBackground(theme.getSecondaryBaseColor().darker().darker());
 		skipRight = new JButton();
 		skipRight.addActionListener(e-> {videoTimeLine.setValue(videoTimeLine.getValue() + 1); repaint();});
-		skipRight.setBackground(settings.getTheme().getSecondaryBaseColor().darker().darker());
+		skipRight.setBackground(theme.getSecondaryBaseColor().darker().darker());
 		
 		frameNumber = new JTextPane();
 		frameNumber.setEditable(false);
-		frameNumber.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 14));
+		frameNumber.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 14));
 		frameNumber.setText("");
-		frameNumber.setBackground(settings.getTheme().getSecondaryHighlightColor());
+		frameNumber.setBackground(theme.getSecondaryHighlightColor());
 
 		
 		videoTimeLine = new JSlider(0,0,0);
 		videoTimeLine.addChangeListener(e -> repaint());
-		videoTimeLine.setBackground(settings.getTheme().getSecondaryHighlightColor());
+		videoTimeLine.setBackground(theme.getSecondaryHighlightColor());
 		
 		buttonPanel = new JPanel() {
 			private static final long serialVersionUID = -2707726343692579133L;
@@ -63,7 +67,7 @@ public class VideoPreview extends JPanel{
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				
-				g.setColor(settings.getTheme().getPrimaryHighlightColor());
+				g.setColor(VideoPreview.this.theme.getPrimaryHighlightColor());
 				g.fillRoundRect(0, 0, getWidth(), getHeight()+100, 50, 50);
 				
 			}
@@ -73,7 +77,7 @@ public class VideoPreview extends JPanel{
 		buttonPanel.add(playPause);		
 		buttonPanel.add(stop);
 		buttonPanel.add(skipRight);
-		buttonPanel.setBackground(settings.getTheme().getPrimaryBaseColor());
+		buttonPanel.setBackground(theme.getPrimaryBaseColor());
 		
 		
 		this.setLayout(new BorderLayout());	
@@ -83,7 +87,7 @@ public class VideoPreview extends JPanel{
 		
 		setUpIconImages();
 		
-		this.setBackground(settings.getTheme().getPrimaryBaseColor());
+		this.setBackground(theme.getPrimaryBaseColor());
 		videoPreviewThread = new Thread(new Runnable() {
 
 			@Override
@@ -113,18 +117,18 @@ public class VideoPreview extends JPanel{
 		
 		pauseImage = new BufferedImage(32,32, BufferedImage.TYPE_3BYTE_BGR);
 		Graphics g = pauseImage.getGraphics();
-		g.setColor(settings.getTheme().getSecondaryBaseColor());
+		g.setColor(theme.getSecondaryBaseColor());
 		g.fillRect(0, 0, 35, 35);
-		g.setColor(settings.getTheme().getPrimaryBaseColor().darker().darker());
+		g.setColor(theme.getPrimaryBaseColor().darker().darker());
 		g.fillRect(9, 2, 5, 28);
 		g.fillRect(18, 2, 5, 28);		
 		pauseIcon = new ImageIcon(pauseImage);
 		
 		playImage = new BufferedImage(32,32, BufferedImage.TYPE_3BYTE_BGR);
 		g = playImage.getGraphics();
-		g.setColor(settings.getTheme().getSecondaryBaseColor());
+		g.setColor(theme.getSecondaryBaseColor());
 		g.fillRect(0, 0, 35, 35);
-		g.setColor(settings.getTheme().getPrimaryBaseColor().darker().darker());
+		g.setColor(theme.getPrimaryBaseColor().darker().darker());
 		Polygon p = new Polygon();
 		p.addPoint(9, 7);
 		p.addPoint(23, 16);
@@ -135,17 +139,17 @@ public class VideoPreview extends JPanel{
 
 		stopImage = new BufferedImage(32,32, BufferedImage.TYPE_3BYTE_BGR);
 		g = stopImage.getGraphics();
-		g.setColor(settings.getTheme().getSecondaryBaseColor());
+		g.setColor(theme.getSecondaryBaseColor());
 		g.fillRect(0, 0, 35, 35);
-		g.setColor(settings.getTheme().getPrimaryBaseColor().darker().darker());
+		g.setColor(theme.getPrimaryBaseColor().darker().darker());
 		g.fillRect(5, 5, 22, 22);
 		stopIcon = new ImageIcon(stopImage);
 		
 		skipRightImage = new BufferedImage(32,32, BufferedImage.TYPE_3BYTE_BGR);
 		g = skipRightImage.getGraphics();
-		g.setColor(settings.getTheme().getSecondaryBaseColor());
+		g.setColor(theme.getSecondaryBaseColor());
 		g.fillRect(0, 0, 35, 35);
-		g.setColor(settings.getTheme().getPrimaryBaseColor().darker().darker());
+		g.setColor(theme.getPrimaryBaseColor().darker().darker());
 		p.translate(-2, 0);
 		g.fillPolygon(p);	
 		g.fillRect(18, 7, 4, 18);
@@ -153,9 +157,9 @@ public class VideoPreview extends JPanel{
 		
 		skipLeftImage = new BufferedImage(32,32, BufferedImage.TYPE_3BYTE_BGR);
 		g = skipLeftImage.getGraphics();
-		g.setColor(settings.getTheme().getSecondaryBaseColor());
+		g.setColor(theme.getSecondaryBaseColor());
 		g.fillRect(0, 0, 35, 35);
-		g.setColor(settings.getTheme().getPrimaryBaseColor().darker().darker());
+		g.setColor(theme.getPrimaryBaseColor().darker().darker());
 		Polygon p2 = new Polygon();
 		p2.addPoint(25, 7);
 		p2.addPoint(11, 16);
@@ -215,7 +219,7 @@ public class VideoPreview extends JPanel{
 			
 			g.drawImage(currentFrame, (panelContainedIn.getWidth() - width)/2, (panelContainedIn.getHeight() - height)/2 - (buttonPanel.getHeight()/2), width, height, null);	
 			
-			g.setColor(settings.getTheme().getSecondaryHighlightColor());
+			g.setColor(theme.getSecondaryHighlightColor());
 			g.fillRoundRect(0, -20, getWidth(), frameNumber.getHeight() + 27, 20, 20);
 		}else {
 			frameNumber.setText("");

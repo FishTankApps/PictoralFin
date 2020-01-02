@@ -95,7 +95,7 @@ public class PictoralFinKinetic {
 		tabbedPane.setBackground(settings.getTheme().getPrimaryBaseColor());
 
 		pictureEditor = new PictureEditor();
-		videoEditor = new VideoEditor();
+		//videoEditor = new VideoEditor();
 		
 		tabbedPane.addTab("PictoralFin Kinetic", null, videoEditor);
 		tabbedPane.addTab("PictoralFin Static", null, pictureEditor);
@@ -104,12 +104,12 @@ public class PictoralFinKinetic {
 			frame.setJMenuBar((tabbedPane.getSelectedIndex() == 0) ? videoTopBar : pictureTopBar);
 			openView = tabbedPane.getSelectedIndex();
 			if(tabbedPane.getSelectedIndex() == 1) {				
-				videoEditor.detachFrameTimeLine();
+				//videoEditor.detachFrameTimeLine();
 				pictureEditor.attachFrameTimeLine();
 				frameTimeLine.setBackground(settings.getTheme().getPrimaryBaseColor());
 			} else {
 				pictureEditor.detachFrameTimeLine();
-				videoEditor.attachFrameTimeLine();
+				//videoEditor.attachFrameTimeLine();
 				frameTimeLine.setBackground(settings.getTheme().getPrimaryHighlightColor());
 			}
 

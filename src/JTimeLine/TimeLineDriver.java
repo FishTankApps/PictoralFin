@@ -10,7 +10,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
-public class TimeLineDriver {
+class TimeLineDriver {
 
 	JFrame frame;
 	JTimeLine timeLine;
@@ -32,21 +32,22 @@ public class TimeLineDriver {
 		frame.setSize(1000, 750);
 		frame.setLocationRelativeTo(null);				
 		timeLine = new JTimeLine(Theme.OCEAN_THEME);
+		timeLine.addOnFrameSelectionChangeListener((old, neW) -> {System.out.println("SELECTION CHANGED");});
 		frame.add(timeLine);		
 		
-		File pictureFolder = new File("C:\\Users\\Robots\\Pictures\\Lego Movies\\Parts of Videos\\Flying Dove");
+		File pictureFolder = new File("C:\\Users\\Robots\\Pictures\\Others\\Sea Turtles");
 		
 		try {
-			Frame f = new Frame();
-			Frame f2 = new Frame(ImageIO.read(pictureFolder.listFiles()[0]));
-			f.addLayer(ImageIO.read(pictureFolder.listFiles()[10]));
-			f.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));
-			f.addLayer(ImageIO.read(pictureFolder.listFiles()[30]));			
-			timeLine.addFrame(f);
-			
-			f2.addLayer(ImageIO.read(pictureFolder.listFiles()[10]));
-			f2.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));			
-			timeLine.addFrame(f2);
+//			Frame f = new Frame(5500);
+//			Frame f2 = new Frame(ImageIO.read(pictureFolder.listFiles()[0]));
+//			f.addLayer(ImageIO.read(pictureFolder.listFiles()[10]));
+//			f.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));
+//			f.addLayer(ImageIO.read(pictureFolder.listFiles()[30]));			
+//			timeLine.addFrame(f);
+//			
+//			f2.addLayer(ImageIO.read(pictureFolder.listFiles()[10]));
+//			f2.addLayer(ImageIO.read(pictureFolder.listFiles()[20]));			
+//			timeLine.addFrame(f2);
 			
 			for(File picture : pictureFolder.listFiles()) {
 				timeLine.addFrame(new Frame(ImageIO.read(picture)));

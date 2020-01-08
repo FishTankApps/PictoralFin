@@ -16,19 +16,18 @@ public class VideoEditor extends JPanel implements Themed {
 	private JPanel videoPreviewPanel, settingsPanel;
 	private JSplitPane videoPreviewAndSettingsPane;
 	private VideoPreview videoPreview;
-	private VideoPreviewSettings videoPreviewSettings;
 	
 	public VideoEditor() {		
 		setLayout(new GridLayout(1,0));
 		
-		videoPreviewSettings = new VideoPreviewSettings();
+		//videoPreviewSettings = new VideoPreviewSettings();
 		videoPreview = new VideoPreview();
 		
 		settingsPanel = new JPanel(new GridLayout(1,0));
 		videoPreviewPanel = new JPanel();
 		
 		videoPreviewPanel.add(videoPreview);
-		settingsPanel.add(videoPreviewSettings);
+		//settingsPanel.add(videoPreviewSettings);
 		
 		
 		videoPreviewAndSettingsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, videoPreviewPanel, settingsPanel);
@@ -46,7 +45,7 @@ public class VideoEditor extends JPanel implements Themed {
 		toReturn.setVideoFormat(VideoSettings.MP4);
 		toReturn.setVideoQuality(0);
 		toReturn.setVideoBitRate(9000);
-		toReturn.setAudioSettings(videoPreviewSettings.getAudioBoard().generateAudioSettings());
+		//toReturn.setAudioSettings(videoPreviewSettings.getAudioBoard().generateAudioSettings());
 		
 		return toReturn;
 	}
@@ -60,7 +59,7 @@ public class VideoEditor extends JPanel implements Themed {
 		repaint();
 		
 		videoPreview.refresh();	
-		videoPreviewSettings.refresh();					
+		//videoPreviewSettings.refresh();					
 	}
 
 	public void applyTheme(Theme theme) {

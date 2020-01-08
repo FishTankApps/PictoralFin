@@ -8,8 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
+import mainFrame.PictoralFin;
 import objectBinders.Frame;
-import objectBinders.Theme;
 
 public class JTimeLine extends JPanel {
 	
@@ -22,18 +22,18 @@ public class JTimeLine extends JPanel {
 	private JPanel timeLinePanel;
 
 	
-	public JTimeLine(Theme theme) {		
+	public JTimeLine(PictoralFin pictoralFin) {		
 
-		frameTimeLine = new FrameTimeLine(theme);		
+		frameTimeLine = new FrameTimeLine(pictoralFin);		
 		
 		timeLinePanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		timeLinePanel.setBackground(theme.getPrimaryBaseColor());
+		timeLinePanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		scrollPane = new JScrollPane(timeLinePanel);		
 		scrollPane.getHorizontalScrollBar().setUnitIncrement(50);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBackground(theme.getPrimaryBaseColor());
+		scrollPane.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		
 		timeLinePanel.add(frameTimeLine);
@@ -53,8 +53,6 @@ public class JTimeLine extends JPanel {
 	public void addOnFrameSelectionChangeListener(OnFrameSelectionChangedListener listener) {
 		frameTimeLine.addOnFrameSelectionChangedListener(listener);
 	}
-
-
 	
 	public void updateSizes() {
 		frameTimeLine.setHeight(250);
@@ -82,6 +80,6 @@ public class JTimeLine extends JPanel {
 		frameTimeLine.addFrame(new Frame(image));
 	}
 	public void removeFrame(int index) {
-		frameTimeLine.remove(index);
+		frameTimeLine.removeFrame(index);
 	}
 }

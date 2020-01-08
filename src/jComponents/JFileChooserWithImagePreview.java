@@ -17,7 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import static globalValues.GlobalVariables.dataFile;
+import mainFrame.PictoralFin;
 
 public class JFileChooserWithImagePreview extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -57,29 +57,31 @@ public class JFileChooserWithImagePreview extends JFrame {
 		}
 	};
 	
-	public File[] openFiles() {
-		File lastOpened = new File(dataFile.getLastOpenedPictureLocation());
+	public static File[] openFiles(PictoralFin pictoralFIn) {
+		JFileChooserWithImagePreview jfcwip = new JFileChooserWithImagePreview();
 		
-		img = new JLabel();
-		img.setPreferredSize(new Dimension(175, 175));
+		File lastOpened = new File(pictoralFIn.getDataFile().getLastOpenedPictureLocation());
+		
+		jfcwip.img = new JLabel();
+		jfcwip.img.setPreferredSize(new Dimension(175, 175));
 
-		jf.setMultiSelectionEnabled(true);
-		jf.setAccessory(img);
-		jf.setDialogTitle("Import Images");
-		jf.setCurrentDirectory((lastOpened.isDirectory()) ? lastOpened : lastOpened.getParentFile());
+		jfcwip.jf.setMultiSelectionEnabled(true);
+		jfcwip.jf.setAccessory(jfcwip.img);
+		jfcwip.jf.setDialogTitle("Import Images");
+		jfcwip.jf.setCurrentDirectory((lastOpened.isDirectory()) ? lastOpened : lastOpened.getParentFile());
 
-		jf.setAcceptAllFileFilterUsed(true);
-		jf.addChoosableFileFilter(new FileNameExtensionFilter("Importable files", "pfkp", "jpg", "jpeg", "png"));
-		jf.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png"));
-		jf.addChoosableFileFilter(new FileNameExtensionFilter("Project files", "pfkp"));
+		jfcwip.jf.setAcceptAllFileFilterUsed(true);
+		jfcwip.jf.addChoosableFileFilter(new FileNameExtensionFilter("Importable files", "pfkp", "jpg", "jpeg", "png"));
+		jfcwip.jf.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png"));
+		jfcwip.jf.addChoosableFileFilter(new FileNameExtensionFilter("Project files", "pfkp"));
 		
 
-		jf.addPropertyChangeListener(onNewItemSelected);
+		jfcwip.jf.addPropertyChangeListener(jfcwip.onNewItemSelected);
 
-		if(jf.showOpenDialog(null) == JFileChooser.CANCEL_OPTION)
+		if(jfcwip.jf.showOpenDialog(null) == JFileChooser.CANCEL_OPTION)
 			return null;
 		
-		dataFile.setLastOpenedPictureLocation(jf.getSelectedFile().getAbsolutePath());
-		return jf.getSelectedFiles();
+		pictoralFIn.getDataFile().setLastOpenedPictureLocation(jfcwip.jf.getSelectedFile().getAbsolutePath());
+		return jfcwip.jf.getSelectedFiles();
 	}
 }

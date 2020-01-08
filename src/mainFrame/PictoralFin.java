@@ -6,10 +6,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -24,8 +22,11 @@ import jComponents.videoEditor.VideoTopBar;
 import listeners.GlobalFocusListener;
 import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
+import objectBinders.DataFile;
+import objectBinders.GlobalImageKit;
+import objectBinders.GlobalListenerToolKit;
 import objectBinders.Settings;
-import objectBinders.Theme;
+import utilities.PictureImporter;
 import utilities.Utilities;
 
 public class PictoralFin extends JFrame {
@@ -36,15 +37,28 @@ public class PictoralFin extends JFrame {
 	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
 	private Settings settings;
+	private DataFile dateFile;
 
 	private JPanel mainPanel;
 	private JTabbedPane tabbedPane;
 	private JTimeLine timeLine;
 	private JSplitPane horizontalSplitPane;
-
+	
+	private GlobalListenerToolKit globalListenerToolKit;
+	private GlobalImageKit globalImageKit;
+	
 	public PictoralFin() {
-		settings = new Settings();
-		settings.setTheme(Theme.RED_METAL_THEME);
+		settings = Settings.openSettings();
+		dateFile = DataFile.openDataFile();
+		
+		globalListenerToolKit = new GlobalListenerToolKit(this);
+		
+		try {
+			globalImageKit = new GlobalImageKit();
+		} catch (IOException e) {
+			throw new RuntimeException("ERROR LOADING PICTURES");
+		}
+		
 		setUpFrame();
 		
 		this.addComponentListener(new ComponentAdapter() {
@@ -70,12 +84,12 @@ public class PictoralFin extends JFrame {
 		setTitle("PictoralFin");
 		setSize(800, 600);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setIconImage(getOrcaIcon());
+		setIconImage(globalImageKit.pictoralFinIcon);
 		setLocationRelativeTo(null);
-		addWindowListener(new OnMainFrameClosed());
+		addWindowListener(new OnMainFrameClosed(this));
 		addComponentListener(new OnWindowResizedListener());
 
-		this.setJMenuBar(new VideoTopBar());
+		setJMenuBar(new VideoTopBar(this));
 		
 		mainPanel = createMainPanel();
 
@@ -97,7 +111,7 @@ public class PictoralFin extends JFrame {
 
 		mainPanel = new JPanel(new GridLayout(1, 0, 1, 1));
 
-		timeLine = new JTimeLine(settings.getTheme());			
+		timeLine = new JTimeLine(this);			
 
 		horizontalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
@@ -125,8 +139,8 @@ public class PictoralFin extends JFrame {
 
 		ImageIcon kineticIcon = null, staticIcon = null;
 		try {
-			kineticIcon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("VideoIcon.jpg")));
-			staticIcon  = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("PictureIcon.png")));
+			kineticIcon = new ImageIcon(globalImageKit.videoIcon);
+			staticIcon  = new ImageIcon(globalImageKit.pictureIcon);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -152,8 +166,8 @@ public class PictoralFin extends JFrame {
 		});
 
 		return tabbedPane;
-	}
-
+	} 
+	
 	public JTimeLine getTimeLine() {
 		return timeLine;
 	}
@@ -163,7 +177,11 @@ public class PictoralFin extends JFrame {
 	public Settings getSettings() {
 		return settings;
 	}
-
+	public DataFile getDataFile() {
+		return dateFile;
+	}
+	
+	
 	private void refreshSizes() {
 		timeLine.updateSizes();
 
@@ -171,15 +189,10 @@ public class PictoralFin extends JFrame {
 		horizontalSplitPane.repaint();
 	}
 
-
-
-	public static BufferedImage getOrcaIcon() {	
-
-		try {
-			return ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("Kinetic Icon.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		};
-		return null;
+	public GlobalListenerToolKit getGlobalListenerToolKit() {
+		return globalListenerToolKit;
+	}
+	public GlobalImageKit getGlobalImageKit() {
+		return globalImageKit;
 	}
 }

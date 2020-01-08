@@ -19,7 +19,6 @@ import jComponents.pictureEditor.PictureTopBar;
 import jComponents.videoEditor.VideoEditor;
 import jComponents.videoEditor.VideoTopBar;
 import listeners.GlobalFocusListener;
-import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
 import objectBinders.Picture;
 import utilities.Utilities;
@@ -59,12 +58,12 @@ public class PictoralFinKinetic {
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setIconImage(orca);
 		frame.setLocationRelativeTo(null);
-		frame.addWindowListener(new OnMainFrameClosed());
+		//frame.addWindowListener(new OnMainFrameClosed());
 		frame.addComponentListener(new OnWindowResizedListener());	
 		
 		mainPanel = getMainPanel();
 		
-		videoTopBar = new VideoTopBar();
+		//videoTopBar = new VideoTopBar();
 		pictureTopBar = new PictureTopBar();
 		frame.setJMenuBar(videoTopBar);
 		

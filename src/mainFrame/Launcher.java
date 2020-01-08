@@ -3,6 +3,8 @@ package mainFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import utilities.PictureImporter;
+
 import java.io.File;
 
 public class Launcher {

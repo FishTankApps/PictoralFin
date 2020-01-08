@@ -32,8 +32,9 @@ public class JFrameButton extends JComponent implements MouseListener, Themed{
 	private boolean selected = false;
 	private boolean highlighted = false;
 	
-	public JFrameButton(Frame frame) {
+	public JFrameButton(Frame frame, Theme theme) {
 		this.frame = frame;
+		this.theme = theme;
 		
 		enableInputMethods(true);   
 		addMouseListener(this);

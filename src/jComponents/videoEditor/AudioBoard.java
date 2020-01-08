@@ -2,10 +2,8 @@ package jComponents.videoEditor;
 
 import static globalValues.GlobalVariables.dataFile;
 import static globalValues.GlobalVariables.pfk;
-import static globalValues.GlobalVariables.settings;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,17 +41,17 @@ public class AudioBoard extends JPanel {
 	
 	public AudioBoard() {
 		addAudio = new JButton("Add Audio");
-		addAudio.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
+		//addAudio.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
 		addAudio.setMaximumSize(new Dimension(90, 25));
-		addAudio.setBackground(settings.getTheme().getSecondaryBaseColor());
+		//addAudio.setBackground(settings.getTheme().getSecondaryBaseColor());
 		
 		removeAudio = new JButton("Remove this Audio");
-		removeAudio.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.ITALIC + Font.BOLD, 15));
-		removeAudio.setBackground(settings.getTheme().getSecondaryBaseColor());
+		//removeAudio.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.ITALIC + Font.BOLD, 15));
+		//removeAudio.setBackground(settings.getTheme().getSecondaryBaseColor());
 		
 		audioSelector = new JComboBox<>();
 		audioSelector.getModel().addListDataListener(new OnAudioSelectionChanges());
-		audioSelector.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
+		//audioSelector.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
 
 		startingSpinnerModel = new SpinnerNumberModel(1,1,1,1);
 		endingSpinnerModel = new SpinnerNumberModel(1,1,1,1);	
@@ -61,16 +59,16 @@ public class AudioBoard extends JPanel {
 		startingFrame = new JSpinner(startingSpinnerModel);
 		startingFrameLabel = new JLabel("Starting Frame:");
 		startingFrameLabel.setHorizontalTextPosition(JLabel.RIGHT);
-		startingFrameLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
+		//startingFrameLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
 		startingFrame.addChangeListener(new OnSpinnerChanged());
-		startingFrame.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 12));
+		//startingFrame.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 12));
 		
 		endingFrame = new JSpinner(endingSpinnerModel);
 		endingFrameLabel = new JLabel("Ending Frame:");
 		endingFrameLabel.setHorizontalTextPosition(JLabel.RIGHT);
-		endingFrameLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
+		//endingFrameLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 10));
 		endingFrame.addChangeListener(new OnSpinnerChanged());
-		endingFrame.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 12));
+		//endingFrame.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 12));
 		
 		SpringLayout settingsPanelLayout = new SpringLayout();
 		
@@ -81,7 +79,7 @@ public class AudioBoard extends JPanel {
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				
-				g.setColor(settings.getTheme().getSecondaryHighlightColor());
+				//g.setColor(settings.getTheme().getSecondaryHighlightColor());
 				g.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 20);
 				
 			}
@@ -103,7 +101,7 @@ public class AudioBoard extends JPanel {
 		settingsPanelLayout.putConstraint(SpringLayout.NORTH, removeAudio, 10, SpringLayout.SOUTH, endingFrame);
 		settingsPanelLayout.putConstraint(SpringLayout.SOUTH, removeAudio, -5, SpringLayout.SOUTH, settingsPanel);
 		
-		settingsPanel.setBackground(settings.getTheme().getPrimaryHighlightColor());
+		//settingsPanel.setBackground(settings.getTheme().getPrimaryHighlightColor());
 		
 		
 		
@@ -133,7 +131,7 @@ public class AudioBoard extends JPanel {
 		this.add(settingsPanel);
 		this.add(addAudio);
 		
-		this.setBackground(settings.getTheme().getPrimaryBaseColor());		
+		//this.setBackground(settings.getTheme().getPrimaryBaseColor());		
 		
 		addAudio.addActionListener(new OnButtonClicked());
 		removeAudio.addActionListener(new OnButtonClicked());
@@ -220,7 +218,7 @@ public class AudioBoard extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		g.setColor(settings.getTheme().getPrimaryHighlightColor());
+		//g.setColor(settings.getTheme().getPrimaryHighlightColor());
 		g.fillRoundRect(0, 0, getWidth()-2, getHeight(), 10, 15);
 
 	}

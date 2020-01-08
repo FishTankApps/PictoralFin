@@ -6,9 +6,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import interfaces.Themed;
+import mainFrame.PictoralFin;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
@@ -17,15 +20,23 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 	private static final long serialVersionUID = -8764321615928981018L;
 	private JFrameButton selectedJFrameButton;
 	private JFrameButton highlightedJFrameButton;
+	private JButton addFrames;
 	private ArrayList<OnFrameSelectionChangedListener> listeners;
 	//private OnComponentDraggedListener dragListener;
 
-	boolean hasFrames = false;;
+	//boolean hasFrames = false;
+	private Theme theme;
 	private int frameDimension = 100;
 	
-	public FrameTimeLine(Theme theme) {			
+	public FrameTimeLine(PictoralFin pictoralFin) {	
+		this.theme = pictoralFin.getSettings().getTheme();
 		listeners = new ArrayList<>();
 		//dragListener = new OnComponentDraggedListener(this);
+		
+		addFrames = new JButton("Add Frames");
+		addFrames.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
+		addFrames.setIcon(new ImageIcon(pictoralFin.getGlobalImageKit().pictureIcon));
+		add(addFrames);
 		
 		setBackground(theme.getPrimaryBaseColor());
 		setHeight(100);		
@@ -35,17 +46,37 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		addMouseMotionListener(this);
 	}
 	
-	public void addFrame(Frame frame) {
-		hasFrames = true;
+	public void addFrame(Frame frame) {		
+		if(getComponent(0) instanceof JButton) 
+			remove(0);
 		
-		JFrameButton newButton = new JFrameButton(frame);
+		
+		JFrameButton newButton = new JFrameButton(frame, theme);
 		newButton.setPreferredHeight(frameDimension);
 		
 		newButton.addMouseListener(this);
 		newButton.addMouseMotionListener(this);
 		
-		add(newButton);		
+		add(newButton);
+		
+		revalidate();
+		repaint();
 	}
+	
+	public void removeFrame(int index) {
+		remove(index);
+
+		if(getComponentCount() == 0)
+			add(addFrames);
+	}
+	
+	public void removeFrame(JFrameButton button) {
+		remove(button);
+
+		if(getComponentCount() == 0)
+			add(addFrames);
+	}
+	
 	protected void addOnFrameSelectionChangedListener(OnFrameSelectionChangedListener listener) {
 		listeners.add(listener);
 	}
@@ -127,7 +158,7 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		if(highlightedJFrameButton == button)
 			highlightedJFrameButton = null;
 	}
-
+	
 
 	public void mousePressed(MouseEvent event) {
 		//System.out.println("PRESSED");
@@ -142,15 +173,15 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		//dragListener.mouseDragged(event);
 	}
 
-
+	
 	public void mouseClicked(MouseEvent arg0) {}
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}	
 	public void mouseMoved(MouseEvent event) {}
 
-	@Override
+	
 	public void applyTheme(Theme theme) {
-		// TODO Auto-generated method stub
+		this.theme = theme;
 		
 	}
 }

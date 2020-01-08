@@ -1,4 +1,4 @@
-package mainFrame;
+package utilities;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -10,22 +10,19 @@ import JTimeLine.JTimeLine;
 import customExceptions.CanceledException;
 import jComponents.JFileChooserWithImagePreview;
 import jComponents.JProgressDialog;
-import utilities.BufferedImageUtil;
-import utilities.Utilities;
+import mainFrame.PictoralFin;
 import videoTools.VideoTools;
-
-import static globalValues.GlobalVariables.*;
 
 public class PictureImporter {
 	
 	private PictoralFin pictoralFin;
 	
-	PictureImporter(PictoralFin pictoralFin) {
+	public PictureImporter(PictoralFin pictoralFin) {
 		this.pictoralFin = pictoralFin;
 	}
 	
 	public void importPictures() {
-		File[] files = new JFileChooserWithImagePreview().openFiles();	
+		File[] files = JFileChooserWithImagePreview.openFiles(pictoralFin);	
 		if(files != null)
 			importPictures(files);
 	}
@@ -39,15 +36,13 @@ public class PictureImporter {
 	}
 	
 	private void importFiles(File[] files, JTimeLine frameTimeLine) {
-		if(noneHaveBeenAdded)
-			frameTimeLine.removeFrame(0);
 			
 		JProgressDialog jpb = new JProgressDialog("Importing Pictures " + JProgressDialog.PERCENT, "Importing...", files.length);
 		ArrayList<String> failedFiles = new ArrayList<>();
 		double width, height, ratio;
 		BufferedImage frame;
 		
-		jpb.setIcon(orca);		
+		jpb.setIcon(pictoralFin.getGlobalImageKit().pictoralFinIcon);		
 		
 		try {
 			for(File file : files) {	
@@ -61,10 +56,10 @@ public class PictureImporter {
 					}else {
 						frame = ImageIO.read(file);
 						
-						width = frame.getWidth() / settings.getMaxPictureSize().getWidth();
-						height = frame.getHeight() / settings.getMaxPictureSize().getHeight();
+						width = frame.getWidth() / pictoralFin.getSettings().getMaxPictureSize().getWidth();
+						height = frame.getHeight() / pictoralFin.getSettings().getMaxPictureSize().getHeight();
 						
-						if(frame.getWidth() > settings.getMaxPictureSize().getWidth() && frame.getHeight() > settings.getMaxPictureSize().getHeight()) {
+						if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() && frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
 							ratio = (width > height) ? width : height;								
 							frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
 						}
@@ -94,8 +89,5 @@ public class PictureImporter {
 			
 			Utilities.showMessage(failedFiles.size() + " Files failed to import:\n" + fileList + "The others files succesfully where imported", failedFiles.size() + " Import Failed", true);
 		}	
-		
-		
-		pfk.getVideoEditor().refresh();
 	}
 }

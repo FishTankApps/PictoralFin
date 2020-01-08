@@ -10,13 +10,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import mainFrame.PictoralFin;
+
 public class VideoTopBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
-	
+
 	private JMenu fileMenu, exportAs;
 	private JMenuItem importFrames, exportAsVideo;
 	
-	public VideoTopBar(){
+	public VideoTopBar(PictoralFin pictoralFin){
+		
 		OnItemClicked otc = new OnItemClicked();
 		
 		//---------{FILE MENU}-------------------------------------------------
@@ -24,7 +27,7 @@ public class VideoTopBar extends JMenuBar {
 		
 		
 		importFrames = new JMenuItem("Import Frame(s)");
-		importFrames.addActionListener(otc);
+		importFrames.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
 		importFrames.setAccelerator(KeyStroke.getKeyStroke('I', CTRL));
 		
 		//-----{Export Sub-Menu }----------------

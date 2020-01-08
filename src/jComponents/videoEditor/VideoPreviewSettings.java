@@ -1,11 +1,9 @@
 package jComponents.videoEditor;
 
 import static globalValues.GlobalVariables.framesPerSecond;
-import static globalValues.GlobalVariables.settings;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.JLabel;
@@ -26,7 +24,7 @@ public class VideoPreviewSettings extends JPanel {
 
 	public VideoPreviewSettings() {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.setBackground(settings.getTheme().getPrimaryBaseColor());
+		//this.setBackground(settings.getTheme().getPrimaryBaseColor());
 		this.setMinimumSize(new Dimension(350, 500));
 
 		audioBoard = new AudioBoard();
@@ -40,7 +38,7 @@ public class VideoPreviewSettings extends JPanel {
 	public void setUpFramesPerSecondStuff() {
 		framesPerSecondLabel = new JLabel("Frames Per Second (10):");
 		framesPerSecondLabel.setHorizontalTextPosition(JLabel.RIGHT);
-		framesPerSecondLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 15));
+		//framesPerSecondLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 15));
 
 		framesPerSecondSlider = new JSlider(1, 250, 10);
 		framesPerSecondSlider.addChangeListener(e -> {
@@ -48,7 +46,7 @@ public class VideoPreviewSettings extends JPanel {
 			framesPerSecondLabel.setText("Frames Per Second (" + framesPerSecond + "):");
 		});
 		
-		framesPerSecondSlider.setBackground(settings.getTheme().getSecondaryHighlightColor());
+		//framesPerSecondSlider.setBackground(settings.getTheme().getSecondaryHighlightColor());
 
 		SpringLayout sl = new SpringLayout();
 		framesPerSecondPanel = new JPanel(sl) {
@@ -57,7 +55,7 @@ public class VideoPreviewSettings extends JPanel {
 			protected void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				
-				g.setColor(settings.getTheme().getPrimaryHighlightColor());
+				//g.setColor(settings.getTheme().getPrimaryHighlightColor());
 				g.fillRoundRect(0, 0, getWidth()-2, getHeight(), 10, 15);
 			}
 		};
@@ -68,7 +66,7 @@ public class VideoPreviewSettings extends JPanel {
 		sl.putConstraint(SpringLayout.NORTH, framesPerSecondSlider, 5, SpringLayout.NORTH, framesPerSecondPanel);
 		sl.putConstraint(SpringLayout.EAST, framesPerSecondSlider, -10, SpringLayout.EAST, framesPerSecondPanel);
 		
-		framesPerSecondPanel.setBackground(settings.getTheme().getPrimaryBaseColor());
+		//framesPerSecondPanel.setBackground(settings.getTheme().getPrimaryBaseColor());
 		
 		framesPerSecondPanel.add(framesPerSecondLabel);
 		framesPerSecondPanel.add(framesPerSecondSlider);

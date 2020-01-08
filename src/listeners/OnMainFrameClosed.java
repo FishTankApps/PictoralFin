@@ -3,13 +3,24 @@ package listeners;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import mainFrame.PictoralFin;
+
 import static globalValues.GlobalVariables.*;
 
 public class OnMainFrameClosed implements WindowListener{
 	
+	private PictoralFin pictoralFin;
+	
+	public OnMainFrameClosed(PictoralFin pictoralFin) {
+		this.pictoralFin = pictoralFin;
+	}
+	
 	public void windowClosing(WindowEvent arg0) {
 		//dataFile.saveToFile();
 		currentlyRunning = false;
+		
+		pictoralFin.getSettings().saveSettings();
+		pictoralFin.getDataFile().saveDataFile();
 		System.exit(0);
 	}
 	

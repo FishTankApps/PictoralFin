@@ -17,7 +17,7 @@ public class GlobalVariables {
 	public static boolean previewIsPlaying = false;
 	public static boolean noneHaveBeenAdded = true;
 	public static boolean isMousePressed = false;
-	public static Settings settings = new Settings();
+	public static Settings settings = null;
 	public static Object lastInFocus = null;
 	public static int openView = 0;
 	

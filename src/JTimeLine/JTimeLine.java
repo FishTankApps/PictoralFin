@@ -82,4 +82,8 @@ public class JTimeLine extends JPanel {
 	public void removeFrame(int index) {
 		frameTimeLine.removeFrame(index);
 	}
+
+	public int numberOfFrame() {
+		return frameTimeLine.numberOfFrames();
+	}
 }

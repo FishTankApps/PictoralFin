@@ -1,6 +1,7 @@
 package JTimeLine;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -36,6 +37,8 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		addFrames = new JButton("Add Frames");
 		addFrames.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
 		addFrames.setIcon(new ImageIcon(pictoralFin.getGlobalImageKit().pictureIcon));
+		addFrames.setFont(new Font(theme.getPrimaryFont(), Font.ITALIC, 50));
+		addFrames.setBackground(theme.getPrimaryHighlightColor());
 		add(addFrames);
 		
 		setBackground(theme.getPrimaryBaseColor());
@@ -46,12 +49,18 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		addMouseMotionListener(this);
 	}
 	
-	public void addFrame(Frame frame) {		
-		if(getComponent(0) instanceof JButton) 
-			remove(0);
-		
-		
+	public void addFrame(Frame frame) {	
 		JFrameButton newButton = new JFrameButton(frame, theme);
+		
+		if(getComponent(0) instanceof JButton) {
+			remove(0);
+			selectedJFrameButton = newButton;
+			newButton.setSelected(true);
+			
+			for(OnFrameSelectionChangedListener l : listeners)
+				l.frameSelectionChanged(null, selectedJFrameButton.getFrame());
+		}
+		
 		newButton.setPreferredHeight(frameDimension);
 		
 		newButton.addMouseListener(this);
@@ -64,17 +73,43 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 	}
 	
 	public void removeFrame(int index) {
+		if (getComponent(index) == selectedJFrameButton){
+			if(index < numberOfFrames() - 1) {
+				selectedJFrameButton = (JFrameButton) getComponent(index + 1);
+				selectedJFrameButton.setSelected(true);
+				
+				for(OnFrameSelectionChangedListener l : listeners)
+					l.frameSelectionChanged(null, selectedJFrameButton.getFrame());
+				
+			} else if(numberOfFrames() != 1) {
+				selectedJFrameButton = (JFrameButton) getComponent(index - 1);
+				selectedJFrameButton.setSelected(true);
+				
+				for(OnFrameSelectionChangedListener l : listeners)
+					l.frameSelectionChanged(null, selectedJFrameButton.getFrame());
+			}
+		}
+		
 		remove(index);
 
-		if(getComponentCount() == 0)
+		if(getComponentCount() == 0) {
 			add(addFrames);
+			selectedJFrameButton = null;
+			
+			for(OnFrameSelectionChangedListener l : listeners)
+				l.frameSelectionChanged(null, null);
+		} 
 	}
 	
 	public void removeFrame(JFrameButton button) {
-		remove(button);
-
-		if(getComponentCount() == 0)
-			add(addFrames);
+		removeFrame(getIndexOfJFrameButton(button));
+	}
+	
+	public int numberOfFrames() {
+		if(getComponent(0) instanceof JButton)
+			return 0;
+		
+		return getComponentCount();
 	}
 	
 	protected void addOnFrameSelectionChangedListener(OnFrameSelectionChangedListener listener) {
@@ -85,10 +120,13 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		return ((JFrameButton) getComponent(index)).getFrame();
 	}
 	public Frame getSelectedFrame() {
+		if(selectedJFrameButton == null)
+			return null;
+		
 		return selectedJFrameButton.getFrame();
 	}
 	public int getSelectedIndex() {
-		return 0;
+		return getIndexOfJFrameButton(selectedJFrameButton);
 	}
 	
 	public JFrameButton getHighlightedJFrameButton() {

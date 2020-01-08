@@ -6,9 +6,11 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -26,6 +28,8 @@ import objectBinders.DataFile;
 import objectBinders.GlobalImageKit;
 import objectBinders.GlobalListenerToolKit;
 import objectBinders.Settings;
+import objectBinders.Theme;
+import utilities.BufferedImageUtil;
 import utilities.PictureImporter;
 import utilities.Utilities;
 
@@ -49,6 +53,7 @@ public class PictoralFin extends JFrame {
 	
 	public PictoralFin() {
 		settings = Settings.openSettings();
+		settings.setTheme(Theme.OCEAN_THEME);
 		dateFile = DataFile.openDataFile();
 		
 		globalListenerToolKit = new GlobalListenerToolKit(this);
@@ -135,19 +140,19 @@ public class PictoralFin extends JFrame {
 		tabbedPane.setFont(new Font(settings.getTheme().getTitleFont(), Font.PLAIN, 20));
 		tabbedPane.setBackground(settings.getTheme().getPrimaryBaseColor());
 
-		videoEditor = new VideoEditor();
+		videoEditor = new VideoEditor(settings.getTheme());
 
 		ImageIcon kineticIcon = null, staticIcon = null;
 		try {
 			kineticIcon = new ImageIcon(globalImageKit.videoIcon);
-			staticIcon  = new ImageIcon(globalImageKit.pictureIcon);
+			staticIcon  = new ImageIcon(BufferedImageUtil.resizeBufferedImage(globalImageKit.pictureIcon, 33, 33, BufferedImage.SCALE_FAST));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		
 		tabbedPane.addTab("  Kinetic", kineticIcon, videoEditor);
-		tabbedPane.addTab("  Static", staticIcon, null);
+		tabbedPane.addTab("  Static", staticIcon, new JButton("TEST"));
 
 		tabbedPane.addChangeListener(e -> {
 //			frame.setJMenuBar((tabbedPane.getSelectedIndex() == 0) ? videoTopBar : pictureTopBar);
@@ -161,8 +166,7 @@ public class PictoralFin extends JFrame {
 //				videoEditor.attachFrameTimeLine();
 //				frameTimeLine.setBackground(settings.getTheme().getPrimaryHighlightColor());
 //			}
-//
-//			refresh();
+
 		});
 
 		return tabbedPane;

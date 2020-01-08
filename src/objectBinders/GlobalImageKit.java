@@ -10,9 +10,9 @@ public class GlobalImageKit {
 	public BufferedImage pictoralFinIcon, pictureIcon, videoIcon;
 	
 	public GlobalImageKit() throws IOException {
-		pictoralFinIcon =    ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("KineticIcon.jpg"));
-		pictureIcon = ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("PictureIcon.png"));
-		videoIcon =   ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("VideoIcon.jpg"));
+		pictoralFinIcon = ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("KineticIcon.jpg"));
+		pictureIcon =     ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("BiggerPictureIcon.png"));
+		videoIcon =       ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("VideoIcon.jpg"));
 	}
 	
 }

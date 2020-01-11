@@ -1,7 +1,5 @@
 package jComponents.videoEditor;
 
-
-
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
@@ -14,10 +12,10 @@ import objectBinders.VideoSettings;
 
 public class VideoEditor extends JPanel implements Themed {
 	private static final long serialVersionUID = -3316034116785566254L;
-	private JPanel settingsPanel;
+	//private JPanel settingsPanel;
 	private JSplitPane videoPreviewAndSettingsPane;
 	private VideoPreview videoPreview;
-	private boolean firstTime = true;
+	//private boolean firstTime = true;
 	
 	public VideoEditor(Theme theme) {		
 		setLayout(new GridLayout(1,0));
@@ -25,7 +23,7 @@ public class VideoEditor extends JPanel implements Themed {
 		//videoPreviewSettings = new VideoPreviewSettings();
 		videoPreview = new VideoPreview(theme);
 		
-		settingsPanel = new JPanel(new GridLayout(1,0));
+		//settingsPanel = new JPanel(new GridLayout(1,0));
 		
 		//settingsPanel.add(videoPreviewSettings);
 		
@@ -65,6 +63,10 @@ public class VideoEditor extends JPanel implements Themed {
 		//videoPreviewSettings.refresh();					
 	}
 
+	public void pausePreview() {
+		videoPreview.setPreviewState(false);
+	}
+	
 	public void applyTheme(Theme theme) {
 		setBackground(theme.getPrimaryBaseColor());
 		videoPreviewAndSettingsPane.setBackground(theme.getPrimaryHighlightColor());		

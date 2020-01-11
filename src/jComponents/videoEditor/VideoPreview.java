@@ -26,6 +26,9 @@ public class VideoPreview extends JPanel implements Themed {
 	private static final long serialVersionUID = -1247649334503994677L;
 	private static final int PREF_BOARDER = 20;
 	
+	public static final boolean PLAYING = true;
+	public static final boolean PAUSED = false;
+	
 	private Thread videoPreviewThread;
 	
 	private JButton playPause, stop, skipLeft, skipRight;
@@ -34,32 +37,35 @@ public class VideoPreview extends JPanel implements Themed {
 	private JTextPane  frameNumber;
 	private ImageIcon playIcon, pauseIcon, stopIcon, skipLeftIcon, skipRightIcon;
 	
+	private boolean previewState = false;
+	
 	private Frame currentFrame = null;
 	
 	private JTimeLine timeLine = null;
 	
-	private Theme theme;
-	
-	public VideoPreview(Theme theme) {		
-		this.theme = theme;
-		
+	public VideoPreview(Theme theme) {				
 		Dimension buttonDim = new Dimension(38, 38);
 		
 		playPause = new JButton();
 		playPause.setPreferredSize(buttonDim);
-		//playPause.addActionListener(e -> {previewIsPlaying = !previewIsPlaying && Utilities.getPictoralFin(this).getTimeLine().numberOfFrame() != 0; repaint();});
+		playPause.addActionListener(e -> {previewState = !previewState && timeLine.numberOfFrame() != 0;
+			if(timeLine.getCurrentFrameIndex() == timeLine.numberOfFrame() - 1)
+				timeLine.setCurrentFrameIndex(0);
+			
+			repaint();
+		});
 		
 		stop = new JButton();
 		stop.setPreferredSize(buttonDim);
-		//stop.addActionListener(e-> {previewIsPlaying = false; videoTimeLine.setValue(0); repaint();});
+		stop.addActionListener(e-> {previewState = false; timeLine.setCurrentFrameIndex(0); repaint();});
 		
 		skipLeft = new JButton();
 		skipLeft.setPreferredSize(buttonDim);
-		//skipLeft.addActionListener(e-> {videoTimeLine.setValue(videoTimeLine.getValue() - 1); repaint();});
+		skipLeft.addActionListener(e-> {if(timeLine.numberOfFrame() != 0) { timeLine.moveCurrentFrame(JTimeLine.PREVIOUS_FRAME); repaint();}});
 		
 		skipRight = new JButton();
 		skipRight.setPreferredSize(buttonDim);
-		//skipRight.addActionListener(e-> {videoTimeLine.setValue(videoTimeLine.getValue() + 1); repaint();});
+		skipRight.addActionListener(e-> {if(timeLine.numberOfFrame() != 0) {timeLine.moveCurrentFrame(JTimeLine.NEXT_FRAME); repaint();}});
 		
 		
 		frameNumber = new JTextPane();
@@ -69,7 +75,10 @@ public class VideoPreview extends JPanel implements Themed {
 
 		
 		videoTimeLine = new JSlider(0,0,0);
-		videoTimeLine.addChangeListener(e -> repaint());		
+		videoTimeLine.addChangeListener(e -> {
+			timeLine.setCurrentFrameIndex(videoTimeLine.getValue());
+			repaint();
+		});		
 		videoTimeLine.setPreferredSize(new Dimension(30, 10));
 		
 		controlPanel = new JPanel();
@@ -85,6 +94,9 @@ public class VideoPreview extends JPanel implements Themed {
 		controlPanel.add(videoTimeLine);
 		controlPanel.add(buttonPanel);
 				
+		
+		videoPreviewThread = new Thread(new PreviewUpdater(this));		
+		videoPreviewThread.start();
 		
 		this.setLayout(new BorderLayout());	
 		
@@ -162,7 +174,16 @@ public class VideoPreview extends JPanel implements Themed {
 		videoTimeLine.setValue(cf);
 		this.repaint();
 	}
+	public void setPreviewState(boolean previewState) {
+		this.previewState = previewState;
+	}	
 	
+	public boolean getPreviewState() {
+		return previewState;
+	}
+	public JTimeLine getTimeLine() {
+		return timeLine;
+	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
@@ -174,6 +195,13 @@ public class VideoPreview extends JPanel implements Themed {
 		}
 		
 		if(timeLine != null && timeLine.getCurrentFrame() != null) {
+			playPause.setIcon((!previewState) ? playIcon : pauseIcon);
+			
+			videoTimeLine.setMaximum(timeLine.numberOfFrame() - 1);
+			videoTimeLine.setValue(timeLine.getCurrentFrameIndex());
+			
+			frameNumber.setText("Frame #" + (timeLine.getCurrentFrameIndex() + 1));
+			
 			currentFrame = timeLine.getCurrentFrame();
 			
 			if(currentFrame != null) {
@@ -192,15 +220,37 @@ public class VideoPreview extends JPanel implements Themed {
 				g.drawImage(image, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER + frameNumber.getHeight(),
 						adjustedImageWidth, adjustedImageHeight, null);
 			}			
+		} else {
+			int displayWidth = getWidth() - PREF_BOARDER * 2;
+			int displayHeight = getHeight() - frameNumber.getHeight() - controlPanel.getHeight()  - PREF_BOARDER * 2;
+			
+			BufferedImage image = Utilities.getPictoralFin(this).getGlobalImageKit().pictoralFinIcon;
+			
+			double ratio = (displayHeight / (double) image.getHeight()) < (displayWidth / (double) image.getWidth()) ? 
+					(displayHeight / (double) image.getHeight()) : 
+					(displayWidth / (double) image.getWidth());
+			
+			int adjustedImageWidth = (int) (image.getWidth() * ratio); 
+			int adjustedImageHeight = (int) (image.getHeight() * ratio);
+			
+			g.drawImage(image, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER + frameNumber.getHeight(),
+					adjustedImageWidth, adjustedImageHeight, null);
+			
+			frameNumber.setText("No Frames");
 		}
 	}
-	public void moveForward() {		
+	public void goToNextFrame() {
+		boolean moved = timeLine.moveCurrentFrame(JTimeLine.NEXT_FRAME);
 		
+		if(!moved) {
+			previewState = PAUSED;
+		}
+		
+		repaint();
 	}
 	
-	public void applyTheme(Theme theme) {
-		this.theme = theme;
-		
+	
+	public void applyTheme(Theme theme) {		
 		playPause.setBackground(theme.getSecondaryBaseColor().darker().darker());
 		stop.setBackground(theme.getSecondaryBaseColor().darker().darker());
 		skipLeft.setBackground(theme.getSecondaryBaseColor().darker().darker());

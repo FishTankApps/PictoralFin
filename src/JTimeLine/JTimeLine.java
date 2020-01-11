@@ -13,7 +13,8 @@ import objectBinders.Frame;
 
 public class JTimeLine extends JPanel {
 	
-	public static final int NEXT_FRAME = -1;
+	public static final boolean NEXT_FRAME = true;
+	public static final boolean PREVIOUS_FRAME = false;
 	
 	private static final long serialVersionUID = -7284429791726637894L;
 	
@@ -45,9 +46,29 @@ public class JTimeLine extends JPanel {
 	public Frame getCurrentFrame() {
 		return frameTimeLine.getSelectedFrame();
 	}
+	public int getCurrentFrameIndex() {
+		return frameTimeLine.getSelectedIndex();
+	}
 	
-	public void setSelectedIndex(int index) {
-		frameTimeLine.setSelectedFrame(index);
+	public boolean moveCurrentFrame(boolean whichDirection) {
+		if(whichDirection) {
+			if(getCurrentFrameIndex() != numberOfFrame() - 1) 
+				setCurrentFrameIndex(getCurrentFrameIndex() + 1);		
+			else
+				return false;
+		} else {
+			if(getCurrentFrameIndex() != 0) 
+				setCurrentFrameIndex(getCurrentFrameIndex() - 1);	
+			else
+				return false;
+		}
+		
+		return true;
+	}
+	
+	public void setCurrentFrameIndex(int index) {		
+		if(index != 0 || numberOfFrame() != 0)
+			frameTimeLine.setSelectedFrame(index);
 	}
 	
 	public void addOnFrameSelectionChangeListener(OnFrameSelectionChangedListener listener) {
@@ -63,7 +84,7 @@ public class JTimeLine extends JPanel {
 		Dimension preferedSize = new Dimension(parentDimension.width, 
 				parentDimension.height - jsp.getDividerLocation() - scrollPane.getHorizontalScrollBar().getHeight());
 
-		frameTimeLine.setHeight((int) (preferedSize.height / 1.7));
+		frameTimeLine.setHeight((int) (preferedSize.height * .85));
 		scrollPane.setPreferredSize(preferedSize);		
 		setPreferredSize(preferedSize);
 	

@@ -155,6 +155,8 @@ public class PictoralFin extends JFrame {
 		tabbedPane.addTab("  Static", staticIcon, new JButton("TEST"));
 
 		tabbedPane.addChangeListener(e -> {
+			videoEditor.pausePreview();
+			
 //			frame.setJMenuBar((tabbedPane.getSelectedIndex() == 0) ? videoTopBar : pictureTopBar);
 //			openView = tabbedPane.getSelectedIndex();
 //			if (tabbedPane.getSelectedIndex() == 1) {

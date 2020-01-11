@@ -14,7 +14,7 @@ public class Frame {
 	private int duration;
 	
 	public Frame() {
-		this(1000);
+		this(100);
 	}
 	
 	public Frame(int duration) {
@@ -23,7 +23,7 @@ public class Frame {
 	}
 	
 	public Frame(BufferedImage image) {
-		this(image, 1000);
+		this(image, 100);
 	}
 	
 	public Frame(BufferedImage image, int duration) {

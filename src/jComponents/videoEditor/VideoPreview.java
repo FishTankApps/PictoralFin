@@ -43,7 +43,7 @@ public class VideoPreview extends JPanel implements Themed {
 	
 	private JTimeLine timeLine = null;
 	
-	public VideoPreview(Theme theme) {				
+	public VideoPreview(VideoEditor videoEditor, Theme theme) {				
 		Dimension buttonDim = new Dimension(38, 38);
 		
 		playPause = new JButton();
@@ -61,11 +61,23 @@ public class VideoPreview extends JPanel implements Themed {
 		
 		skipLeft = new JButton();
 		skipLeft.setPreferredSize(buttonDim);
-		skipLeft.addActionListener(e-> {if(timeLine.numberOfFrame() != 0) { timeLine.moveCurrentFrame(JTimeLine.PREVIOUS_FRAME); repaint();}});
+		skipLeft.addActionListener(e-> 
+			{
+				if (timeLine.numberOfFrame() != 0) { 
+					timeLine.moveCurrentFrameUpTo((previewState) ? -10 : -1); 
+					repaint();
+				}
+			});
 		
 		skipRight = new JButton();
 		skipRight.setPreferredSize(buttonDim);
-		skipRight.addActionListener(e-> {if(timeLine.numberOfFrame() != 0) {timeLine.moveCurrentFrame(JTimeLine.NEXT_FRAME); repaint();}});
+		skipRight.addActionListener(e-> 
+			{
+				if (timeLine.numberOfFrame() != 0) {
+					timeLine.moveCurrentFrameUpTo((previewState) ? 10 : 1);
+					repaint();
+				}
+			});
 		
 		
 		frameNumber = new JTextPane();
@@ -74,7 +86,7 @@ public class VideoPreview extends JPanel implements Themed {
 		frameNumber.setText("No Frames");		
 
 		
-		videoTimeLine = new JSlider(0,0,0);
+		videoTimeLine = new JumpClickSlider(0,0,0);
 		videoTimeLine.addChangeListener(e -> {
 			timeLine.setCurrentFrameIndex(videoTimeLine.getValue());
 			repaint();

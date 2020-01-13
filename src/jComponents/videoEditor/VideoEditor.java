@@ -2,39 +2,67 @@ package jComponents.videoEditor;
 
 import java.awt.GridLayout;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import interfaces.Themed;
+import mainFrame.PictoralFin;
 import objectBinders.Theme;
 import objectBinders.VideoSettings;
 
 public class VideoEditor extends JPanel implements Themed {
 	private static final long serialVersionUID = -3316034116785566254L;
-	//private JPanel settingsPanel;
+
 	private JSplitPane videoPreviewAndSettingsPane;
 	private VideoPreview videoPreview;
-	//private boolean firstTime = true;
+	private VideoEditorSettingsPanel videoEditorSettingsPanel;
 	
-	public VideoEditor(Theme theme) {		
+	public VideoEditor(Theme theme, PictoralFin pictoralFin) {		
 		setLayout(new GridLayout(1,0));
-		
-		//videoPreviewSettings = new VideoPreviewSettings();
-		videoPreview = new VideoPreview(theme);
-		
-		//settingsPanel = new JPanel(new GridLayout(1,0));
-		
-		//settingsPanel.add(videoPreviewSettings);
-		
+		videoPreview = new VideoPreview(this, theme);
+		videoEditorSettingsPanel = new VideoEditorSettingsPanel(theme);
 		
 		videoPreviewAndSettingsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		videoPreviewAndSettingsPane.setLeftComponent(videoPreview);
-		videoPreviewAndSettingsPane.setRightComponent(new JButton("WOAH! I am on the RIGHT!"));
+		videoPreviewAndSettingsPane.setRightComponent(videoEditorSettingsPanel);
 		videoPreviewAndSettingsPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, e -> {});
 		videoPreviewAndSettingsPane.setOneTouchExpandable(false);
 		
 		add(videoPreviewAndSettingsPane);
+		
+		pictoralFin.getTimeLine().addOnFrameSelectionChangeListener((oldFrame, newFrame) -> {				
+				if(!videoPreview.getPreviewState()) {
+					videoEditorSettingsPanel.dettachSettingsPanel();
+						
+					if(newFrame != null)
+						videoEditorSettingsPanel.attachSettingsPanel(newFrame.generateSettingsPanel());		
+				}									
+			});
+		
+//		pictoralFin.getTimeLine().addOnFrameSelectionChangeListener((oldFrame, newFrame) -> {	
+//					lastEdit = System.currentTimeMillis();
+//					
+//					new Thread(new Runnable() {
+//						
+//						public void run() {
+//							try {
+//								Thread.sleep(WAIT_TIME);
+//								
+//								if(System.currentTimeMillis() - lastEdit >= WAIT_TIME - 10) {
+//									System.out.println("----[ UPDATED ]-----");
+//									videoEditorSettingsPanel.dettachSettingsPanel();
+//									
+//									if(newFrame != null)
+//										videoEditorSettingsPanel.attachSettingsPanel(newFrame.generateSettingsPanel());		
+//								} else {
+//									System.out.println("NOT UPDATED");
+//								}
+//							} catch (InterruptedException e) {}							
+//						}						
+//					}).start();
+//					
+//											
+//			});
 	}
 
 	public VideoPreview getVideoPreview() {

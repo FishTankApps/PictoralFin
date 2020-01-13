@@ -37,6 +37,10 @@ public class PictoralFin extends JFrame {
 	
 	private static final long serialVersionUID = 6656205076381846860L;
 	
+	public static enum EditorMode {
+		STATIC, KINETIC;
+	}
+	
 	// =======[ TABS ]---------
 	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
@@ -126,7 +130,7 @@ public class PictoralFin extends JFrame {
 		horizontalSplitPane.setBottomComponent(timeLine);
 
 		horizontalSplitPane.setOneTouchExpandable(false);
-		horizontalSplitPane.setBackground(settings.getTheme().getSecondaryHighlightColor());
+		horizontalSplitPane.setBackground(settings.getTheme().getSecondaryBaseColor());
 		horizontalSplitPane.setForeground(Color.RED);
 		
 		mainPanel.add(horizontalSplitPane);
@@ -140,7 +144,7 @@ public class PictoralFin extends JFrame {
 		tabbedPane.setFont(new Font(settings.getTheme().getTitleFont(), Font.PLAIN, 20));
 		tabbedPane.setBackground(settings.getTheme().getPrimaryBaseColor());
 
-		videoEditor = new VideoEditor(settings.getTheme());
+		videoEditor = new VideoEditor(settings.getTheme(), this);
 
 		ImageIcon kineticIcon = null, staticIcon = null;
 		try {
@@ -174,6 +178,14 @@ public class PictoralFin extends JFrame {
 		return tabbedPane;
 	} 
 	
+	public void setCurrentMode(EditorMode mode) {
+		if(mode == EditorMode.STATIC) 
+			tabbedPane.setSelectedIndex(1);
+		else if (mode == EditorMode.KINETIC)
+			tabbedPane.setSelectedIndex(0);
+		
+	}
+	
 	public JTimeLine getTimeLine() {
 		return timeLine;
 	}
@@ -186,8 +198,7 @@ public class PictoralFin extends JFrame {
 	public DataFile getDataFile() {
 		return dateFile;
 	}
-	
-	
+		
 	private void refreshSizes() {
 		timeLine.updateSizes();
 

@@ -58,7 +58,7 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 			newButton.setSelected(true);
 			
 			for(OnFrameSelectionChangedListener l : listeners)
-				l.frameSelectionChanged(null, selectedJFrameButton.getFrame());
+				l.frameSelectionChanged(null, selectedJFrameButton);
 		}
 		
 		newButton.setPreferredHeight(frameDimension);
@@ -79,14 +79,14 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 				selectedJFrameButton.setSelected(true);
 				
 				for(OnFrameSelectionChangedListener l : listeners)
-					l.frameSelectionChanged(null, selectedJFrameButton.getFrame());
+					l.frameSelectionChanged(null, selectedJFrameButton);
 				
 			} else if(numberOfFrames() != 1) {
 				selectedJFrameButton = (JFrameButton) getComponent(index - 1);
 				selectedJFrameButton.setSelected(true);
 				
 				for(OnFrameSelectionChangedListener l : listeners)
-					l.frameSelectionChanged(null, selectedJFrameButton.getFrame());
+					l.frameSelectionChanged(null, selectedJFrameButton);
 			}
 		}
 		
@@ -98,7 +98,9 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 			
 			for(OnFrameSelectionChangedListener l : listeners)
 				l.frameSelectionChanged(null, null);
-		} 
+		}
+		revalidate();
+		repaint();
 	}
 	
 	public void removeFrame(JFrameButton button) {
@@ -149,9 +151,14 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 				index = 0;
 		}
 		
+		
 		JFrameButton button = (JFrameButton) getComponent(index);
 		
 		button.setSelected(true);
+		
+		for(OnFrameSelectionChangedListener l : listeners)
+			l.frameSelectionChanged((selectedJFrameButton != null) ? selectedJFrameButton : null, button);
+		
 		selectedJFrameButton = button;
 	}
 	public int getIndexOfJFrameButton(JFrameButton button) {
@@ -184,7 +191,7 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 		
 		if(button != selectedJFrameButton)
 			for(OnFrameSelectionChangedListener l : listeners)
-				l.frameSelectionChanged((selectedJFrameButton != null) ? selectedJFrameButton.getFrame() : null, button.getFrame());
+				l.frameSelectionChanged((selectedJFrameButton != null) ? selectedJFrameButton : null, button);
 		
 		selectedJFrameButton = button;
 	}

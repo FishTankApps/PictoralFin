@@ -12,11 +12,13 @@ import java.awt.event.MouseListener;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import interfaces.SettingsPanel;
+import interfaces.SettingsPanelOOI;
 import interfaces.Themed;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
-public class JFrameButton extends JComponent implements MouseListener, Themed{
+public class JFrameButton extends JComponent implements MouseListener, Themed, SettingsPanelOOI {
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	
@@ -162,4 +164,8 @@ public class JFrameButton extends JComponent implements MouseListener, Themed{
 		this.theme = theme;		
 	}
 
+	
+	public SettingsPanel generateSettingsPanel() {		
+		return new FrameSettingsPanel(this);
+	}
 }

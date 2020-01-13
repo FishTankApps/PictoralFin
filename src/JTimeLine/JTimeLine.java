@@ -66,6 +66,11 @@ public class JTimeLine extends JPanel {
 		return true;
 	}
 	
+	public void moveCurrentFrameUpTo(int movement) {
+		for(int count = 0; count < Math.abs(movement); count++)
+			moveCurrentFrame(movement > 0);
+	}
+	
 	public void setCurrentFrameIndex(int index) {		
 		if(index != 0 || numberOfFrame() != 0)
 			frameTimeLine.setSelectedFrame(index);

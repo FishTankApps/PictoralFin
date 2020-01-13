@@ -1,8 +1,6 @@
 package JTimeLine;
 
-import objectBinders.Frame;
-
 public interface OnFrameSelectionChangedListener {
 
-	abstract void frameSelectionChanged(Frame oldFrame, Frame newFrame);
+	abstract void frameSelectionChanged(JFrameButton oldFrame, JFrameButton newFrame);
 }

@@ -4,7 +4,6 @@ import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-
 import interfaces.Themed;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
@@ -13,22 +12,28 @@ import objectBinders.VideoSettings;
 public class VideoEditor extends JPanel implements Themed {
 	private static final long serialVersionUID = -3316034116785566254L;
 
-	private JSplitPane videoPreviewAndSettingsPane;
+	public static final int FRAME = 0;
+	
+	private JSplitPane horizontalSplitPane;
 	private VideoPreview videoPreview;
 	private VideoEditorSettingsPanel videoEditorSettingsPanel;
 	
-	public VideoEditor(Theme theme, PictoralFin pictoralFin) {		
+	private PictoralFin pictoralFin;
+	
+	public VideoEditor(Theme theme, PictoralFin pictoralFin) {	
+		this.pictoralFin = pictoralFin;
+		
 		setLayout(new GridLayout(1,0));
 		videoPreview = new VideoPreview(this, theme);
 		videoEditorSettingsPanel = new VideoEditorSettingsPanel(theme);
 		
-		videoPreviewAndSettingsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		videoPreviewAndSettingsPane.setLeftComponent(videoPreview);
-		videoPreviewAndSettingsPane.setRightComponent(videoEditorSettingsPanel);
-		videoPreviewAndSettingsPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, e -> {});
-		videoPreviewAndSettingsPane.setOneTouchExpandable(false);
+		horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		horizontalSplitPane.setLeftComponent(videoPreview);
+		horizontalSplitPane.setRightComponent(videoEditorSettingsPanel);
+		horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, e -> {});
+		horizontalSplitPane.setOneTouchExpandable(false);
 		
-		add(videoPreviewAndSettingsPane);
+		add(horizontalSplitPane);
 		
 		pictoralFin.getTimeLine().addOnFrameSelectionChangeListener((oldFrame, newFrame) -> {				
 				if(!videoPreview.getPreviewState()) {
@@ -38,31 +43,6 @@ public class VideoEditor extends JPanel implements Themed {
 						videoEditorSettingsPanel.attachSettingsPanel(newFrame.generateSettingsPanel());		
 				}									
 			});
-		
-//		pictoralFin.getTimeLine().addOnFrameSelectionChangeListener((oldFrame, newFrame) -> {	
-//					lastEdit = System.currentTimeMillis();
-//					
-//					new Thread(new Runnable() {
-//						
-//						public void run() {
-//							try {
-//								Thread.sleep(WAIT_TIME);
-//								
-//								if(System.currentTimeMillis() - lastEdit >= WAIT_TIME - 10) {
-//									System.out.println("----[ UPDATED ]-----");
-//									videoEditorSettingsPanel.dettachSettingsPanel();
-//									
-//									if(newFrame != null)
-//										videoEditorSettingsPanel.attachSettingsPanel(newFrame.generateSettingsPanel());		
-//								} else {
-//									System.out.println("NOT UPDATED");
-//								}
-//							} catch (InterruptedException e) {}							
-//						}						
-//					}).start();
-//					
-//											
-//			});
 	}
 
 	public VideoPreview getVideoPreview() {
@@ -91,12 +71,20 @@ public class VideoEditor extends JPanel implements Themed {
 		//videoPreviewSettings.refresh();					
 	}
 
+	public void updateSettingsPanel(int aspectToFocusOn) {
+		if(aspectToFocusOn == FRAME) {
+			videoEditorSettingsPanel.dettachSettingsPanel();			
+			
+			videoEditorSettingsPanel.attachSettingsPanel(pictoralFin.getTimeLine().getCurrentFrameButton().generateSettingsPanel());				
+		}
+	}
+	
 	public void pausePreview() {
 		videoPreview.setPreviewState(false);
 	}
 	
 	public void applyTheme(Theme theme) {
 		setBackground(theme.getPrimaryBaseColor());
-		videoPreviewAndSettingsPane.setBackground(theme.getPrimaryHighlightColor());		
+		horizontalSplitPane.setBackground(theme.getPrimaryHighlightColor());		
 	}
 }

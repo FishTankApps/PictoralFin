@@ -50,7 +50,7 @@ public class PictoralFin extends JFrame {
 	private JPanel mainPanel;
 	private JTabbedPane tabbedPane;
 	private JTimeLine timeLine;
-	private JSplitPane horizontalSplitPane;
+	private JSplitPane verticalSplitPane;
 	
 	private GlobalListenerToolKit globalListenerToolKit;
 	private GlobalImageKit globalImageKit;
@@ -82,7 +82,7 @@ public class PictoralFin extends JFrame {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				horizontalSplitPane.setDividerLocation(0.75);
+				verticalSplitPane.setDividerLocation(0.75);
 			}
 		});		
 	}
@@ -122,18 +122,18 @@ public class PictoralFin extends JFrame {
 
 		timeLine = new JTimeLine(this);			
 
-		horizontalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+		verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		verticalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
 				e -> refreshSizes());
 
-		horizontalSplitPane.setTopComponent(createTabbedPane());
-		horizontalSplitPane.setBottomComponent(timeLine);
+		verticalSplitPane.setTopComponent(createTabbedPane());
+		verticalSplitPane.setBottomComponent(timeLine);
 
-		horizontalSplitPane.setOneTouchExpandable(false);
-		horizontalSplitPane.setBackground(settings.getTheme().getSecondaryBaseColor());
-		horizontalSplitPane.setForeground(Color.RED);
+		verticalSplitPane.setOneTouchExpandable(false);
+		verticalSplitPane.setBackground(settings.getTheme().getSecondaryBaseColor());
+		verticalSplitPane.setForeground(Color.RED);
 		
-		mainPanel.add(horizontalSplitPane);
+		mainPanel.add(verticalSplitPane);
 
 		return mainPanel;
 	}
@@ -202,8 +202,8 @@ public class PictoralFin extends JFrame {
 	private void refreshSizes() {
 		timeLine.updateSizes();
 
-		horizontalSplitPane.revalidate();
-		horizontalSplitPane.repaint();
+		verticalSplitPane.revalidate();
+		verticalSplitPane.repaint();
 	}
 
 	public GlobalListenerToolKit getGlobalListenerToolKit() {

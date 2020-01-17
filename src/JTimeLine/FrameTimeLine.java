@@ -16,7 +16,7 @@ import mainFrame.PictoralFin;
 import objectBinders.Frame;
 import objectBinders.Theme;
 
-class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotionListener{
+public class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotionListener{
 	
 	private static final long serialVersionUID = -8764321615928981018L;
 	private JFrameButton selectedJFrameButton;
@@ -129,6 +129,12 @@ class FrameTimeLine extends JPanel implements Themed, MouseListener, MouseMotion
 	}
 	public int getSelectedIndex() {
 		return getIndexOfJFrameButton(selectedJFrameButton);
+	}
+
+
+	public JFrameButton getSelectedFrameButton() {
+		
+		return selectedJFrameButton;
 	}
 	
 	public JFrameButton getHighlightedJFrameButton() {

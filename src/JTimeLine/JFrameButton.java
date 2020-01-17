@@ -120,13 +120,10 @@ public class JFrameButton extends JComponent implements MouseListener, Themed, S
 	}
 	
 	private String formatFrameLength() {
-		int hours = frame.getDuration() / 3_600_000;
-		int minutes = (frame.getDuration() - (3_600_000 * hours)) / 60_000;
-		int seconds = (frame.getDuration() - (3_600_000 * hours) - (60_000 * minutes)) / 1_000;
-		int millis = (frame.getDuration() - (3_600_000 * hours) - (60_000 * minutes) - (1_000 * seconds));
+		int seconds = (int) ((frame.getDuration()) / 1_000);
+		int millis = (int) ((frame.getDuration() - (1_000 * seconds)));
 		
-		return hours + ":" + ((minutes < 10) ? "0" : "") + minutes + ":"
-		+ ((seconds < 10) ? "0" : "") + seconds + "."
+		return ((seconds < 10) ? "0" : "") + seconds + "."
 		+  ((millis < 100) ? ((millis < 10) ? "00" : "0") : "") + millis;
 	}
 	
@@ -166,6 +163,6 @@ public class JFrameButton extends JComponent implements MouseListener, Themed, S
 
 	
 	public SettingsPanel generateSettingsPanel() {		
-		return new FrameSettingsPanel(this);
+		return new FrameSettingsPanel(this, theme);
 	}
 }

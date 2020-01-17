@@ -48,9 +48,14 @@ public class VideoPreview extends JPanel implements Themed {
 		
 		playPause = new JButton();
 		playPause.setPreferredSize(buttonDim);
-		playPause.addActionListener(e -> {previewState = !previewState && timeLine.numberOfFrame() != 0;
+		playPause.addActionListener(e -> {
+			previewState = !previewState && timeLine.numberOfFrame() != 0;
+			
 			if(timeLine.getCurrentFrameIndex() == timeLine.numberOfFrame() - 1)
 				timeLine.setCurrentFrameIndex(0);
+			
+			VideoEditor ve = (VideoEditor) this.getParent().getParent();
+			ve.updateSettingsPanel(VideoEditor.FRAME);
 			
 			repaint();
 		});

@@ -42,7 +42,10 @@ public class JTimeLine extends JPanel {
 		
 		add(scrollPane);
 	}
-	
+
+	public JFrameButton getCurrentFrameButton() {
+		return frameTimeLine.getSelectedFrameButton();
+	}
 	public Frame getCurrentFrame() {
 		return frameTimeLine.getSelectedFrame();
 	}

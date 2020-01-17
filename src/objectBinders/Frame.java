@@ -11,13 +11,13 @@ public class Frame {
 	/**
 	 * Duration of the frame in Milliseconds.
 	 */
-	private int duration;
+	private long duration;
 	
 	public Frame() {
 		this(100);
 	}
 	
-	public Frame(int duration) {
+	public Frame(long duration) {
 		this.duration = duration;
 		layers = new ArrayList<>();
 	}
@@ -49,7 +49,7 @@ public class Frame {
 		layers.add(layer);
 	}
 	
-	public void setDuration(int duration) {
+	public void setDuration(long duration) {
 		this.duration = duration;
 	}
 	
@@ -57,7 +57,7 @@ public class Frame {
 		return layers.get(index);
 	}
 	
-	public int getDuration() {
+	public long getDuration() {
 		return duration;
 	}
 	

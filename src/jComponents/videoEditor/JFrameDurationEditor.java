@@ -1,8 +1,6 @@
 package jComponents.videoEditor;
 
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridBagLayout;
 
 import javax.swing.JButton;
@@ -11,17 +9,14 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 
 import JTimeLine.JFrameButton;
-import interfaces.Themed;
 import objectBinders.Theme;
 import utilities.Utilities;
 
-public class JFrameDurationEditor extends JPanel implements Themed {
+public class JFrameDurationEditor extends JPanel {
 
 	private static final long serialVersionUID = -6268190339352421685L;
 	
 	private static final int DURRATION_PRECISION = 5;
-	
-	private Theme theme;
 	
 	private JLabel labelFPS;
 	private JLabel labelMili;
@@ -31,9 +26,7 @@ public class JFrameDurationEditor extends JPanel implements Themed {
 	
 	private boolean adjustingValues = false;	
 	
-	public JFrameDurationEditor(JFrameButton frameButton, Theme theme) {
-		this.theme = theme;		
-		
+	public JFrameDurationEditor(JFrameButton frameButton, Theme theme) {		
 		setLayout(new GridBagLayout());		
 		
 		durationInFPS  = new JSlider();
@@ -98,16 +91,4 @@ public class JFrameDurationEditor extends JPanel implements Themed {
 			frameTimeLine.repaint();
 		});
 	}
-	
-	public Dimension getPrefferedSize() {
-		super.getPreferredSize();
-		
-		return new Dimension(getParent().getSize().width - 100, getParent().getSize().height - 100);
-	}
-
-	
-	public void applyTheme(Theme theme) {
-		this.theme = theme;		
-	}
-
 }

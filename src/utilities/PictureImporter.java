@@ -11,7 +11,7 @@ import customExceptions.CanceledException;
 import jComponents.JFileChooserWithImagePreview;
 import jComponents.JProgressDialog;
 import mainFrame.PictoralFin;
-import videoTools.VideoTools;
+//import videoTools.VideoTools;
 
 public class PictureImporter {
 	
@@ -51,9 +51,9 @@ public class PictureImporter {
 					if(file.getAbsolutePath().endsWith(".pfkp")) {
 						
 					} else if (file.getAbsolutePath().endsWith(".mp4")) {
-						for(BufferedImage bi : VideoTools.mp4ToPictures(file.getAbsolutePath()))
-							frameTimeLine.addFrame(bi);
-					}else {
+						//for(BufferedImage bi : VideoTools.mp4ToPictures(file.getAbsolutePath()))
+						//	frameTimeLine.addFrame(bi);
+					} else {
 						frame = ImageIO.read(file);
 						
 						width = frame.getWidth() / pictoralFin.getSettings().getMaxPictureSize().getWidth();

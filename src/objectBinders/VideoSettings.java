@@ -1,6 +1,6 @@
 package objectBinders;
 
-import org.bytedeco.javacpp.avcodec;
+//import org.bytedeco.javacpp.avcodec;
 
 public class VideoSettings {
 	public static final int MP4 = 1;
@@ -37,7 +37,7 @@ public class VideoSettings {
 	}
 	public final int getVideoCodec() {
 		if(videoFormat == MP4)
-			return avcodec.AV_CODEC_ID_MPEG4;		
+			return 1;//avcodec.AV_CODEC_ID_MPEG4;		
 		else
 			return -1;
 	}

@@ -20,10 +20,11 @@ public class PreviewUpdater implements Runnable {
 				Thread.sleep(10);
 				
 				while(preview.getPreviewState()) {		
-					accuPause.acuSleep(preview.getTimeLine().getCurrentFrame().getDuration());
+					accuPause.acuSleep(10);
+					preview.currentMilli += 10;
 					
 					if(preview.getPreviewState())
-						preview.goToNextFrame();
+						preview.updateFrame();
 				}				
 			}
 		} catch (InterruptedException e) {

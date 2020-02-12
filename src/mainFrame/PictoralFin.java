@@ -199,6 +199,10 @@ public class PictoralFin extends JFrame {
 		return dateFile;
 	}
 		
+	public VideoEditor getVideoEditor() {
+		return videoEditor;
+	}
+	
 	private void refreshSizes() {
 		timeLine.updateSizes();
 

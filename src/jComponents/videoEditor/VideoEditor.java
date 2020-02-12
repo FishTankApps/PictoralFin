@@ -48,7 +48,11 @@ public class VideoEditor extends JPanel implements Themed {
 	public VideoPreview getVideoPreview() {
 		return this.videoPreview;
 	}
-
+	public VideoEditorSettingsPanel getVideoEditorSettingsPanel() {
+		return videoEditorSettingsPanel;
+	}
+	
+	
 	public VideoSettings generateSettings(){
 		VideoSettings toReturn = new VideoSettings();
 		toReturn.setFrameRate(10);

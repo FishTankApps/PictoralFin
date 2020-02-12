@@ -1,5 +1,6 @@
 package utilities;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
@@ -116,6 +117,19 @@ public class Utilities {
 		
 			else 
 				container = container.getParent();
+	}
+
+	public static String formatFrameLength(long durration) {
+		int minutes = (int) (durration / 60_000);
+		int seconds = (int) ((durration - (60_000 * minutes)) / 1_000);
+		int millis = (int) ((durration - (1_000 * seconds) - (60_000 * minutes)));
+		
+		return minutes + ":" + ((seconds < 10) ? "0" : "") + seconds + "."
+		+  ((millis < 100) ? ((millis < 10) ? "00" : "0") : "") + millis;
+	}
+	
+	public static Color invertColor(Color c) {
+		return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
 	}
 }
 

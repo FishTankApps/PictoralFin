@@ -21,6 +21,30 @@ public class PictureImporter {
 		this.pictoralFin = pictoralFin;
 	}
 	
+	public void simpleImportPicture(File picture) {
+		try {
+			double width, height, ratio;
+			BufferedImage frame;
+			frame = ImageIO.read(picture);
+			
+			width = frame.getWidth() / pictoralFin.getSettings().getMaxPictureSize().getWidth();
+			height = frame.getHeight() / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+			
+			if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() && frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+				ratio = (width > height) ? width : height;								
+				frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
+			}
+			
+			if(frame == null)
+				throw new Exception("frame = NULL");
+			pictoralFin.getTimeLine().addFrame(frame);
+		} catch (Exception e) {
+			System.out.println("Error: PictureImporter.simpleImportPicture()" +
+							   "Message: " + e.getMessage());
+		}
+		
+	}
+	
 	public void importPictures() {
 		File[] files = JFileChooserWithImagePreview.openFiles(pictoralFin);	
 		if(files != null)

@@ -21,6 +21,7 @@ public class OnMainFrameClosed implements WindowListener{
 		
 		pictoralFin.getSettings().saveSettings();
 		pictoralFin.getDataFile().saveDataFile();
+		pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().getJDriveExplorer().closeDevices();
 		System.exit(0);
 	}
 	

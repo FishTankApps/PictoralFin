@@ -8,9 +8,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import interfaces.SettingsPanel;
-import jComponents.videoEditor.JFrameDurationEditor;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
+import utilities.ChainGBC;
 import utilities.Utilities;
 
 public class FrameSettingsPanel extends SettingsPanel {
@@ -47,9 +47,9 @@ public class FrameSettingsPanel extends SettingsPanel {
 		removeFrame.addActionListener(REMOVE_FRAME);
 		editImage.addActionListener(EDIT_IMAGE);
 
-		add(removeFrame, Utilities.generateGBC(0, 0, 1, 1));
-		add(editImage, Utilities.generateGBC(1, 0, 1, 1));
-		add(durationEditor, Utilities.generateGBC(0, 1, 2, 1));
+		add(removeFrame,    new ChainGBC(0, 0).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
+		add(editImage,      new ChainGBC(1, 0).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
+		add(durationEditor, new ChainGBC(0, 1).setPadding(5).setWidthAndHeight(2, 1).setFill(true));
 		
 		setBackground(theme.getPrimaryBaseColor());
 	}

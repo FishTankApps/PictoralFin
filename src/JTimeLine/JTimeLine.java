@@ -53,6 +53,10 @@ public class JTimeLine extends JPanel {
 		return frameTimeLine.getSelectedIndex();
 	}
 	
+	public Frame getFrameAtMilli(int milli) {
+		return frameTimeLine.getFrameAtMilli(milli);
+	}
+	
 	public boolean moveCurrentFrame(boolean whichDirection) {
 		if(whichDirection) {
 			if(getCurrentFrameIndex() != numberOfFrame() - 1) 
@@ -74,13 +78,21 @@ public class JTimeLine extends JPanel {
 			moveCurrentFrame(movement > 0);
 	}
 	
+	public void setCurrentFrame(Frame frame) {
+		frameTimeLine.setSelectedFrame(frame);
+	}
+	
 	public void setCurrentFrameIndex(int index) {		
 		if(index != 0 || numberOfFrame() != 0)
 			frameTimeLine.setSelectedFrame(index);
 	}
-	
+		
 	public void addOnFrameSelectionChangeListener(OnFrameSelectionChangedListener listener) {
 		frameTimeLine.addOnFrameSelectionChangedListener(listener);
+	}
+	
+	public void addOnVideoDurrationChangedListener(OnVideoDurrationChangedListener listener) {
+		frameTimeLine.addOnVideoDurrationChangedListener(listener);
 	}
 	
 	public void updateSizes() {
@@ -114,5 +126,9 @@ public class JTimeLine extends JPanel {
 
 	public int numberOfFrame() {
 		return frameTimeLine.numberOfFrames();
+	}
+
+	public int getVideoDurration() {
+		return frameTimeLine.getVideoDurration();
 	}
 }

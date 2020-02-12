@@ -7,9 +7,9 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextPane;
@@ -35,7 +35,11 @@ public class VideoPreview extends JPanel implements Themed {
 	private JPanel controlPanel, buttonPanel;
 	private JSlider videoTimeLine;
 	private JTextPane  frameNumber;
+	private JLabel currentTime, videoDurration;
 	private ImageIcon playIcon, pauseIcon, stopIcon, skipLeftIcon, skipRightIcon;
+	private Theme theme;
+	
+	public int currentMilli = 0;
 	
 	private boolean previewState = false;
 	
@@ -43,7 +47,8 @@ public class VideoPreview extends JPanel implements Themed {
 	
 	private JTimeLine timeLine = null;
 	
-	public VideoPreview(VideoEditor videoEditor, Theme theme) {				
+	public VideoPreview(VideoEditor videoEditor, Theme theme) {		
+		this.theme = theme;
 		Dimension buttonDim = new Dimension(38, 38);
 		
 		playPause = new JButton();
@@ -51,25 +56,34 @@ public class VideoPreview extends JPanel implements Themed {
 		playPause.addActionListener(e -> {
 			previewState = !previewState && timeLine.numberOfFrame() != 0;
 			
-			if(timeLine.getCurrentFrameIndex() == timeLine.numberOfFrame() - 1)
+			if(currentMilli >= timeLine.getVideoDurration()) {
 				timeLine.setCurrentFrameIndex(0);
+				currentMilli = 0;
+			}
 			
-			VideoEditor ve = (VideoEditor) this.getParent().getParent();
-			ve.updateSettingsPanel(VideoEditor.FRAME);
+			if(timeLine.numberOfFrame() != 0) {
+				VideoEditor ve = (VideoEditor) this.getParent().getParent();
+				ve.updateSettingsPanel(VideoEditor.FRAME);
+			}
+			
 			
 			repaint();
 		});
 		
 		stop = new JButton();
 		stop.setPreferredSize(buttonDim);
-		stop.addActionListener(e-> {previewState = false; timeLine.setCurrentFrameIndex(0); repaint();});
+		stop.addActionListener(e-> {previewState = false; timeLine.setCurrentFrameIndex(0); currentMilli = 0; repaint();});
 		
 		skipLeft = new JButton();
 		skipLeft.setPreferredSize(buttonDim);
 		skipLeft.addActionListener(e-> 
 			{
 				if (timeLine.numberOfFrame() != 0) { 
-					timeLine.moveCurrentFrameUpTo((previewState) ? -10 : -1); 
+					currentMilli -= 1000;
+					
+					if(currentMilli < 0)
+						currentMilli = 0;
+					
 					repaint();
 				}
 			});
@@ -79,7 +93,11 @@ public class VideoPreview extends JPanel implements Themed {
 		skipRight.addActionListener(e-> 
 			{
 				if (timeLine.numberOfFrame() != 0) {
-					timeLine.moveCurrentFrameUpTo((previewState) ? 10 : 1);
+					currentMilli += 1000;
+					
+					if(currentMilli > timeLine.getVideoDurration())
+						currentMilli = timeLine.getVideoDurration();
+					
 					repaint();
 				}
 			});
@@ -90,16 +108,21 @@ public class VideoPreview extends JPanel implements Themed {
 		
 		frameNumber.setText("No Frames");		
 
+
+		currentTime = new JLabel("00:00.000");
+		currentTime.setVerticalAlignment(JLabel.TOP);
+		videoDurration = new JLabel("00:00.000");
+		videoDurration.setVerticalAlignment(JLabel.TOP);
 		
 		videoTimeLine = new JumpClickSlider(0,0,0);
 		videoTimeLine.addChangeListener(e -> {
-			timeLine.setCurrentFrameIndex(videoTimeLine.getValue());
+			currentMilli = videoTimeLine.getValue();
 			repaint();
 		});		
 		videoTimeLine.setPreferredSize(new Dimension(30, 10));
 		
 		controlPanel = new JPanel();
-		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+		controlPanel.setLayout(new BorderLayout());
 		
 		buttonPanel = new JPanel();
 		buttonPanel.setBackground(theme.getPrimaryHighlightColor());
@@ -108,8 +131,11 @@ public class VideoPreview extends JPanel implements Themed {
 		buttonPanel.add(stop);
 		buttonPanel.add(skipRight);
 		
-		controlPanel.add(videoTimeLine);
-		controlPanel.add(buttonPanel);
+		controlPanel.add(videoTimeLine, BorderLayout.NORTH);
+		controlPanel.add(buttonPanel, BorderLayout.CENTER);
+		controlPanel.add(currentTime, BorderLayout.WEST);
+		controlPanel.add(videoDurration, BorderLayout.EAST);
+		
 				
 		
 		videoPreviewThread = new Thread(new PreviewUpdater(this));		
@@ -202,20 +228,26 @@ public class VideoPreview extends JPanel implements Themed {
 		return timeLine;
 	}
 	
-	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
 		if(timeLine == null && Utilities.getPictoralFin(this) != null) {
 			timeLine = Utilities.getPictoralFin(this).getTimeLine();
 			timeLine.addOnFrameSelectionChangeListener((oldFrame, newFrame) -> repaint());
+			timeLine.addOnVideoDurrationChangedListener(e->repaint());
 		}
 		
+		g.setColor(theme.getSecondaryHighlightColor());
+		g.fillRoundRect(0, 0, getWidth(), frameNumber.getHeight() + 10, 50, 10);
+		
 		if(timeLine != null && timeLine.getCurrentFrame() != null) {
+			currentTime.setText(Utilities.formatFrameLength(currentMilli));
+			videoDurration.setText(Utilities.formatFrameLength(timeLine.getVideoDurration()));
+			
 			playPause.setIcon((!previewState) ? playIcon : pauseIcon);
 			
-			videoTimeLine.setMaximum(timeLine.numberOfFrame() - 1);
-			videoTimeLine.setValue(timeLine.getCurrentFrameIndex());
+			videoTimeLine.setMaximum(timeLine.getVideoDurration());
+			videoTimeLine.setValue(currentMilli);
 			
 			frameNumber.setText("Frame #" + (timeLine.getCurrentFrameIndex() + 1));
 			
@@ -223,7 +255,7 @@ public class VideoPreview extends JPanel implements Themed {
 			
 			if(currentFrame != null) {
 				int displayWidth = getWidth() - PREF_BOARDER * 2;
-				int displayHeight = getHeight() - frameNumber.getHeight() - controlPanel.getHeight()  - PREF_BOARDER * 2;
+				int displayHeight = getHeight() - frameNumber.getHeight() - controlPanel.getHeight()  - PREF_BOARDER * 2 - 10;
 				
 				BufferedImage image = currentFrame.getLayer(0);
 				
@@ -234,12 +266,15 @@ public class VideoPreview extends JPanel implements Themed {
 				int adjustedImageWidth = (int) (image.getWidth() * ratio); 
 				int adjustedImageHeight = (int) (image.getHeight() * ratio);
 				
-				g.drawImage(image, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER + frameNumber.getHeight(),
+				g.drawImage(image, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER + frameNumber.getHeight() + 10,
 						adjustedImageWidth, adjustedImageHeight, null);
 			}			
 		} else {
+			currentTime.setText("00:00.000");
+			videoDurration.setText("00:00.000");
+			
 			int displayWidth = getWidth() - PREF_BOARDER * 2;
-			int displayHeight = getHeight() - frameNumber.getHeight() - controlPanel.getHeight()  - PREF_BOARDER * 2;
+			int displayHeight = getHeight() - frameNumber.getHeight() - controlPanel.getHeight()  - PREF_BOARDER * 2 - 10;
 			
 			BufferedImage image = Utilities.getPictoralFin(this).getGlobalImageKit().pictoralFinIcon;
 			
@@ -250,17 +285,20 @@ public class VideoPreview extends JPanel implements Themed {
 			int adjustedImageWidth = (int) (image.getWidth() * ratio); 
 			int adjustedImageHeight = (int) (image.getHeight() * ratio);
 			
-			g.drawImage(image, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER + frameNumber.getHeight(),
+			g.drawImage(image, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER + frameNumber.getHeight() + 10,
 					adjustedImageWidth, adjustedImageHeight, null);
 			
 			frameNumber.setText("No Frames");
 		}
 	}
-	public void goToNextFrame() {
-		boolean moved = timeLine.moveCurrentFrame(JTimeLine.NEXT_FRAME);
+	public void updateFrame() {
+		Frame frame = timeLine.getFrameAtMilli(currentMilli);
 		
-		if(!moved) {
+		if(frame == null) {
 			previewState = PAUSED;
+		} else {
+			currentFrame = frame;
+			timeLine.setCurrentFrame(frame);
 		}
 		
 		repaint();
@@ -275,7 +313,7 @@ public class VideoPreview extends JPanel implements Themed {
 		frameNumber.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 14));
 		frameNumber.setBackground(theme.getSecondaryHighlightColor());
 		videoTimeLine.setBackground(theme.getSecondaryHighlightColor());
-		controlPanel.setBackground(theme.getPrimaryBaseColor());
+		controlPanel.setBackground(theme.getPrimaryHighlightColor());
 		setBackground(theme.getPrimaryBaseColor());
 		
 		

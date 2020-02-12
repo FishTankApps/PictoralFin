@@ -12,10 +12,13 @@ public class Launcher {
 	public static void main(String[] filePaths) {
 
 		try {
+			System.out.println("-- Setting Look And Feel --");
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			
+			System.out.println("-- Setting Up PictoralFin --");
 			PictoralFin pfk = new PictoralFin();
 
+			System.out.println("-- Importing Pictures --");
 			if (filePaths.length > 0) {
 				PictureImporter pictureImporter = pfk.getPictureImporter();
 				
@@ -26,6 +29,7 @@ public class Launcher {
 				pictureImporter.importPictures(files);
 			}
 			
+			System.out.println("-- Launching PictoralFin --");
 			pfk.launch();
 
 		} catch (Exception e) {

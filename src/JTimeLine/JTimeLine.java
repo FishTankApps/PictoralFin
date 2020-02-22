@@ -10,7 +10,7 @@ import javax.swing.JSplitPane;
 
 import mainFrame.PictoralFin;
 import objectBinders.Frame;
-
+ 
 public class JTimeLine extends JPanel {
 	
 	public static final boolean NEXT_FRAME = true;

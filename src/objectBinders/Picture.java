@@ -12,8 +12,6 @@ public class Picture {
 	private int currentLayer = 0;
 
 	public Picture(BufferedImage start) {
-		start = BufferedImageUtil.setBufferedImageType(start, BufferedImage.TYPE_4BYTE_ABGR);
-
 		history = new ArrayList<>();
 		history.add(start);
 		currentLayer = 0;

@@ -1,7 +1,10 @@
 package JTimeLine;
 
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagLayout;
+import java.awt.Polygon;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,9 +27,12 @@ public class JFrameDurationEditor extends JPanel {
 	private JButton applyToAll;
 	
 	private boolean adjustingValues = false;	
+	private Theme theme;
 	
 	public JFrameDurationEditor(JFrameButton frameButton, Theme theme) {
+		this.theme = theme;
 		
+		setBackground(theme.getPrimaryHighlightColor());
 		setLayout(new GridBagLayout());		
 		
 		durationInFPS  = new JSlider();
@@ -36,6 +42,7 @@ public class JFrameDurationEditor extends JPanel {
 		durationInFPS.setMajorTickSpacing(5);
 		durationInFPS.setMinorTickSpacing(1);
 		durationInFPS.setPaintTicks(true);
+		durationInFPS.setBackground(theme.getSecondaryBaseColor());
 		
 		durationInMili = new JSlider();
 		durationInMili.setMaximum(500);
@@ -44,17 +51,21 @@ public class JFrameDurationEditor extends JPanel {
 		durationInMili.setMajorTickSpacing(10);
 		durationInMili.setMinorTickSpacing(2);
 		durationInMili.setPaintTicks(true);	
+		durationInMili.setBackground(theme.getSecondaryBaseColor());
 		
 		labelFPS  = new JLabel("Frames Per Second (" + durationInFPS.getValue() + "):");
+		labelFPS.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 15));
 		labelMili = new JLabel("Durration In Mili: (" + durationInMili.getValue() * DURRATION_PRECISION + "):");		
+		labelMili.setFont(labelFPS.getFont());
 		
 		applyToAll   = new JButton("Apply Time to All Frames");
+		applyToAll.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 17));
 		
-		add(labelFPS,       new ChainGBC(0, 0).setPadding(2).setWidthAndHeight(1, 1).setFill(false));
-		add(durationInFPS, 	new ChainGBC(1, 0).setPadding(2).setWidthAndHeight(1, 1).setFill(true));
-		add(labelMili,      new ChainGBC(0, 1).setPadding(2).setWidthAndHeight(1, 1).setFill(false));
-		add(durationInMili, new ChainGBC(1, 1).setPadding(2).setWidthAndHeight(1, 1).setFill(true));
-		add(applyToAll,     new ChainGBC(0, 2).setPadding(2).setWidthAndHeight(2, 1).setFill(true));
+		add(labelFPS,       new ChainGBC(0, 0).setPadding(20, 2, 20, 2).setWidthAndHeight(1, 1).setFill(false));
+		add(durationInFPS, 	new ChainGBC(1, 0).setPadding(2, 20, 20, 2).setWidthAndHeight(1, 1).setFill(true));
+		add(labelMili,      new ChainGBC(0, 1).setPadding(20, 2, 2, 5).setWidthAndHeight(1, 1).setFill(false));
+		add(durationInMili, new ChainGBC(1, 1).setPadding(2, 20, 2, 5).setWidthAndHeight(1, 1).setFill(true));
+		add(applyToAll,     new ChainGBC(0, 2).setPadding(20).setWidthAndHeight(2, 1).setFill(true));
 		
 		durationInFPS.addChangeListener(e -> {
 				labelFPS.setText("Frames Per Second (" + durationInFPS.getValue() + "):");
@@ -95,5 +106,23 @@ public class JFrameDurationEditor extends JPanel {
 			frameTimeLine.repaint();
 			
 		});
+	}
+	
+	public void paintComponent(Graphics g) {
+		g.setColor(theme.getSecondaryHighlightColor());
+		if(theme.isSharp()) {
+			Polygon p = new Polygon();
+			p.addPoint(5, 15);
+			p.addPoint(15, 5);
+
+			p.addPoint(getWidth() - 5, 5);			
+			
+			p.addPoint(getWidth() - 5, getHeight() - 25);
+			p.addPoint(getWidth() - 25, getHeight() - 5);
+			
+			p.addPoint(5, getHeight() - 5);
+			g.fillPolygon(p);
+		} else 
+			g.fillRoundRect(0, 0, getWidth(), getHeight(), 40, 40);
 	}
 }

@@ -2,17 +2,21 @@ package mainFrame;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -30,6 +34,7 @@ import objectBinders.GlobalListenerToolKit;
 import objectBinders.Settings;
 import objectBinders.Theme;
 import utilities.BufferedImageUtil;
+import utilities.ChainGBC;
 import utilities.PictureImporter;
 import utilities.Utilities;
 
@@ -51,6 +56,7 @@ public class PictoralFin extends JFrame {
 	private JTabbedPane tabbedPane;
 	private JTimeLine timeLine;
 	private JSplitPane verticalSplitPane;
+	private JProgressBar memoryUsageBar;
 	
 	private GlobalListenerToolKit globalListenerToolKit;
 	private GlobalImageKit globalImageKit;
@@ -117,9 +123,8 @@ public class PictoralFin extends JFrame {
 
 	private JPanel createMainPanel() {
 		JPanel mainPanel;
-
-		mainPanel = new JPanel(new GridLayout(1, 0, 1, 1));
-
+		mainPanel = new JPanel(new GridBagLayout());
+		mainPanel.setBackground(settings.getTheme().getSecondaryBaseColor());
 		timeLine = new JTimeLine(this);			
 
 		verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -133,8 +138,20 @@ public class PictoralFin extends JFrame {
 		verticalSplitPane.setBackground(settings.getTheme().getSecondaryBaseColor());
 		verticalSplitPane.setForeground(Color.RED);
 		
-		mainPanel.add(verticalSplitPane);
-
+		JLabel memoryLabel = new JLabel("  Memory Usage:");
+		memoryLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.PLAIN, 11));
+		
+		memoryUsageBar = new JProgressBar();
+		memoryUsageBar.setMinimumSize(new Dimension(500, 10));
+		memoryUsageBar.setMinimum(0);
+		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());
+		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+		
+		mainPanel.add(verticalSplitPane,          (new ChainGBC(0,0)).setFill(true)      .setPadding(0).setWidthAndHeight(3, 1));
+		mainPanel.add(memoryLabel,                (new ChainGBC(0,1)).setFill(false)      .setPadding(0, 10, 0, 0).setWidthAndHeight(1, 1));
+		mainPanel.add(memoryUsageBar,             (new ChainGBC(1,1)).setFill(false)      .setPadding(0).setWidthAndHeight(1, 1));
+		mainPanel.add(Box.createVerticalStrut(1), (new ChainGBC(2,1)).setFill(true, false).setPadding(0).setWidthAndHeight(1, 1));
+		
 		return mainPanel;
 	}
 
@@ -201,6 +218,14 @@ public class PictoralFin extends JFrame {
 		
 	public VideoEditor getVideoEditor() {
 		return videoEditor;
+	}
+	
+	public void updateMemoryUsage(){
+		System.gc();
+		
+		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());
+		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+		memoryUsageBar.repaint();
 	}
 	
 	private void refreshSizes() {

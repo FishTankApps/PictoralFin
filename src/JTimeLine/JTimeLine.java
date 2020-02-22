@@ -21,10 +21,12 @@ public class JTimeLine extends JPanel {
 	private FrameTimeLine frameTimeLine;
 	private JScrollPane scrollPane;
 	private JPanel timeLinePanel;
+	private PictoralFin pictoralFin;
 
 	
 	public JTimeLine(PictoralFin pictoralFin) {		
-
+		this.pictoralFin = pictoralFin;
+		
 		frameTimeLine = new FrameTimeLine(pictoralFin);		
 		
 		timeLinePanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
@@ -116,9 +118,11 @@ public class JTimeLine extends JPanel {
 	
 	public void addFrame(Frame frame) {
 		frameTimeLine.addFrame(frame);
+		pictoralFin.updateMemoryUsage();
 	}
 	public void addFrame(BufferedImage image) {
 		frameTimeLine.addFrame(new Frame(image));
+		pictoralFin.updateMemoryUsage();
 	}
 	public void removeFrame(int index) {
 		frameTimeLine.removeFrame(index);

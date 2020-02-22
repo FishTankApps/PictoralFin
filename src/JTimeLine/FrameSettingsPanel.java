@@ -1,5 +1,6 @@
 package JTimeLine;
 
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Polygon;
@@ -40,15 +41,17 @@ public class FrameSettingsPanel extends SettingsPanel {
 		setLayout(new GridBagLayout());
 		
 		removeFrame = new JButton("Remove This Frame");
+		removeFrame.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 17));
 		editImage = new JButton("Edit Image");
+		editImage.setFont(removeFrame.getFont());
 		
 		durationEditor = new JFrameDurationEditor(toEdit, theme);
 		
 		removeFrame.addActionListener(REMOVE_FRAME);
 		editImage.addActionListener(EDIT_IMAGE);
 
-		add(removeFrame,    new ChainGBC(0, 0).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
-		add(editImage,      new ChainGBC(1, 0).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
+		add(removeFrame,    new ChainGBC(0, 0).setPadding(35, 5, 5, 5).setWidthAndHeight(1, 1).setFill(true));
+		add(editImage,      new ChainGBC(1, 0).setPadding(5, 35, 5, 5).setWidthAndHeight(1, 1).setFill(true));
 		add(durationEditor, new ChainGBC(0, 1).setPadding(5).setWidthAndHeight(2, 1).setFill(true));
 		
 		setBackground(theme.getPrimaryBaseColor());

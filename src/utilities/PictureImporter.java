@@ -11,7 +11,6 @@ import customExceptions.CanceledException;
 import jComponents.JFileChooserWithImagePreview;
 import jComponents.JProgressDialog;
 import mainFrame.PictoralFin;
-//import videoTools.VideoTools;
 
 public class PictureImporter {
 	
@@ -63,7 +62,7 @@ public class PictureImporter {
 			
 		JProgressDialog jpb = new JProgressDialog("Importing Pictures " + JProgressDialog.PERCENT, "Importing...", files.length);
 		ArrayList<String> failedFiles = new ArrayList<>();
-		double width, height, ratio;
+		double widthRatio, heightRation, ratio;
 		BufferedImage frame;
 		
 		jpb.setIcon(pictoralFin.getGlobalImageKit().pictoralFinIcon);		
@@ -80,11 +79,11 @@ public class PictureImporter {
 					} else {
 						frame = ImageIO.read(file);
 						
-						width = frame.getWidth() / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-						height = frame.getHeight() / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+						widthRatio = ((double) frame.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
+						heightRation = ((double) frame.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
 						
-						if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() && frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
-							ratio = (width > height) ? width : height;								
+						if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+							ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
 							frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
 						}
 						

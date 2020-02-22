@@ -16,7 +16,7 @@ public class Settings implements Serializable{
 	
 	private Settings() {
 		theme = Theme.OCEAN_THEME;
-		maxPictureSize = new Dimension(720, 1280);
+		maxPictureSize = new Dimension(360, 640);
 	}
 
 	public final Theme getTheme() {

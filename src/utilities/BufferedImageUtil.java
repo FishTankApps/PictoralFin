@@ -15,6 +15,7 @@ public class BufferedImageUtil {
 		
 		return target;
 	}
+	@Deprecated
 	public static BufferedImage setBufferedImageType(BufferedImage toCopy, int type){
 		BufferedImage target = new BufferedImage(toCopy.getWidth(), toCopy.getHeight(), type);
 		Graphics targetGraphics = target.getGraphics();

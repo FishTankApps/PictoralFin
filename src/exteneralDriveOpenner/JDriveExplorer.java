@@ -1,7 +1,8 @@
 package exteneralDriveOpenner;
 
-import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.io.File;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -11,6 +12,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -44,33 +46,50 @@ public class JDriveExplorer extends JPanel {
 	private boolean enabled = true;
 	private boolean hasSelectedFolder = false;
 	private boolean scanning = false;
+	private boolean ignoreScan = false;
 	
 	private PortableDeviceObject[] previousScanFiles = null;
 	private PortableDeviceToHostImpl32 importer = new PortableDeviceToHostImpl32();
 	private ScheduledThreadPoolExecutor eventPool;
 	
+	private Theme theme;
+	
 	public JDriveExplorer(Theme theme) {
-		setBackground(Color.GREEN);
+		this.theme = theme;
 		
+		setBackground(theme.getPrimaryBaseColor());		
 		setLayout(new GridBagLayout());
 		
 		driveManager = new ExternalDriveManager();
 		
 		currentDir = new JLabel("No Folder Selected");
+		currentDir.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 15));
 		refresh = new JButton("Rescan for Devices");
-		refresh.addActionListener(e-> refreshTree());
+		refresh.setFont(currentDir.getFont());
+		refresh.addActionListener(e -> refreshTree());
 		refresh.setPreferredSize(new Dimension(300, 50));
 		
 		scan = new JButton("Begin Scanning");
+		scan.setFont(refresh.getFont());
 		scan.addActionListener(e -> {
 			if(!enabled || !hasSelectedFolder) {
 				System.out.println("Not enabled/No Selected Folder");
 				return;
 			}
+			
+			
+			
+			
 			if(scanning) {
 				scanning = false;
 				scan.setText("Begin Scanning");
 			} else {
+				int choice = JOptionPane.showConfirmDialog(null, "Would you like to import the current files?", "Import Files", JOptionPane.INFORMATION_MESSAGE);
+				
+				if(choice == JOptionPane.CANCEL_OPTION)
+					return;
+				
+				ignoreScan = JOptionPane.YES_OPTION == choice;
 				scanning = true;
 				scan.setText("Stop Scanning");
 			}
@@ -78,7 +97,9 @@ public class JDriveExplorer extends JPanel {
 		
 		rootNode = new DefaultMutableTreeNode("External Drives");
 		driveTree = new JTree(rootNode);
+		driveTree.setFont(new Font(theme.getPrimaryFont(), Font.PLAIN, 12));
 		driveTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		driveTree.setBackground(theme.getSecondaryBaseColor());
 		driveTree.addTreeSelectionListener(e -> {
 			
 			if(driveTree.getSelectionPath() != null) {
@@ -98,9 +119,11 @@ public class JDriveExplorer extends JPanel {
 		JScrollPane treeScrollPane = new JScrollPane(driveTree);
 		treeScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		treeScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		treeScrollPane.setPreferredSize(new Dimension(1000, 100));
-
-		enableAutoImport = new JCheckBox("Auto Import", true);
+		treeScrollPane.setPreferredSize(new Dimension(1000, 100));	
+		
+		enableAutoImport = new JCheckBox("Auto Import", false);
+		enableAutoImport.setFont(currentDir.getFont());
+		enableAutoImport.setBackground(theme.getSecondaryHighlightColor());
 		enableAutoImport.addChangeListener(e->{
 			enabled = enableAutoImport.isSelected();
 			
@@ -111,6 +134,13 @@ public class JDriveExplorer extends JPanel {
 			
 			repaint();
 		});
+		
+		enabled = false;
+		
+		currentDir.setVisible(enabled);
+		refresh.setVisible(enabled);	
+		scan.setVisible(enabled);
+		treeScrollPane.setVisible(enabled);
 		
 		add(enableAutoImport, 			new ChainGBC(0,0).setFill(false, false).setPadding(10).setWidthAndHeight(1, 1));		
 		add(refresh,          			new ChainGBC(1,0).setFill(false, false).setPadding(10).setWidthAndHeight(1, 1));
@@ -150,7 +180,7 @@ public class JDriveExplorer extends JPanel {
 			
 			// REPORT NEW CHILDREN
 			for(PortableDeviceObject newFile : targetDirChildern) {
-				boolean isNewFile = true;
+				boolean isNewFile = ignoreScan;
 				
 				if(previousScanFiles != null) 
 					for(PortableDeviceObject oldFile : previousScanFiles) 
@@ -169,8 +199,10 @@ public class JDriveExplorer extends JPanel {
 					}			
 				}				
 			}
-			
+			ignoreScan = false;
 			previousScanFiles = targetDirChildern;
+			
+			break;
 		}
 		
 				
@@ -254,7 +286,6 @@ public class JDriveExplorer extends JPanel {
 	private void addNode(DefaultMutableTreeNode parent, PortableDeviceObject file) {
 		if(file.getName().charAt(0) != '.') {
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode(file.getName());
-			
 			if(file.getName().contains("app") || file.getName().contains("Android") || file.getName().contains("temp"))
 				return;
 		
@@ -283,5 +314,14 @@ public class JDriveExplorer extends JPanel {
 			if (scanning)
 				scanTargetFolder();			
 		}		 
+	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.setColor(theme.getPrimaryHighlightColor());
+		if(theme.isSharp())
+			g.fillRect(0, 0, getWidth(), getHeight());
+		else
+			g.fillRoundRect(0, -30, getWidth(), getHeight() + 30, 30, 30);
 	}
 }

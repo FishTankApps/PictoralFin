@@ -1,7 +1,5 @@
 package jComponents.videoEditor;
 
-import utilities.AccuPause;
-
 public class PreviewUpdater implements Runnable {
 
 	private VideoPreview preview;
@@ -13,15 +11,16 @@ public class PreviewUpdater implements Runnable {
 	@Override
 	public void run() {
 		try {
-			AccuPause accuPause = new AccuPause();
+			long startTime;
 			while(true) {
-				accuPause.resetStartTime();
+				
 
 				Thread.sleep(10);
 				
 				while(preview.getPreviewState()) {		
-					accuPause.acuSleep(10);
-					preview.currentMilli += 10;
+					startTime = System.currentTimeMillis();
+					Thread.sleep(10);
+					preview.currentMilli += System.currentTimeMillis() - startTime;
 					
 					if(preview.getPreviewState())
 						preview.updateFrame();

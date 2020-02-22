@@ -12,8 +12,11 @@ public class AccuPause {
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
 		
-		
 		long currentTime = System.currentTimeMillis();
+		if(currentTime-startTime < pauseTimeInMillis)
+			System.out.println("SKIPPED");
+		
+		
 		
 		while(currentTime-startTime < pauseTimeInMillis){
 			currentTime = System.currentTimeMillis();

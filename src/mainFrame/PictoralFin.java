@@ -63,7 +63,7 @@ public class PictoralFin extends JFrame {
 	
 	public PictoralFin() {
 		settings = Settings.openSettings();
-		settings.setTheme(Theme.OCEAN_THEME);
+		settings.setTheme(Theme.RED_METAL_THEME);
 		dateFile = DataFile.openDataFile();
 		
 		globalListenerToolKit = new GlobalListenerToolKit(this);

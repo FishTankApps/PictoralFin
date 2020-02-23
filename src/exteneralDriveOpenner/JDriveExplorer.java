@@ -75,10 +75,7 @@ public class JDriveExplorer extends JPanel {
 			if(!enabled || !hasSelectedFolder) {
 				System.out.println("Not enabled/No Selected Folder");
 				return;
-			}
-			
-			
-			
+			}			
 			
 			if(scanning) {
 				scanning = false;
@@ -89,7 +86,7 @@ public class JDriveExplorer extends JPanel {
 				if(choice == JOptionPane.CANCEL_OPTION)
 					return;
 				
-				ignoreScan = JOptionPane.YES_OPTION == choice;
+				ignoreScan = JOptionPane.YES_OPTION != choice;
 				scanning = true;
 				scan.setText("Stop Scanning");
 			}
@@ -153,7 +150,7 @@ public class JDriveExplorer extends JPanel {
 		
 		
 		eventPool = new ScheduledThreadPoolExecutor(1);
-		eventPool.scheduleAtFixedRate(new ScanningRunnable(), 0, 1500, TimeUnit.MILLISECONDS);
+		eventPool.scheduleAtFixedRate(new ScanningRunnable(), 0, 4, TimeUnit.SECONDS);
 		Thread[] listOfThreads = new Thread[Thread.activeCount()];
 		Thread.enumerate(listOfThreads);
 	}
@@ -179,26 +176,29 @@ public class JDriveExplorer extends JPanel {
 			PortableDeviceObject[] targetDirChildern = getTargetFolderChildern((PortableDeviceObject) targetDir);
 			
 			// REPORT NEW CHILDREN
-			for(PortableDeviceObject newFile : targetDirChildern) {
-				boolean isNewFile = ignoreScan;
-				
-				if(previousScanFiles != null) 
-					for(PortableDeviceObject oldFile : previousScanFiles) 
-						isNewFile = isNewFile && !newFile.getName().equals(oldFile.getName());				
-				
-				if(isNewFile) {
-					try {
-						importer.copyFromPortableDeviceToHost(newFile.getID(), "C:/Users/" + System.getProperty("user.name") + "/Pictures", (PortableDevice) device);
-						
-						File importedPicture = new File("C:/Users/" + System.getProperty("user.name") + "/Pictures/" + newFile.getName());
-						Utilities.getPictoralFin(this).getPictureImporter().simpleImportPicture(importedPicture);
-						importedPicture.delete();
-						
-					} catch (COMException e) {
-						e.printStackTrace();
-					}			
-				}				
-			}
+			if(!ignoreScan) {
+				for(PortableDeviceObject newFile : targetDirChildern) {
+					boolean isNewFile = true;
+					
+					if(previousScanFiles != null) 
+						for(PortableDeviceObject oldFile : previousScanFiles) 
+							isNewFile = isNewFile && !newFile.getName().equals(oldFile.getName());				
+					
+					if(isNewFile) {
+						try {
+							importer.copyFromPortableDeviceToHost(newFile.getID(), "C:/Users/" + System.getProperty("user.name") + "/Pictures", (PortableDevice) device);
+							
+							File importedPicture = new File("C:/Users/" + System.getProperty("user.name") + "/Pictures/" + newFile.getName());
+							Utilities.getPictoralFin(this).getPictureImporter().simpleImportPicture(importedPicture);
+							importedPicture.delete();
+							
+							Utilities.playSound("PictureImported.wav");
+						} catch (COMException e) {
+							e.printStackTrace();
+						}			
+					}				
+				}
+			}			
 			ignoreScan = false;
 			previousScanFiles = targetDirChildern;
 			
@@ -311,8 +311,10 @@ public class JDriveExplorer extends JPanel {
 
 	private class ScanningRunnable implements Runnable {
 		public void run() {
-			if (scanning)
-				scanTargetFolder();			
+			if (scanning) {
+				Utilities.playSound("SonarPing.wav");
+				scanTargetFolder();	
+			}
 		}		 
 	}
 

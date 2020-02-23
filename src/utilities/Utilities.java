@@ -7,6 +7,9 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.util.ArrayList;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.JOptionPane;
 
 import mainFrame.PictoralFin;
@@ -130,6 +133,25 @@ public class Utilities {
 	
 	public static Color invertColor(Color c) {
 		return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
+	}
+
+	public static void playSound(String fileName) {
+		new Thread(new Runnable() {
+
+			public void run() {
+				try {
+					AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Utilities.class.getResourceAsStream(fileName));
+			        Clip clip = AudioSystem.getClip();
+			   	    clip.open(audioInputStream); 
+			   	    clip.start(); 
+				} catch (Exception e) {
+					 System.out.println("There was an Error playing the sound: "+ fileName + "\n" + e.getMessage());
+				}
+			}
+			
+		}).start();
+		
+			
 	}
 }
 

@@ -3,8 +3,11 @@ package jComponents.videoEditor;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import customExceptions.FeatureNotSupportedException;
 import exteneralDriveOpenner.JDriveExplorer;
 import interfaces.SettingsPanel;
 import objectBinders.Theme;
@@ -21,8 +24,13 @@ public class VideoEditorSettingsPanel extends JPanel {
 		setBackground(theme.getPrimaryBaseColor());		
 		setMinimumSize(new Dimension(500, 50));
 		
-		driveExplorer = new JDriveExplorer(theme);
-		add(driveExplorer, BorderLayout.NORTH);
+		try {
+			driveExplorer = new JDriveExplorer(theme);
+			add(driveExplorer, BorderLayout.NORTH);
+		} catch (FeatureNotSupportedException e) {
+			JOptionPane.showMessageDialog(null, "External Drive Not Supported");
+		}
+		
 	}
 	
 	public JDriveExplorer getJDriveExplorer() {

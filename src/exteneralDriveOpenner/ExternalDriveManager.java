@@ -2,6 +2,7 @@ package exteneralDriveOpenner;
 
 import java.util.ArrayList;
 
+import customExceptions.FeatureNotSupportedException;
 import jmtp.PortableDevice;
 import jmtp.PortableDeviceManager;
 
@@ -11,8 +12,14 @@ public class ExternalDriveManager {
 	private PortableDeviceManager manager;
 	
 	public ExternalDriveManager() {
-		devices = new ArrayList<>();
-		manager = new PortableDeviceManager();
+		devices = new ArrayList<>();	
+		
+		try {
+			manager = new PortableDeviceManager();
+		} catch (java.lang.UnsatisfiedLinkError e) {
+			throw new FeatureNotSupportedException();
+		}
+		
 		refresh();
 	}
 	

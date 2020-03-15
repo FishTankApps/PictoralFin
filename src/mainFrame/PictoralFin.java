@@ -29,10 +29,11 @@ import listeners.GlobalFocusListener;
 import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
 import objectBinders.DataFile;
-import objectBinders.GlobalImageKit;
-import objectBinders.GlobalListenerToolKit;
+import globalToolKits.GlobalImageKit;
+import globalToolKits.GlobalListenerToolKit;
 import objectBinders.Settings;
 import objectBinders.Theme;
+import utilities.AudioImporter;
 import utilities.BufferedImageUtil;
 import utilities.ChainGBC;
 import utilities.PictureImporter;
@@ -43,7 +44,7 @@ public class PictoralFin extends JFrame {
 	private static final long serialVersionUID = 6656205076381846860L;
 	
 	public static enum EditorMode {
-		STATIC, KINETIC;
+		STATIC, KINETIC, WAVE;
 	}
 	
 	// =======[ TABS ]---------
@@ -63,7 +64,7 @@ public class PictoralFin extends JFrame {
 	
 	public PictoralFin() {
 		settings = Settings.openSettings();
-		settings.setTheme(Theme.RED_METAL_THEME);
+		settings.setTheme(Theme.OCEAN_THEME);
 		dateFile = DataFile.openDataFile();
 		
 		globalListenerToolKit = new GlobalListenerToolKit(this);
@@ -163,10 +164,11 @@ public class PictoralFin extends JFrame {
 
 		videoEditor = new VideoEditor(settings.getTheme(), this);
 
-		ImageIcon kineticIcon = null, staticIcon = null;
+		ImageIcon kineticIcon = null, staticIcon = null, audioIcon = null;
 		try {
 			kineticIcon = new ImageIcon(globalImageKit.videoIcon);
 			staticIcon  = new ImageIcon(BufferedImageUtil.resizeBufferedImage(globalImageKit.pictureIcon, 33, 33, BufferedImage.SCALE_FAST));
+			audioIcon  = new ImageIcon(BufferedImageUtil.resizeBufferedImage(globalImageKit.audioIcon, 33, 33, BufferedImage.SCALE_FAST));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -174,6 +176,7 @@ public class PictoralFin extends JFrame {
 		
 		tabbedPane.addTab("  Kinetic", kineticIcon, videoEditor);
 		tabbedPane.addTab("  Static", staticIcon, new JButton("TEST"));
+		tabbedPane.addTab("  Wave", audioIcon, new JButton("TEST"));
 
 		tabbedPane.addChangeListener(e -> {
 			videoEditor.pausePreview();
@@ -208,6 +211,9 @@ public class PictoralFin extends JFrame {
 	}
 	public PictureImporter getPictureImporter() {
 		return new PictureImporter(this);
+	}
+	public AudioImporter getAudioImporter() {
+		return new AudioImporter(this);
 	}
 	public Settings getSettings() {
 		return settings;

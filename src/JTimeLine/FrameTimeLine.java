@@ -1,6 +1,7 @@
 package JTimeLine;
 
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -35,6 +36,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		this.theme = pictoralFin.getSettings().getTheme();
 		listenersOFSC = new ArrayList<>();
 		listenersOVDC = new ArrayList<>();
+		setLayout(new FlowLayout(FlowLayout.LEFT));
 		//dragListener = new OnComponentDraggedListener(this);
 		
 		addFrames = new JButton("Add Frames");

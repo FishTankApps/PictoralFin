@@ -10,22 +10,26 @@ import javax.swing.JPanel;
 import customExceptions.FeatureNotSupportedException;
 import exteneralDriveOpenner.JDriveExplorer;
 import interfaces.SettingsPanel;
-import objectBinders.Theme;
+import mainFrame.PictoralFin;
 
 public class VideoEditorSettingsPanel extends JPanel {
 
 	private static final long serialVersionUID = 1584668485922313959L;
 
 	private JDriveExplorer driveExplorer;
+	private FileImportPanel fileImportPanel;
 
-	public VideoEditorSettingsPanel(Theme theme) {	
+	public VideoEditorSettingsPanel(PictoralFin pictoralFin) {	
 		super(new BorderLayout());
 		
-		setBackground(theme.getPrimaryBaseColor());		
+		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());		
 		setMinimumSize(new Dimension(500, 50));
 		
+		fileImportPanel = new FileImportPanel(pictoralFin);
+		add(fileImportPanel, BorderLayout.CENTER);
+		
 		try {
-			driveExplorer = new JDriveExplorer(theme);
+			driveExplorer = new JDriveExplorer(pictoralFin.getSettings().getTheme());
 			add(driveExplorer, BorderLayout.NORTH);
 		} catch (FeatureNotSupportedException e) {
 			JOptionPane.showMessageDialog(null, "External Drive Not Supported");

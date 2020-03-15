@@ -25,7 +25,7 @@ public class VideoEditor extends JPanel implements Themed {
 		
 		setLayout(new GridLayout(1,0));
 		videoPreview = new VideoPreview(this, theme);
-		videoEditorSettingsPanel = new VideoEditorSettingsPanel(theme);
+		videoEditorSettingsPanel = new VideoEditorSettingsPanel(pictoralFin);
 		
 		horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		horizontalSplitPane.setLeftComponent(videoPreview);

@@ -1,7 +1,7 @@
 package JTimeLine;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -10,6 +10,7 @@ import javax.swing.JSplitPane;
 
 import mainFrame.PictoralFin;
 import objectBinders.Frame;
+import utilities.ChainGBC;
  
 public class JTimeLine extends JPanel {
 	
@@ -19,6 +20,7 @@ public class JTimeLine extends JPanel {
 	private static final long serialVersionUID = -7284429791726637894L;
 	
 	private FrameTimeLine frameTimeLine;
+	private AudioTimeLine audioTimeLine;
 	private JScrollPane scrollPane;
 	private JPanel timeLinePanel;
 	private PictoralFin pictoralFin;
@@ -28,8 +30,9 @@ public class JTimeLine extends JPanel {
 		this.pictoralFin = pictoralFin;
 		
 		frameTimeLine = new FrameTimeLine(pictoralFin);		
+		audioTimeLine = new AudioTimeLine(pictoralFin);
 		
-		timeLinePanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		timeLinePanel = new JPanel(new GridBagLayout());
 		timeLinePanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		scrollPane = new JScrollPane(timeLinePanel);		
@@ -39,64 +42,62 @@ public class JTimeLine extends JPanel {
 		scrollPane.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		
-		timeLinePanel.add(frameTimeLine);
-
+		timeLinePanel.add(frameTimeLine, new ChainGBC(0, 0).setFill(true));
+		timeLinePanel.add(audioTimeLine, new ChainGBC(0, 1).setFill(true));
 		
 		add(scrollPane);
 	}
 
-	public JFrameButton getCurrentFrameButton() {
-		return frameTimeLine.getSelectedFrameButton();
-	}
+	//----------{ FRAMES }-------------------------------------------------------------------------
+	//=====[ Getters ]====================================================	
+	public int numberOfFrame() {
+		return frameTimeLine.numberOfFrames();
+	}	
 	public Frame getCurrentFrame() {
 		return frameTimeLine.getSelectedFrame();
 	}
+	public int getVideoDurration() {
+		return frameTimeLine.getVideoDurration();
+	}	
 	public int getCurrentFrameIndex() {
 		return frameTimeLine.getSelectedIndex();
 	}
-	
 	public Frame getFrameAtMilli(int milli) {
 		return frameTimeLine.getFrameAtMilli(milli);
+	}	
+    public JFrameButton getCurrentFrameButton() {
+		return frameTimeLine.getSelectedFrameButton();
 	}
 	
-	public boolean moveCurrentFrame(boolean whichDirection) {
-		if(whichDirection) {
-			if(getCurrentFrameIndex() != numberOfFrame() - 1) 
-				setCurrentFrameIndex(getCurrentFrameIndex() + 1);		
-			else
-				return false;
-		} else {
-			if(getCurrentFrameIndex() != 0) 
-				setCurrentFrameIndex(getCurrentFrameIndex() - 1);	
-			else
-				return false;
-		}
-		
-		return true;
-	}
-	
-	public void moveCurrentFrameUpTo(int movement) {
-		for(int count = 0; count < Math.abs(movement); count++)
-			moveCurrentFrame(movement > 0);
-	}
-	
-	public void setCurrentFrame(Frame frame) {
+	//=====[ Setters ]====================================================
+    public void setCurrentFrame(Frame frame) {
 		frameTimeLine.setSelectedFrame(frame);
 	}
-	
-	public void setCurrentFrameIndex(int index) {		
+    public void setCurrentFrameIndex(int index) {
 		if(index != 0 || numberOfFrame() != 0)
 			frameTimeLine.setSelectedFrame(index);
 	}
-		
+	
+    //=====[ Add/Remove ]=================================================
+    public void addFrame(Frame frame) {
+		frameTimeLine.addFrame(frame);
+		pictoralFin.updateMemoryUsage();
+	}
+	public void addFrame(BufferedImage image) {
+		frameTimeLine.addFrame(new Frame(image));
+		pictoralFin.updateMemoryUsage();
+	}
+	public void removeFrame(int index) {
+		frameTimeLine.removeFrame(index);
+	}
 	public void addOnFrameSelectionChangeListener(OnFrameSelectionChangedListener listener) {
 		frameTimeLine.addOnFrameSelectionChangedListener(listener);
-	}
-	
+	}	
 	public void addOnVideoDurrationChangedListener(OnVideoDurrationChangedListener listener) {
 		frameTimeLine.addOnVideoDurrationChangedListener(listener);
 	}
 	
+	//=====[ Interactors ]================================================
 	public void updateSizes() {
 		frameTimeLine.setHeight(250);
 		
@@ -114,25 +115,30 @@ public class JTimeLine extends JPanel {
 		
 		revalidate();
 		repaint();
+	}	
+	public void moveCurrentFrameUpTo(int movement) {
+		for(int count = 0; count < Math.abs(movement); count++)
+			moveCurrentFrame(movement > 0);
 	}
+	public boolean moveCurrentFrame(boolean whichDirection) {
+			if(whichDirection) {
+				if(getCurrentFrameIndex() != numberOfFrame() - 1) 
+					setCurrentFrameIndex(getCurrentFrameIndex() + 1);		
+				else
+					return false;
+			} else {
+				if(getCurrentFrameIndex() != 0) 
+					setCurrentFrameIndex(getCurrentFrameIndex() - 1);	
+				else
+					return false;
+			}
+			
+			return true;
+		}
+
 	
-	public void addFrame(Frame frame) {
-		frameTimeLine.addFrame(frame);
-		pictoralFin.updateMemoryUsage();
-	}
-	public void addFrame(BufferedImage image) {
-		frameTimeLine.addFrame(new Frame(image));
-		pictoralFin.updateMemoryUsage();
-	}
-	public void removeFrame(int index) {
-		frameTimeLine.removeFrame(index);
-	}
-
-	public int numberOfFrame() {
-		return frameTimeLine.numberOfFrames();
-	}
-
-	public int getVideoDurration() {
-		return frameTimeLine.getVideoDurration();
+	//--------{ AUDIO }----------------------------------------------------------------------------
+	public void addAudioClip(AudioClip audioClip) {
+		audioTimeLine.addAudioClip(audioClip);
 	}
 }

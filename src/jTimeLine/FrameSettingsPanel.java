@@ -1,16 +1,20 @@
-package JTimeLine;
+package jTimeLine;
 
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Polygon;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 import interfaces.SettingsPanel;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
+import utilities.BufferedImageUtil;
 import utilities.ChainGBC;
 import utilities.Utilities;
 
@@ -19,12 +23,12 @@ public class FrameSettingsPanel extends SettingsPanel {
 	private static final long serialVersionUID = 5935805967298622431L;
 	
 	private ActionListener REMOVE_FRAME = e -> {
+		Utilities.getPictoralFin(FrameSettingsPanel.this.frameButton).getVideoEditor().getVideoEditorSettingsPanel().dettachSettingsPanel();
 		FrameTimeLine frameTimeLine = (FrameTimeLine) FrameSettingsPanel.this.frameButton.getParent();
-		frameTimeLine.removeFrame(FrameSettingsPanel.this.frameButton);
+		frameTimeLine.removeFrame(FrameSettingsPanel.this.frameButton);		
 	};
 	private ActionListener EDIT_IMAGE = e -> {
-		PictoralFin pictoralFin = Utilities.getPictoralFin(FrameSettingsPanel.this.frameButton);
-		pictoralFin.setCurrentMode(PictoralFin.EditorMode.STATIC);
+		Utilities.getPictoralFin(FrameSettingsPanel.this.frameButton).setCurrentMode(PictoralFin.EditorMode.STATIC);
 	};
 
 	
@@ -49,10 +53,14 @@ public class FrameSettingsPanel extends SettingsPanel {
 		
 		removeFrame.addActionListener(REMOVE_FRAME);
 		editImage.addActionListener(EDIT_IMAGE);
+		
+		JLabel image = new JLabel();
+		image.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(toEdit.getFrame().getLayer(0), 50, 50, BufferedImage.SCALE_FAST)));
 
-		add(removeFrame,    new ChainGBC(0, 0).setPadding(35, 5, 5, 5).setWidthAndHeight(1, 1).setFill(true));
-		add(editImage,      new ChainGBC(1, 0).setPadding(5, 35, 5, 5).setWidthAndHeight(1, 1).setFill(true));
-		add(durationEditor, new ChainGBC(0, 1).setPadding(5).setWidthAndHeight(2, 1).setFill(true));
+		add(removeFrame,    new ChainGBC(0, 0).setPadding(35, 0, 5, 5).setWidthAndHeight(1, 1).setFill(true));
+		add(image,          new ChainGBC(1, 0).setPadding(10, 10,  5, 5).setWidthAndHeight(1, 1).setFill(false));
+		add(editImage,      new ChainGBC(2, 0).setPadding(0, 35, 5, 5).setWidthAndHeight(1, 1).setFill(true));
+		add(durationEditor, new ChainGBC(0, 1).setPadding(5).setWidthAndHeight(3, 1).setFill(true));
 		
 		setBackground(theme.getPrimaryBaseColor());
 	}

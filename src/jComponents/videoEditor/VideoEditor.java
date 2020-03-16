@@ -18,10 +18,7 @@ public class VideoEditor extends JPanel implements Themed {
 	private VideoPreview videoPreview;
 	private VideoEditorSettingsPanel videoEditorSettingsPanel;
 	
-	private PictoralFin pictoralFin;
-	
 	public VideoEditor(Theme theme, PictoralFin pictoralFin) {	
-		this.pictoralFin = pictoralFin;
 		
 		setLayout(new GridLayout(1,0));
 		videoPreview = new VideoPreview(this, theme);
@@ -34,15 +31,6 @@ public class VideoEditor extends JPanel implements Themed {
 		horizontalSplitPane.setOneTouchExpandable(false);
 		
 		add(horizontalSplitPane);
-		
-		pictoralFin.getTimeLine().addOnFrameSelectionChangeListener((oldFrame, newFrame) -> {				
-				if(!videoPreview.getPreviewState()) {
-					videoEditorSettingsPanel.dettachSettingsPanel();
-						
-					if(newFrame != null)
-						videoEditorSettingsPanel.attachSettingsPanel(newFrame.generateSettingsPanel());		
-				}									
-			});
 	}
 
 	public VideoPreview getVideoPreview() {
@@ -73,14 +61,6 @@ public class VideoEditor extends JPanel implements Themed {
 		
 		//videoPreview.refresh();	
 		//videoPreviewSettings.refresh();					
-	}
-
-	public void updateSettingsPanel(int aspectToFocusOn) {
-		if(aspectToFocusOn == FRAME) {
-			videoEditorSettingsPanel.dettachSettingsPanel();			
-			
-			videoEditorSettingsPanel.attachSettingsPanel(pictoralFin.getTimeLine().getCurrentFrameButton().generateSettingsPanel());				
-		}
 	}
 	
 	public void pausePreview() {

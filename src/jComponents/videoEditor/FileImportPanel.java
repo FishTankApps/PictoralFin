@@ -19,7 +19,7 @@ public class FileImportPanel extends JPanel implements Themed {
 
 	private static final long serialVersionUID = -8225882191341895849L;
 
-	private JButton importPicture, importAudio; //, importVideo, importFiles;
+	private JButton importPicture, importAudio, importVideo, importFiles;
 	private PictoralFin pictoralFin;
 	
 	public FileImportPanel(PictoralFin pictoralFin) {
@@ -29,8 +29,8 @@ public class FileImportPanel extends JPanel implements Themed {
 		
 		importPicture = new JButton(" Import Pictures");
 		importAudio   = new JButton(" Import Audio Files");
-		//importVideo   = new JButton(" Import Videos");
-		//importFiles   = new JButton(" Import Files");
+		importVideo   = new JButton(" Import Videos");
+		importFiles   = new JButton(" Import Files");
 		
 		importPicture.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
 		importAudio.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddAudioRequest);
@@ -39,22 +39,32 @@ public class FileImportPanel extends JPanel implements Themed {
 		importPicture.setFont(font);
 		importAudio.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(pictoralFin.getGlobalImageKit().audioIcon, 25, 25, BufferedImage.SCALE_FAST)));
 		importAudio.setFont(font);
+		importFiles.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(pictoralFin.getGlobalImageKit().videoIcon, 25, 25, BufferedImage.SCALE_FAST)));
+		importFiles.setFont(font);
+		importVideo.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(pictoralFin.getGlobalImageKit().videoIcon, 25, 25, BufferedImage.SCALE_FAST)));
+		importVideo.setFont(font);
 		
 		
 		
 		setLayout(new GridBagLayout());
 		add(importPicture, new ChainGBC(0, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
 		add(importAudio, new ChainGBC(1, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
-		//add(importVideo, new ChainGBC(0, 1).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
-		//add(importFiles, new ChainGBC(1, 1).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
+		add(importVideo, new ChainGBC(0, 1).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
+		add(importFiles, new ChainGBC(1, 1).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
 		
 		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 	}
 		
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		
+		int width, height;
+		
+		width  = importPicture.getWidth()  + importAudio.getWidth()  + 40;
+		height = importPicture.getHeight() + importVideo.getHeight() + 40;
+		
 		g.setColor(pictoralFin.getSettings().getTheme().getSecondaryBaseColor());
-		g.fillRoundRect(30, 30, getWidth() - 60, getHeight() - 60, 40, 40);
+		g.fillRoundRect((getWidth() - width) / 2, (getHeight() - height) / 2, width, height, 40, 40);
 	}
 	
 	public void applyTheme(Theme theme) {

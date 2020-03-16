@@ -1,4 +1,4 @@
-package JTimeLine;
+package jTimeLine;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
@@ -30,20 +30,21 @@ public class JTimeLine extends JPanel {
 		this.pictoralFin = pictoralFin;
 		
 		frameTimeLine = new FrameTimeLine(pictoralFin);		
-		audioTimeLine = new AudioTimeLine(pictoralFin);
+		audioTimeLine = new AudioTimeLine(pictoralFin, this);
 		
 		timeLinePanel = new JPanel(new GridBagLayout());
 		timeLinePanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		scrollPane = new JScrollPane(timeLinePanel);		
 		scrollPane.getHorizontalScrollBar().setUnitIncrement(50);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		
-		timeLinePanel.add(frameTimeLine, new ChainGBC(0, 0).setFill(true));
-		timeLinePanel.add(audioTimeLine, new ChainGBC(0, 1).setFill(true));
+		timeLinePanel.add(frameTimeLine, new ChainGBC(0, 0).setFill(true).setPadding(0, 0, 10, 10));
+		timeLinePanel.add(audioTimeLine, new ChainGBC(0, 1).setFill(true).setPadding(0, 0, 0, 10));
 		
 		add(scrollPane);
 	}
@@ -64,11 +65,17 @@ public class JTimeLine extends JPanel {
 	}
 	public Frame getFrameAtMilli(int milli) {
 		return frameTimeLine.getFrameAtMilli(milli);
-	}	
+	}
+	public int getIndexOfFrameAtMilli(int milli) {
+		return frameTimeLine.getIndexOfFrameAtMilli(milli);
+	}
     public JFrameButton getCurrentFrameButton() {
 		return frameTimeLine.getSelectedFrameButton();
 	}
-	
+	FrameTimeLine getFrameTimeLine() {
+		return frameTimeLine;
+	}
+    
 	//=====[ Setters ]====================================================
     public void setCurrentFrame(Frame frame) {
 		frameTimeLine.setSelectedFrame(frame);
@@ -140,5 +147,8 @@ public class JTimeLine extends JPanel {
 	//--------{ AUDIO }----------------------------------------------------------------------------
 	public void addAudioClip(AudioClip audioClip) {
 		audioTimeLine.addAudioClip(audioClip);
+	}
+	AudioTimeLine getAudioTimeLine() {
+		return audioTimeLine;
 	}
 }

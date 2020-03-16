@@ -1,4 +1,4 @@
-package JTimeLine;
+package jTimeLine;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -28,14 +28,17 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 	//private OnComponentDraggedListener dragListener;
 
 	//boolean hasFrames = false;
-	private Theme theme;
-	private int frameDimension = 100;
+	Theme theme;
+	int frameDimension = 100;
 	private int durration = 0;
+	private PictoralFin pictoralFin;
 	
 	public FrameTimeLine(PictoralFin pictoralFin) {	
 		this.theme = pictoralFin.getSettings().getTheme();
+		this.pictoralFin = pictoralFin;
 		listenersOFSC = new ArrayList<>();
 		listenersOVDC = new ArrayList<>();
+		
 		setLayout(new FlowLayout(FlowLayout.LEFT));
 		//dragListener = new OnComponentDraggedListener(this);
 		
@@ -149,6 +152,24 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		
 		return null;
 	}
+	public int getIndexOfFrameAtMilli(int milli) {
+		if(getComponent(0) instanceof JButton)
+			return -1;
+		
+		long durration = 0;
+		int index = -1;
+		for(Component c : getComponents()) {
+			JFrameButton button = (JFrameButton) c;
+			durration += button.getFrame().getDuration();
+			index++;
+			
+			if(durration > milli) {
+				return index;
+			}
+		}
+		
+		return -2;
+	}
 	
 	public Frame getSelectedFrame() {
 		if(selectedJFrameButton == null)
@@ -176,7 +197,6 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		
 		return durration;
 	}
-
 
 	void flagDurrationChanged() {
 		durration = getDurrationInMillis();
@@ -255,6 +275,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		if(selectedJFrameButton != null) {
 			selectedJFrameButton.setSelected(false);
 			selectedJFrameButton.repaint();
+			
 		}		
 		
 		button.setSelected(true);
@@ -264,6 +285,8 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 				l.frameSelectionChanged((selectedJFrameButton != null) ? selectedJFrameButton : null, button);
 		
 		selectedJFrameButton = button;
+		
+		pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().attachSettingsPanel(selectedJFrameButton.generateSettingsPanel());
 	}
 	void onJFrameButtonHighlighted(JFrameButton button) {				
 		highlightedJFrameButton = button;
@@ -287,13 +310,11 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		//System.out.println("DRAG");
 		//dragListener.mouseDragged(event);
 	}
-
 	
 	public void mouseClicked(MouseEvent arg0) {}
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}	
 	public void mouseMoved(MouseEvent event) {}
-
 	
 	public void applyTheme(Theme theme) {
 		this.theme = theme;

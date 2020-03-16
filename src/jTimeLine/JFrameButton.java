@@ -1,4 +1,4 @@
-package JTimeLine;
+package jTimeLine;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

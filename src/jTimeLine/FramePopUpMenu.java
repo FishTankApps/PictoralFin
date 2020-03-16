@@ -1,4 +1,4 @@
-package JTimeLine;
+package jTimeLine;
 
 import java.awt.event.ActionListener;
 

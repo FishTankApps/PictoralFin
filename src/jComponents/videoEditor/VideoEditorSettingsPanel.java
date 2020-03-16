@@ -42,6 +42,8 @@ public class VideoEditorSettingsPanel extends JPanel {
 	}
 	
 	public void attachSettingsPanel(SettingsPanel panel) {
+		
+		dettachSettingsPanel();
 		add(panel, BorderLayout.SOUTH);
 		
 		revalidate();

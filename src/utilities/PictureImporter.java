@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import JTimeLine.JTimeLine;
 import customExceptions.CanceledException;
 import jComponents.JFileChooserWithImagePreview;
 import jComponents.JProgressDialog;
+import jTimeLine.JTimeLine;
 import mainFrame.PictoralFin;
 
 public class PictureImporter {

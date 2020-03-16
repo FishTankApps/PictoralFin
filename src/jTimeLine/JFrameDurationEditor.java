@@ -1,4 +1,4 @@
-package JTimeLine;
+package jTimeLine;
 
 import java.awt.Component;
 import java.awt.Font;

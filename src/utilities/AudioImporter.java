@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import JTimeLine.AudioClip;
+import jTimeLine.AudioClip;
 import mainFrame.PictoralFin;
 
 public class AudioImporter {
@@ -20,7 +20,7 @@ public class AudioImporter {
 		fileChooser.showOpenDialog(null);
 		
 		if(fileChooser.getSelectedFile() != null) {
-			pictoralFin.getTimeLine().addAudioClip(new AudioClip(fileChooser.getSelectedFile()));
+			pictoralFin.getTimeLine().addAudioClip(new AudioClip(fileChooser.getSelectedFile(), pictoralFin.getTimeLine()));
 			
 			pictoralFin.getDataFile().setLastOpenAudioLocation(fileChooser.getSelectedFile().getAbsolutePath());
 		}		

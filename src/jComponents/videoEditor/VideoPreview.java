@@ -14,8 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextPane;
 
-import JTimeLine.JTimeLine;
 import interfaces.Themed;
+import jTimeLine.JTimeLine;
 import objectBinders.Frame;
 import objectBinders.Theme;
 import utilities.Utilities;
@@ -53,21 +53,15 @@ public class VideoPreview extends JPanel implements Themed {
 		
 		playPause = new JButton();
 		playPause.setPreferredSize(buttonDim);
-		playPause.addActionListener(e -> {
+		playPause.addActionListener(e -> {			
+			
 			previewState = !previewState && timeLine.numberOfFrame() != 0;
 			
 			if(currentMilli >= timeLine.getVideoDurration()) {
 				timeLine.setCurrentFrameIndex(0);
 				currentMilli = 0;
-			}
-			
-			if(timeLine.numberOfFrame() != 0) {
-				VideoEditor ve = (VideoEditor) this.getParent().getParent();
-				ve.updateSettingsPanel(VideoEditor.FRAME);
-			}
-			
-			
-			repaint();
+			}			
+			repaint();			
 		});
 		
 		stop = new JButton();
@@ -117,6 +111,7 @@ public class VideoPreview extends JPanel implements Themed {
 		videoTimeLine = new JumpClickSlider(0,0,0);
 		videoTimeLine.addChangeListener(e -> {
 			currentMilli = videoTimeLine.getValue();
+			updateFrame();
 			repaint();
 		});		
 		videoTimeLine.setPreferredSize(new Dimension(30, 10));
@@ -230,7 +225,6 @@ public class VideoPreview extends JPanel implements Themed {
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
 		if(timeLine == null && Utilities.getPictoralFin(this) != null) {
 			timeLine = Utilities.getPictoralFin(this).getTimeLine();
 			timeLine.addOnFrameSelectionChangeListener((oldFrame, newFrame) -> repaint());

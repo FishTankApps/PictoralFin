@@ -21,10 +21,10 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import JTimeLine.JTimeLine;
 import interfaces.Themed;
 import jComponents.videoEditor.VideoEditor;
 import jComponents.videoEditor.VideoTopBar;
+import jTimeLine.JTimeLine;
 import listeners.GlobalFocusListener;
 import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;

@@ -1,4 +1,4 @@
-package JTimeLine;
+package jTimeLine;
 
 public interface OnVideoDurrationChangedListener {
 

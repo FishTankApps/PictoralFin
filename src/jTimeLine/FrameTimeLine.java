@@ -171,6 +171,23 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		return -2;
 	}
 	
+	public int getMilliAtCurrentFrame() {
+		if(getComponentCount() == 0 || getComponent(0) instanceof JButton)
+			return -1;
+		
+		int durration = 0;
+		for(Component c : getComponents()) {
+			JFrameButton button = (JFrameButton) c;
+			durration += button.getFrame().getDuration();
+			
+			if(button == getSelectedFrameButton()) {
+				return durration;
+			}
+		}
+		
+		return -1;
+	}
+	
 	public Frame getSelectedFrame() {
 		if(selectedJFrameButton == null)
 			return null;
@@ -259,6 +276,31 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		return -1;
 	}
 
+	public void moveJFrameButton(byte whereTo, JFrameButton button) {
+		int buttonIndex = getIndexOfJFrameButton(button);
+		
+		if(buttonIndex == -1)
+			return;
+			
+		if(whereTo == JFrameButton.LEFT && buttonIndex != 0) {
+			this.remove(button);
+			this.add(button, buttonIndex - 1); 
+		} else if (whereTo == JFrameButton.BEGINNING && buttonIndex != 0) {
+			this.remove(button);
+			this.add(button, 0); 
+		} else if (whereTo == JFrameButton.RIGHT && buttonIndex != getComponentCount() - 1) {
+			this.remove(button);
+			this.add(button, buttonIndex + 1); 
+		} else if (whereTo == JFrameButton.END && buttonIndex != getComponentCount() - 1) {
+			this.remove(button);
+			this.add(button, getComponentCount()); 
+		} else 
+			return;
+		
+		revalidate();
+		repaint();
+	}
+	
 	public void setHeight(int height) {
 		frameDimension = height;
 		
@@ -274,8 +316,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 	void onJFrameButtonClicked(JFrameButton button) {
 		if(selectedJFrameButton != null) {
 			selectedJFrameButton.setSelected(false);
-			selectedJFrameButton.repaint();
-			
+			selectedJFrameButton.repaint();			
 		}		
 		
 		button.setSelected(true);

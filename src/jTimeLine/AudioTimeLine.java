@@ -9,6 +9,7 @@ import javax.swing.JButton;
 
 import interfaces.Themed;
 import javafx.embed.swing.JFXPanel;
+import javafx.util.Duration;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
 
@@ -18,9 +19,11 @@ public class AudioTimeLine extends JFXPanel implements Themed {
 	private Theme theme;
 	private JButton addAudio;
 	private JTimeLine jTimeLine;
+	private PictoralFin pictoralFin;
 
 	public AudioTimeLine(PictoralFin pictoralFin, JTimeLine jTimeLine) {
 		this.jTimeLine = jTimeLine;
+		this.pictoralFin = pictoralFin;
 		this.theme = pictoralFin.getSettings().getTheme();
 		setLayout(new GridLayout(0, 1, 10, 10));
 		
@@ -39,19 +42,57 @@ public class AudioTimeLine extends JFXPanel implements Themed {
 	
 	public void addAudioClip(AudioClip audioClip) {
 		add(audioClip);		
-		jTimeLine.repaint();
+		audioClip.checker.passPictoralFin(pictoralFin);
+		revalidate();
+		repaint();
 	}	
+	
+	public void removeAudioClip(AudioClip audioClip) {
+		remove(audioClip);
+		revalidate();
+		repaint();
+	}
 	
 	public void unselectAudioClip() {
 		for(Component c : getComponents()) {
 			if(c instanceof AudioClip)
 				((AudioClip) c).selected = false;
 		}
-		jTimeLine.repaint();
+		revalidate();
+		repaint();
 	}
 	
 	public void applyTheme(Theme theme) {
 		jTimeLine.repaint();		
 	}
 	
+	
+	public void seekTo(int milli) {
+		for(Component c : getComponents()) {
+			if(c instanceof AudioClip) {
+				((AudioClip) c).getMediaPlayer().seek(Duration.millis(milli));
+			}
+		}
+	}	
+	public void play() {
+		for(Component c : getComponents()) {
+			if(c instanceof AudioClip) {
+				((AudioClip) c).play();
+			}
+		}
+	}
+	public void pause() {
+		for(Component c : getComponents()) {
+			if(c instanceof AudioClip) {
+				((AudioClip) c).pause();
+			}
+		}
+	}
+	public void stop() {
+		for(Component c : getComponents()) {
+			if(c instanceof AudioClip) {
+				((AudioClip) c).stop();
+			}
+		}
+	}
 }

@@ -60,13 +60,21 @@ public class VideoPreview extends JPanel implements Themed {
 			if(currentMilli >= timeLine.getVideoDurration()) {
 				timeLine.setCurrentFrameIndex(0);
 				currentMilli = 0;
-			}			
+			}		
+			
+			if(previewState == PLAYING) {
+				timeLine.getAudioTimeLine().seekTo(currentMilli);
+				timeLine.getAudioTimeLine().play();
+			} else {
+				timeLine.getAudioTimeLine().pause();
+			}
+			
 			repaint();			
 		});
 		
 		stop = new JButton();
 		stop.setPreferredSize(buttonDim);
-		stop.addActionListener(e-> {previewState = false; timeLine.setCurrentFrameIndex(0); currentMilli = 0; repaint();});
+		stop.addActionListener(e-> {previewState = false; timeLine.setCurrentFrameIndex(0); currentMilli = 0; timeLine.getAudioTimeLine().stop(); repaint();});
 		
 		skipLeft = new JButton();
 		skipLeft.setPreferredSize(buttonDim);
@@ -225,6 +233,7 @@ public class VideoPreview extends JPanel implements Themed {
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		
 		if(timeLine == null && Utilities.getPictoralFin(this) != null) {
 			timeLine = Utilities.getPictoralFin(this).getTimeLine();
 			timeLine.addOnFrameSelectionChangeListener((oldFrame, newFrame) -> repaint());
@@ -290,6 +299,7 @@ public class VideoPreview extends JPanel implements Themed {
 		
 		if(frame == null) {
 			previewState = PAUSED;
+			timeLine.getAudioTimeLine().pause();
 		} else {
 			currentFrame = frame;
 			timeLine.setCurrentFrame(frame);
@@ -297,8 +307,7 @@ public class VideoPreview extends JPanel implements Themed {
 		
 		repaint();
 	}
-	
-	
+		
 	public void applyTheme(Theme theme) {		
 		playPause.setBackground(theme.getSecondaryBaseColor().darker().darker());
 		stop.setBackground(theme.getSecondaryBaseColor().darker().darker());

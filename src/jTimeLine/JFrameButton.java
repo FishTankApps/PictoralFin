@@ -22,6 +22,11 @@ public class JFrameButton extends JComponent implements MouseListener, Themed, S
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	
+	static final byte LEFT = 0;
+	static final byte RIGHT = 1;
+	static final byte END = 2;
+	static final byte BEGINNING = 3;
+	
 	private final Dimension minSize = new Dimension(50, 50);
 	private final Dimension maxSize = new Dimension(2000, 2000);
 	private Frame frame;
@@ -125,6 +130,10 @@ public class JFrameButton extends JComponent implements MouseListener, Themed, S
 		
 		return ((seconds < 10) ? "0" : "") + seconds + "."
 		+  ((millis < 100) ? ((millis < 10) ? "00" : "0") : "") + millis;
+	}
+	
+	public void move(byte toWhere) {
+		((FrameTimeLine) getParent()).moveJFrameButton(toWhere, this);
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {

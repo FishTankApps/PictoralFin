@@ -16,7 +16,11 @@ public class AudioImporter {
 	
 	public void importAudio() {
 		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setMultiSelectionEnabled(true);
 		fileChooser.setCurrentDirectory(new File(pictoralFin.getDataFile().getLastOpenAudioLocation()));
+		fileChooser.setDialogTitle("Import Music");
+		fileChooser.setApproveButtonText("Import");
+		
 		fileChooser.showOpenDialog(null);
 		
 		if(fileChooser.getSelectedFile() != null) {

@@ -93,6 +93,7 @@ public class PictureImporter {
 					}
 				}catch(Exception ignore) {
 					Utilities.showMessage(ignore.getMessage(), "ERROR", true);
+					ignore.printStackTrace();
 					failedFiles.add(file.getName());
 				}
 				

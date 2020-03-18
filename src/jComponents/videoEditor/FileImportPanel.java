@@ -49,8 +49,8 @@ public class FileImportPanel extends JPanel implements Themed {
 		setLayout(new GridBagLayout());
 		add(importPicture, new ChainGBC(0, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
 		add(importAudio, new ChainGBC(1, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
-		add(importVideo, new ChainGBC(0, 1).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
-		add(importFiles, new ChainGBC(1, 1).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
+		add(importVideo, new ChainGBC(2, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
+		add(importFiles, new ChainGBC(3, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
 		
 		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 	}
@@ -58,13 +58,14 @@ public class FileImportPanel extends JPanel implements Themed {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		int width, height;
-		
-		width  = importPicture.getWidth()  + importAudio.getWidth()  + 40;
-		height = importPicture.getHeight() + importVideo.getHeight() + 40;
+		int height = importVideo.getHeight() + 10;
 		
 		g.setColor(pictoralFin.getSettings().getTheme().getSecondaryBaseColor());
-		g.fillRoundRect((getWidth() - width) / 2, (getHeight() - height) / 2, width, height, 40, 40);
+		
+		if(pictoralFin.getSettings().getTheme().isSharp())
+			g.fillRect(0, (getHeight() - height) / 2, getWidth(), height);
+		else
+			g.fillRoundRect(0, (getHeight() - height) / 2, getWidth(), height, 40, 40);
 	}
 	
 	public void applyTheme(Theme theme) {

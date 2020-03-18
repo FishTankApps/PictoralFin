@@ -59,7 +59,10 @@ public class JTimeLine extends JPanel {
 	}
 	public int getVideoDurration() {
 		return frameTimeLine.getVideoDurration();
-	}	
+	}
+	public int getMilliAtCurrentFrame() {
+		return frameTimeLine.getMilliAtCurrentFrame();
+	}
 	public int getCurrentFrameIndex() {
 		return frameTimeLine.getSelectedIndex();
 	}
@@ -148,7 +151,7 @@ public class JTimeLine extends JPanel {
 	public void addAudioClip(AudioClip audioClip) {
 		audioTimeLine.addAudioClip(audioClip);
 	}
-	AudioTimeLine getAudioTimeLine() {
+	public AudioTimeLine getAudioTimeLine() {
 		return audioTimeLine;
 	}
 }

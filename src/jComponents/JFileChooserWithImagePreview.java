@@ -68,6 +68,7 @@ public class JFileChooserWithImagePreview extends JFrame {
 		jfcwip.jf.setMultiSelectionEnabled(true);
 		jfcwip.jf.setAccessory(jfcwip.img);
 		jfcwip.jf.setDialogTitle("Import Images");
+		jfcwip.jf.setApproveButtonText("Import");
 		jfcwip.jf.setCurrentDirectory((lastOpened.isDirectory()) ? lastOpened : lastOpened.getParentFile());
 
 		jfcwip.jf.setAcceptAllFileFilterUsed(true);

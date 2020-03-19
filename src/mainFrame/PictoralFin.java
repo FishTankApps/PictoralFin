@@ -222,6 +222,7 @@ public class PictoralFin extends JFrame {
 		return dateFile;
 	}
 		
+	
 	public VideoEditor getVideoEditor() {
 		return videoEditor;
 	}

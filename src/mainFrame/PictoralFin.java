@@ -25,7 +25,6 @@ import interfaces.Themed;
 import jComponents.videoEditor.VideoEditor;
 import jComponents.videoEditor.VideoTopBar;
 import jTimeLine.JTimeLine;
-import listeners.GlobalFocusListener;
 import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
 import objectBinders.DataFile;
@@ -103,7 +102,7 @@ public class PictoralFin extends JFrame {
 		setIconImage(globalImageKit.pictoralFinIcon);
 		setLocationRelativeTo(null);
 		addWindowListener(new OnMainFrameClosed(this));
-		addComponentListener(new OnWindowResizedListener());
+		addComponentListener(new OnWindowResizedListener(this));
 
 		setJMenuBar(new VideoTopBar(this));
 		
@@ -111,14 +110,6 @@ public class PictoralFin extends JFrame {
 
 		add(mainPanel);
 
-		GlobalFocusListener gfl = new GlobalFocusListener();
-		for (Component c : Utilities.getAllSubComponents(this)) {
-			c.setFocusable(true);
-			c.addFocusListener(gfl);
-			
-			if(c instanceof Themed)
-				((Themed) c).applyTheme(settings.getTheme());
-		}
 
 	}
 

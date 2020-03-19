@@ -5,8 +5,6 @@ import java.awt.event.WindowListener;
 
 import mainFrame.PictoralFin;
 
-import static globalValues.GlobalVariables.*;
-
 public class OnMainFrameClosed implements WindowListener{
 	
 	private PictoralFin pictoralFin;
@@ -16,8 +14,7 @@ public class OnMainFrameClosed implements WindowListener{
 	}
 	
 	public void windowClosing(WindowEvent arg0) {
-		//dataFile.saveToFile();
-		currentlyRunning = false;
+		//dataFile.saveToFile();		
 		
 		pictoralFin.getSettings().saveSettings();
 		pictoralFin.getDataFile().saveDataFile();

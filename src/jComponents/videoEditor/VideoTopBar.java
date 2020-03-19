@@ -1,7 +1,5 @@
 package jComponents.videoEditor;
 
-import static globalValues.Constants.CTRL;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import mainFrame.PictoralFin;
+import utilities.Constants;
 
 public class VideoTopBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
@@ -26,7 +25,7 @@ public class VideoTopBar extends JMenuBar {
 		
 		importFrames = new JMenuItem("Import Frame(s)");
 		importFrames.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
-		importFrames.setAccelerator(KeyStroke.getKeyStroke('I', CTRL));
+		importFrames.setAccelerator(KeyStroke.getKeyStroke('I', Constants.CTRL));
 			
 		
 		fileMenu.add(importFrames);

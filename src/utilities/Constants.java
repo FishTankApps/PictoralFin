@@ -1,4 +1,4 @@
-package globalValues;
+package utilities;
 
 public final class Constants {
 	private Constants() {}

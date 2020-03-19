@@ -7,7 +7,6 @@ import javax.swing.JSplitPane;
 import interfaces.Themed;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
-import objectBinders.VideoSettings;
 
 public class VideoEditor extends JPanel implements Themed {
 	private static final long serialVersionUID = -3316034116785566254L;
@@ -38,18 +37,6 @@ public class VideoEditor extends JPanel implements Themed {
 	}
 	public VideoEditorSettingsPanel getVideoEditorSettingsPanel() {
 		return videoEditorSettingsPanel;
-	}
-	
-	
-	public VideoSettings generateSettings(){
-		VideoSettings toReturn = new VideoSettings();
-		toReturn.setFrameRate(10);
-		toReturn.setVideoFormat(VideoSettings.MP4);
-		toReturn.setVideoQuality(0);
-		toReturn.setVideoBitRate(9000);
-		//toReturn.setAudioSettings(videoPreviewSettings.getAudioBoard().generateAudioSettings());
-		
-		return toReturn;
 	}
 	
 	public void setDividersToDefaultLocations() {

@@ -43,10 +43,13 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 		setBackground(theme.getPrimaryBaseColor());
 
 		startingMilliModel = new SpinnerNumberModel(audioClip.getStartTime(), 0, Integer.MAX_VALUE, 10);
-		startingMilliModel.addChangeListener(e -> {audioClip.setStartTime((int) startingMilliModel.getValue()); audioClip.setLength((int) lengthMilliModel.getValue());});
+		startingMilliModel.addChangeListener(e -> {
+			audioClip.setStartTime((int) Math.floor((double) startingMilliModel.getValue())); 
+			audioClip.setLength((int) Math.floor((double) lengthMilliModel.getValue()));repaint();});
 		
-		lengthMilliModel = new SpinnerNumberModel(audioClip.getEndTime(), 0, Integer.MAX_VALUE, 10);		
-		lengthMilliModel.addChangeListener(e -> audioClip.setLength((int) lengthMilliModel.getValue()));
+		lengthMilliModel = new SpinnerNumberModel(audioClip.getLength(), 0, (int) audioClip.getMaxLength(), 10);		
+		lengthMilliModel.addChangeListener(e ->{
+			audioClip.setLength((int) Math.floor((double) lengthMilliModel.getValue()));repaint();});
 		
 		startMilli = new JSpinner(startingMilliModel);
 		lengthMilli = new JSpinner(lengthMilliModel);
@@ -71,7 +74,7 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 		lengthLabel.setHorizontalAlignment(JLabel.RIGHT);
 		lengthLabel.setFont(labelFont);
 		
-		JLabel trackTitle = new JLabel("-----  " + audioClip.getAudioFile().getName() + "  -----");
+		JLabel trackTitle = new JLabel("-----  " + audioClip.getName() + "  -----");
 		trackTitle.setHorizontalAlignment(JLabel.CENTER);
 		trackTitle.setFont(new Font(theme.getTitleFont(), Font.PLAIN, 23));
 		

@@ -14,22 +14,53 @@ import utilities.Constants;
 public class VideoTopBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 
-	private JMenu fileMenu;
-	private JMenuItem importFrames;
+	private JMenu fileMenu, importFiles;
+	private JMenuItem importFrames, importAudio,   importVideo, importOtherFiles, 
+					  saveProject,  saveProjectAs, openProject;
 	
 	public VideoTopBar(PictoralFin pictoralFin){
 		
 		//---------{FILE MENU}-------------------------------------------------
 		fileMenu = new JMenu("File");
+		importFiles = new JMenu("Import...");
 		
 		
 		importFrames = new JMenuItem("Import Frame(s)");
 		importFrames.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
-		importFrames.setAccelerator(KeyStroke.getKeyStroke('I', Constants.CTRL));
+		
+		importAudio = new JMenuItem("Import Audio(s)");
+		importAudio.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddAudioRequest);
+		
+		importVideo = new JMenuItem("Import Video(s)");
+		//importVideo.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
+		
+		importOtherFiles = new JMenuItem("Import Other File(s)");
+		//importOtherFiles.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
 			
 		
-		fileMenu.add(importFrames);
+		saveProject = new JMenuItem("Save Project");
+		saveProject.addActionListener(e->pictoralFin.saveProject());
+		saveProject.setAccelerator(KeyStroke.getKeyStroke('S', Constants.CTRL));
+		
+		saveProjectAs = new JMenuItem("Save Project As");
+		saveProjectAs.addActionListener(e->pictoralFin.saveProjectAs());
+		saveProjectAs.setAccelerator(KeyStroke.getKeyStroke('S', Constants.CTRL_SHIFT));
+		
+		openProject = new JMenuItem("Open Project");
+		openProject.addActionListener(e->pictoralFin.openProject(null));
+		openProject.setAccelerator(KeyStroke.getKeyStroke('O', Constants.CTRL));
+		
+		fileMenu.add(importFiles);
+			importFiles.add(importFrames);
+			importFiles.add(importAudio);
+			importFiles.add(importVideo);
+			importFiles.add(importOtherFiles);
+		
 		fileMenu.addSeparator();
+		
+		fileMenu.add(openProject);		
+		fileMenu.add(saveProject);
+		fileMenu.add(saveProjectAs);
 		
 		//---------{TOOLS MENU}-------------------------------------------------		
 		add(fileMenu);

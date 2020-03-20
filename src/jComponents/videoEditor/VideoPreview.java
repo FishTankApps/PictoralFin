@@ -39,7 +39,7 @@ public class VideoPreview extends JPanel implements Themed {
 	private ImageIcon playIcon, pauseIcon, stopIcon, skipLeftIcon, skipRightIcon;
 	private Theme theme;
 	
-	public int currentMilli = 0;
+	public long currentMilli = 0;
 	
 	private boolean previewState = false;
 	
@@ -149,7 +149,8 @@ public class VideoPreview extends JPanel implements Themed {
 		this.add(controlPanel,  BorderLayout.SOUTH);
 		this.add(frameNumber, BorderLayout.NORTH);
 		
-		setUpIconImages(theme);		
+		setUpIconImages(theme);	
+		applyTheme(theme);
 	
 		
 		this.setMinimumSize(new Dimension(800,500));
@@ -249,8 +250,8 @@ public class VideoPreview extends JPanel implements Themed {
 			
 			playPause.setIcon((!previewState) ? playIcon : pauseIcon);
 			
-			videoTimeLine.setMaximum(timeLine.getVideoDurration());
-			videoTimeLine.setValue(currentMilli);
+			videoTimeLine.setMaximum((int) timeLine.getVideoDurration());
+			videoTimeLine.setValue((int) currentMilli);
 			
 			frameNumber.setText("Frame #" + (timeLine.getCurrentFrameIndex() + 1));
 			

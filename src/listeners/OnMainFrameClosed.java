@@ -3,7 +3,10 @@ package listeners;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.JOptionPane;
+
 import mainFrame.PictoralFin;
+import projectFileManagement.PictoralFinProjectManager;
 
 public class OnMainFrameClosed implements WindowListener{
 	
@@ -14,8 +17,19 @@ public class OnMainFrameClosed implements WindowListener{
 	}
 	
 	public void windowClosing(WindowEvent arg0) {
-		//dataFile.saveToFile();		
+		//dataFile.saveToFile();	
 		
+		if(!pictoralFin.getTimeLine().isEmpty()) {
+			int choice = JOptionPane.showConfirmDialog(null, "Would you like to save the current project?", "Save", JOptionPane.INFORMATION_MESSAGE);
+			
+			if(choice == JOptionPane.YES_OPTION)
+				if(!pictoralFin.saveProject())
+					return;
+			else if(choice == JOptionPane.CANCEL_OPTION || choice == JOptionPane.CLOSED_OPTION)
+				return;
+		}
+		
+		pictoralFin.close();
 		pictoralFin.getSettings().saveSettings();
 		pictoralFin.getDataFile().saveDataFile();
 		
@@ -23,6 +37,7 @@ public class OnMainFrameClosed implements WindowListener{
 			pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().getJDriveExplorer().closeDevices();
 		} catch (NullPointerException e) {}
 		
+	    PictoralFinProjectManager.clearTempFiles();		
 		System.exit(0);
 	}
 	

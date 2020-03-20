@@ -49,27 +49,38 @@ public class JTimeLine extends JPanel {
 		add(scrollPane);
 	}
 
+	public boolean isEmpty() {
+		return frameTimeLine.isEmpty() && audioTimeLine.isEmpty();
+	}
+	public void empty() {
+		frameTimeLine.empty();
+		audioTimeLine.empty();
+	}
+	
 	//----------{ FRAMES }-------------------------------------------------------------------------
 	//=====[ Getters ]====================================================	
+	public Frame[] getFrames() {
+		return frameTimeLine.getFrames();
+	}
 	public int numberOfFrame() {
 		return frameTimeLine.numberOfFrames();
 	}	
 	public Frame getCurrentFrame() {
 		return frameTimeLine.getSelectedFrame();
 	}
-	public int getVideoDurration() {
+	public long getVideoDurration() {
 		return frameTimeLine.getVideoDurration();
 	}
-	public int getMilliAtCurrentFrame() {
+	public long getMilliAtCurrentFrame() {
 		return frameTimeLine.getMilliAtCurrentFrame();
 	}
 	public int getCurrentFrameIndex() {
 		return frameTimeLine.getSelectedIndex();
 	}
-	public Frame getFrameAtMilli(int milli) {
+	public Frame getFrameAtMilli(long milli) {
 		return frameTimeLine.getFrameAtMilli(milli);
 	}
-	public int getIndexOfFrameAtMilli(int milli) {
+	public int getIndexOfFrameAtMilli(long milli) {
 		return frameTimeLine.getIndexOfFrameAtMilli(milli);
 	}
     public JFrameButton getCurrentFrameButton() {
@@ -153,5 +164,8 @@ public class JTimeLine extends JPanel {
 	}
 	public AudioTimeLine getAudioTimeLine() {
 		return audioTimeLine;
+	}
+	public AudioClip[] getAudioClips() {
+		return audioTimeLine.getAudioClips();
 	}
 }

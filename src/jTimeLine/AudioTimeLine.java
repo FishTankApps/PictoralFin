@@ -39,6 +39,19 @@ public class AudioTimeLine extends JFXPanel implements Themed {
 		jTimeLine.addOnFrameSelectionChangeListener((o,n)->unselectAudioClip()); 
 	}
 	
+	public AudioClip[] getAudioClips() {
+		if(getComponentCount() == 0)
+			return null;
+		
+		 AudioClip[] audioClips = new AudioClip[getComponentCount()];
+		 int index = 0;
+		 
+		 for(Component c : getComponents()) 
+			 audioClips[index++] = ((AudioClip) c);
+		 
+		 
+		 return audioClips;
+	}
 	
 	public void addAudioClip(AudioClip audioClip) {
 		add(audioClip);		
@@ -66,8 +79,15 @@ public class AudioTimeLine extends JFXPanel implements Themed {
 		jTimeLine.repaint();		
 	}
 	
+	public boolean isEmpty() {
+		return (getComponentCount() == 0);
+	}
 	
-	public void seekTo(int milli) {
+	public void empty() {
+		removeAll();
+	}
+	
+	public void seekTo(long milli) {
 		for(Component c : getComponents()) {
 			if(c instanceof AudioClip) {
 				((AudioClip) c).getMediaPlayer().seek(Duration.millis(milli));

@@ -30,7 +30,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 	//boolean hasFrames = false;
 	Theme theme;
 	int frameDimension = 100;
-	private int durration = 0;
+	private long durration = 0;
 	private PictoralFin pictoralFin;
 	
 	public FrameTimeLine(PictoralFin pictoralFin) {	
@@ -136,7 +136,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 	public Frame getFrameAt(int index) {
 		return ((JFrameButton) getComponent(index)).getFrame();
 	}
-	public Frame getFrameAtMilli(int milli) {
+	public Frame getFrameAtMilli(long milli) {
 		if(getComponent(0) instanceof JButton)
 			return null;
 		
@@ -152,7 +152,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		
 		return null;
 	}
-	public int getIndexOfFrameAtMilli(int milli) {
+	public int getIndexOfFrameAtMilli(long milli) {
 		if(getComponent(0) instanceof JButton)
 			return -1;
 		
@@ -170,12 +170,24 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		
 		return -2;
 	}
+	public Frame[] getFrames() {
+		if(getComponentCount() == 0 || getComponent(0) instanceof JButton)
+			return null;
+		
+		Frame[] frames = new Frame[getComponentCount()];
+		int index = 0;
+		for(Component c : getComponents()) {
+			frames[index++] = ((JFrameButton) c).getFrame();
+		}
+		
+		return frames;
+	}
 	
-	public int getMilliAtCurrentFrame() {
+	public long getMilliAtCurrentFrame() {
 		if(getComponentCount() == 0 || getComponent(0) instanceof JButton)
 			return -1;
 		
-		int durration = 0;
+		long durration = 0;
 		for(Component c : getComponents()) {
 			JFrameButton button = (JFrameButton) c;
 			durration += button.getFrame().getDuration();
@@ -198,15 +210,23 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		return getIndexOfJFrameButton(selectedJFrameButton);
 	}
 	
-	public int getVideoDurration() {
+	public boolean isEmpty() {
+		return (getComponentCount() == 0 || getComponent(0) instanceof JButton);
+	}
+	
+	public void empty() {
+		while(numberOfFrames() > 0) removeFrame(0);
+	}
+	
+	public long getVideoDurration() {
 		return durration;
 	}
 	
-	private int getDurrationInMillis() {
+	private long getDurrationInMillis() {
 		if(getComponentCount() == 0 || getComponent(0) instanceof JButton)
 			return -1;
 		
-		int durration = 0;
+		long durration = 0;
 		for(Component c : getComponents()) {
 			JFrameButton button = (JFrameButton) c;
 			durration += button.getFrame().getDuration();	

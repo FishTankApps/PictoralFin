@@ -50,6 +50,10 @@ public class Frame {
 		return layers.get(index);
 	}
 	
+	public ArrayList<BufferedImage> getLayers(){
+		return layers;
+	}
+	
 	public long getDuration() {
 		return duration;
 	}

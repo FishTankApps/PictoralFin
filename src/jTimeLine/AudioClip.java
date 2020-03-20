@@ -10,6 +10,7 @@ import java.io.File;
 
 import javax.swing.JComponent;
 
+import interfaces.Closeable;
 import interfaces.SettingsPanel;
 import interfaces.SettingsPanelOOI;
 import interfaces.Themed;
@@ -20,19 +21,20 @@ import mainFrame.PictoralFin;
 import objectBinders.Theme;
 import utilities.Utilities;
 
-public class AudioClip extends JComponent implements MouseListener, Themed, SettingsPanelOOI {
+public class AudioClip extends JComponent implements MouseListener, Themed, SettingsPanelOOI, Closeable {
 
 	
 	private static final long serialVersionUID = 5730191032565741283L;
 	private File audioFile;
-	private int startTime, endTime;
+	private String name;
+	private long startTime, length;
 	private double volume = 1.0;
 	private MediaPlayer mediaPlayer;
 	private JTimeLine jTimeLine;
 	boolean hovering = false, selected = false;
 	Checker checker;
 	
-	private int currentMillis = 0;
+	private long currentMillis = 0;
 	private boolean playing = false;
 	
 	public AudioClip(String filePath, JTimeLine jTimeLine) {
@@ -43,21 +45,22 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		this.audioFile = audioFile;
 		this.jTimeLine = jTimeLine;
 		this.checker = new Checker();
+		name = audioFile.getName();
 		
 		mediaPlayer = new MediaPlayer(new Media(audioFile.toURI().toString()));
 		
 		startTime = 0;
-		endTime = -1;
+		length = -1;
 
 		
 		mediaPlayer.setOnReady(new Runnable() {
 		        public void run() {
-		            endTime = (jTimeLine.getVideoDurration() < mediaPlayer.getTotalDuration().toMillis()) ? 
+		        	length = (jTimeLine.getVideoDurration() < mediaPlayer.getTotalDuration().toMillis()) ? 
 		            		jTimeLine.getVideoDurration() : (int) mediaPlayer.getTotalDuration().toMillis();
 		        }
 		    });
 		
-		while(endTime == -1) {try {Thread.sleep(10);}catch(Exception e) {}}
+		while(length == -1) {try {Thread.sleep(10);}catch(Exception e) {}}
 		
 		
 		addMouseListener(this);
@@ -78,7 +81,7 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		
 		int buttonSize = jTimeLine.getFrameTimeLine().frameDimension;
 		int startIndex = (jTimeLine.getIndexOfFrameAtMilli(startTime) * buttonSize) + (5 * jTimeLine.getIndexOfFrameAtMilli(startTime)); // 5 = H-Gap in FrameTimeLine's Buttons
-		int endIndex =   (jTimeLine.getIndexOfFrameAtMilli(endTime)  * buttonSize) + (5 * jTimeLine.getIndexOfFrameAtMilli(endTime));
+		int endIndex =   (jTimeLine.getIndexOfFrameAtMilli(startTime+length)  * buttonSize) + (5 * jTimeLine.getIndexOfFrameAtMilli(startTime+length));
 		
 		if(jTimeLine.getIndexOfFrameAtMilli(startTime) == -1) {
 			startIndex = 0;
@@ -100,7 +103,7 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		g.setColor(theme.getPrimaryBaseColor());
 		g.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, (jTimeLine.getFrameTimeLine().frameDimension/7) - 5));
 		for(int count = startIndex + buttonSize; count < (endIndex - startIndex); count+=(5*buttonSize)) {
-			g.drawString(audioFile.getName(), count, (jTimeLine.getFrameTimeLine().frameDimension/7) - 5);
+			g.drawString(getName(), count, (jTimeLine.getFrameTimeLine().frameDimension/7) - 5);
 		}
 		
 	}
@@ -108,35 +111,44 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	public File getAudioFile() {
 		return audioFile;
 	}
-	public int getStartTime() {
+	public long getStartTime() {
 		return startTime;
 	}
-	public int getEndTime() {
-		return endTime;
+	public long getEndTime() {
+		return startTime+length;
 	}
-	public int getLength() {
-		return endTime - startTime;
+	public long getLength() {
+		return length;
+	}
+	public long getMaxLength() {
+		return (long) mediaPlayer.getTotalDuration().toMillis();
 	}
 	public double getVolume() {
 		return volume;
 	}
-	public void setStartTime(int startTime) {
+	public String getName() {
+		return name;
+	}
+	public void setStartTime(long startTime) {
 		this.startTime = startTime;
 		repaint();
 	}
-	public void setEndTime(int endTime) {
-		this.endTime = endTime;
+	public void setEndTime(long endTime) {
+		this.length = endTime - startTime;
 		repaint();
 	}
-	public void setLength(int length) {
-		endTime = startTime + length;
+	public void setLength(long length) {
+		this.length = length;
 		repaint();
 	}
 	public void setVolume(double volume) {
 		this.volume = volume;
 		mediaPlayer.setVolume(volume);
 	}
-
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public MediaPlayer getMediaPlayer() {
 		 return mediaPlayer;
 	}
@@ -184,11 +196,11 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 						
 						currentMillis = pictoralFin.getVideoEditor().getVideoPreview().currentMilli;
 						
-						if(!playerIsPlaying && currentMillis > startTime && currentMillis < endTime) {
+						if(!playerIsPlaying && currentMillis > startTime && currentMillis < startTime+length) {
 							mediaPlayer.seek(Duration.millis(currentMillis - startTime));
 							mediaPlayer.play();		
 							playerIsPlaying = true;
-						} else if (playerIsPlaying && (currentMillis >= endTime)) 
+						} else if (playerIsPlaying && (currentMillis >= startTime+length)) 
 							break;				
 					}	
 					
@@ -225,5 +237,10 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 
 	public void applyTheme(Theme theme) {
 		repaint();		
+	}
+
+	
+	public void close() {
+		mediaPlayer.dispose();		
 	}
 }

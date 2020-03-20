@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.Box;
@@ -21,24 +22,25 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
-import interfaces.Themed;
+import globalToolKits.GlobalImageKit;
+import globalToolKits.GlobalListenerToolKit;
+import interfaces.Closeable;
 import jComponents.videoEditor.VideoEditor;
 import jComponents.videoEditor.VideoTopBar;
 import jTimeLine.JTimeLine;
 import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
 import objectBinders.DataFile;
-import globalToolKits.GlobalImageKit;
-import globalToolKits.GlobalListenerToolKit;
 import objectBinders.Settings;
 import objectBinders.Theme;
+import projectFileManagement.PictoralFinProjectManager;
 import utilities.AudioImporter;
 import utilities.BufferedImageUtil;
 import utilities.ChainGBC;
 import utilities.PictureImporter;
 import utilities.Utilities;
 
-public class PictoralFin extends JFrame {
+public class PictoralFin extends JFrame implements Closeable {
 	
 	private static final long serialVersionUID = 6656205076381846860L;
 	
@@ -51,6 +53,7 @@ public class PictoralFin extends JFrame {
 	private VideoEditor videoEditor;
 	private Settings settings;
 	private DataFile dateFile;
+	public File openProject = null;
 
 	private JPanel mainPanel;
 	private JTabbedPane tabbedPane;
@@ -213,7 +216,27 @@ public class PictoralFin extends JFrame {
 		return dateFile;
 	}
 		
+	public void openProject(String filePath) {
+		openProject = PictoralFinProjectManager.openProject(this, filePath);
+		
+		if(openProject != null)
+			setTitle("PictoralFin - " + openProject.getName());
+	}
 	
+	public boolean saveProject() {
+		openProject = PictoralFinProjectManager.saveProject(this, (openProject == null) ? null : openProject.getAbsolutePath());
+
+		if(openProject != null)
+			setTitle("PictoralFin - " + openProject.getName());
+		return openProject != null;
+	}
+	public boolean saveProjectAs() {
+		openProject = PictoralFinProjectManager.saveProject(this, null);
+
+		if(openProject != null)
+			setTitle("PictoralFin - " + openProject.getName());
+		return openProject != null;
+	}
 	public VideoEditor getVideoEditor() {
 		return videoEditor;
 	}
@@ -238,5 +261,13 @@ public class PictoralFin extends JFrame {
 	}
 	public GlobalImageKit getGlobalImageKit() {
 		return globalImageKit;
+	}
+
+	@Override
+	public void close() {
+		for(Component c : Utilities.getAllSubComponents(this)) {
+			if(c instanceof Closeable)
+				((Closeable) c).close();
+		}
 	}
 }

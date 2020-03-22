@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 
 import interfaces.Themed;
 import javafx.embed.swing.JFXPanel;
@@ -13,15 +14,19 @@ import javafx.util.Duration;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
 
-public class AudioTimeLine extends JFXPanel implements Themed {
+public class AudioTimeLine extends JPanel implements Themed {
 
 	private static final long serialVersionUID = 8196866343586565813L;
 	private Theme theme;
 	private JButton addAudio;
 	private JTimeLine jTimeLine;
 	private PictoralFin pictoralFin;
+	
+	@SuppressWarnings("unused")
+	private transient JFXPanel panel;
 
 	public AudioTimeLine(PictoralFin pictoralFin, JTimeLine jTimeLine) {
+		panel = new JFXPanel();
 		this.jTimeLine = jTimeLine;
 		this.pictoralFin = pictoralFin;
 		this.theme = pictoralFin.getSettings().getTheme();

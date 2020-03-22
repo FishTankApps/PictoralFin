@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import customExceptions.FeatureNotSupportedException;
@@ -32,7 +31,7 @@ public class VideoEditorSettingsPanel extends JPanel {
 			driveExplorer = new JDriveExplorer(pictoralFin.getSettings().getTheme());
 			add(driveExplorer, BorderLayout.NORTH);
 		} catch (FeatureNotSupportedException e) {
-			JOptionPane.showMessageDialog(null, "External Drive Not Supported");
+			pictoralFin.flags.add("Feature Not Supported$The External Drive feature is not supported.\nIt must be run on 32-bit JVM.");
 		}
 		
 	}

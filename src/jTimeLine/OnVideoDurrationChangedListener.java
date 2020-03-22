@@ -1,6 +1,8 @@
 package jTimeLine;
 
-public interface OnVideoDurrationChangedListener {
+import java.io.Serializable;
+
+public interface OnVideoDurrationChangedListener extends Serializable {
 
 	public abstract void onVideoDurrationChanged(long durration);
 	

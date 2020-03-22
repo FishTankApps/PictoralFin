@@ -37,14 +37,24 @@ public class PictoralFinProjectManager {
 			if(filePath == null) {
 				JFileChooser jfc = new JFileChooser();
 				
+				jfc.setCurrentDirectory(new File(pictoralFin.getDataFile().getLastOpenProjectLocation()));
 				jfc.setDialogTitle("Save Project As");
+				jfc.setApproveButtonText("Save");
 				jfc.setAcceptAllFileFilterUsed(true);
 				jfc.addChoosableFileFilter(new FileNameExtensionFilter("Project Files", "pfp"));
 				
-				if(jfc.showSaveDialog(null) == JFileChooser.CANCEL_OPTION)
+				if(jfc.showOpenDialog(null) == JFileChooser.CANCEL_OPTION)
 					return null;
-
+				
+				if(jfc.getSelectedFile().exists()) {
+					int choice = JOptionPane.showConfirmDialog(null, "The file \"" + jfc.getSelectedFile().getName() +
+							"\" already exists.\nAre you sure you want  to replace this file?",
+							"File Already Exists", JOptionPane.INFORMATION_MESSAGE);
 					
+					if(choice != JOptionPane.YES_OPTION) {
+						return null;
+					}					
+				}
 				filePath = jfc.getSelectedFile().getPath();	
 			}
 			
@@ -55,7 +65,7 @@ public class PictoralFinProjectManager {
 			saveLocation.mkdirs();
 			fileName = saveLocation.getName() + ".pfp";
 			
-			ObjectOutputStream objectOutput = new ObjectOutputStream(new FileOutputStream(new File(saveLocation.getAbsoluteFile() + "/PROJECT-INFO.info")));
+			ObjectOutputStream objectOutput = new ObjectOutputStream(new FileOutputStream(new File(saveLocation.getAbsolutePath() + "/PROJECT-INFO.info")));
 			objectOutput.writeObject(projectInfo);			
 			objectOutput.close();
 			
@@ -80,6 +90,9 @@ public class PictoralFinProjectManager {
 			
 			FileUtils.zipFolder(saveLocation, saveLocation.getParent() + "\\" + fileName);
 			FileUtils.deleteFolder(saveLocation);
+			
+			pictoralFin.getDataFile().setLastOpenProjectLocation(saveLocation.getParent());
+			
 			return new File(saveLocation.getParent() + "\\" + fileName);
 			
 		} catch(Exception e) {
@@ -111,6 +124,7 @@ public class PictoralFinProjectManager {
 			File openLocation;
 			if(filePath == null) {
 				JFileChooser jfc = new JFileChooser();
+				jfc.setCurrentDirectory(new File(pictoralFin.getDataFile().getLastOpenProjectLocation()));
 				jfc.setDialogTitle("Open Project");
 				jfc.setAcceptAllFileFilterUsed(true);
 				jfc.addChoosableFileFilter(new FileNameExtensionFilter("Project Files", "pfp"));
@@ -157,6 +171,8 @@ public class PictoralFinProjectManager {
 					pictoralFin.getTimeLine().addFrame(frame);
 				}
 			tempFiles.add(new File(path));
+			
+			pictoralFin.getDataFile().setLastOpenProjectLocation(openLocation.getParent());
 			
 			return openLocation;
 			

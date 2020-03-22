@@ -31,7 +31,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 	Theme theme;
 	int frameDimension = 100;
 	private long durration = 0;
-	private PictoralFin pictoralFin;
+	private transient PictoralFin pictoralFin;
 	
 	public FrameTimeLine(PictoralFin pictoralFin) {	
 		this.theme = pictoralFin.getSettings().getTheme();

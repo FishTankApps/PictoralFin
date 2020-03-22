@@ -14,11 +14,13 @@ public class DataFile implements Serializable {
 	private String lastOpenPictureLocation;
 	private String lastOpenAudioLocation;
 	private String lastOpenVideoLocation;
+	private String lastOpenProjectLocation;
 	
 	private DataFile() {
 		lastOpenPictureLocation = "C:/Users/" + System.getProperty("user.name") + "/Pictures";
 		lastOpenAudioLocation = "C:/Users/" + System.getProperty("user.name") + "/Music";
 		lastOpenVideoLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos";		
+		lastOpenProjectLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos";		
 	}
 	
 	public static DataFile openDataFile() {
@@ -38,6 +40,7 @@ public class DataFile implements Serializable {
 	}
 	
 
+	
 	public void saveDataFile() {
 		try {
 			ObjectOutputStream fileOutput = new ObjectOutputStream(new FileOutputStream(new File("dataFiles/dataFile.pfd")));
@@ -67,5 +70,12 @@ public class DataFile implements Serializable {
 	}
 	public void setLastOpenVideoLocation(String lastOpenVideoLocation) {
 		this.lastOpenVideoLocation = lastOpenVideoLocation;
+	}
+
+	public String getLastOpenProjectLocation() {
+		return lastOpenProjectLocation;
+	}
+	public void setLastOpenProjectLocation(String lastOpenProjectLocation) {
+		this.lastOpenProjectLocation = lastOpenProjectLocation;
 	}
 }

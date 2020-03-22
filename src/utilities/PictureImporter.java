@@ -37,6 +37,7 @@ public class PictureImporter {
 			if(frame == null)
 				throw new Exception("frame = NULL");
 			pictoralFin.getTimeLine().addFrame(frame);
+			pictoralFin.updateMemoryUsage();
 		} catch (Exception e) {
 			System.out.println("Error: PictureImporter.simpleImportPicture()" +
 							   "Message: " + e.getMessage());

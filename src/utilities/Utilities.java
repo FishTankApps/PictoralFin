@@ -136,22 +136,14 @@ public class Utilities {
 	}
 
 	public static void playSound(String fileName) {
-		new Thread(new Runnable() {
-
-			public void run() {
-				try {
-					AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Utilities.class.getResourceAsStream(fileName));
-			        Clip clip = AudioSystem.getClip();
-			   	    clip.open(audioInputStream); 
-			   	    clip.start(); 
-				} catch (Exception e) {
-					 System.out.println("There was an Error playing the sound: "+ fileName + "\n" + e.getMessage());
-				}
-			}
-			
-		}).start();
-		
-			
+		try {
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Utilities.class.getResourceAsStream(fileName));
+	        Clip clip = AudioSystem.getClip();
+	   	    clip.open(audioInputStream); 
+	   	    clip.start(); 
+		} catch (Exception e) {
+			 System.out.println("There was an Error playing the sound: "+ fileName + "\n" + e.getMessage());
+		}		
 	}
 }
 

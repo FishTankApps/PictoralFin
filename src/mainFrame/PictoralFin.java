@@ -10,12 +10,14 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
@@ -64,7 +66,10 @@ public class PictoralFin extends JFrame implements Closeable {
 	private GlobalListenerToolKit globalListenerToolKit;
 	private GlobalImageKit globalImageKit;
 	
+	public ArrayList<String> flags;
+	
 	public PictoralFin() {
+		flags = new ArrayList<>();
 		settings = Settings.openSettings();
 		settings.setTheme(Theme.OCEAN_THEME);
 		dateFile = DataFile.openDataFile();
@@ -88,12 +93,20 @@ public class PictoralFin extends JFrame implements Closeable {
 
 	void launch() {
 		setVisible(true);
-
+		
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				verticalSplitPane.setDividerLocation(0.75);
 			}
 		});		
+
+		for(String flag : flags) {
+			String[] parts = flag.split("\\$");
+			
+			JOptionPane.showMessageDialog(null, parts[1], parts[0], JOptionPane.INFORMATION_MESSAGE);
+		}
+		flags.clear();
 	}
 	
 	// ----------{ SET-UP }-------------------------------------------------------------------------
@@ -242,10 +255,14 @@ public class PictoralFin extends JFrame implements Closeable {
 	}
 	
 	public void updateMemoryUsage(){
-		System.gc();
+		if(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() < 1000)
+			System.gc();
 		
 		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());
 		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+		
+		
+		
 		memoryUsageBar.repaint();
 	}
 	

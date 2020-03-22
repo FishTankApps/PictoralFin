@@ -32,7 +32,7 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	private MediaPlayer mediaPlayer;
 	private JTimeLine jTimeLine;
 	boolean hovering = false, selected = false;
-	Checker checker;
+    Checker checker;
 	
 	private long currentMillis = 0;
 	private boolean playing = false;
@@ -169,7 +169,6 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 			
 	
 	class Checker implements Runnable {
-
 		long lastCheck = 0;
 		PictoralFin pictoralFin = null;
 		boolean playerIsPlaying = false;
@@ -243,4 +242,5 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	public void close() {
 		mediaPlayer.dispose();		
 	}
+
 }

@@ -10,6 +10,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 import objectBinders.Theme;
 import utilities.ChainGBC;
@@ -18,12 +20,12 @@ public class JFrameDurationEditor extends JPanel {
 
 	private static final long serialVersionUID = -6268190339352421685L;
 	
-	private static final int DURRATION_PRECISION = 1;
 	
 	private JLabel labelFPS;
 	private JLabel labelMili;
 	private JSlider durationInFPS;
-	private JSlider durationInMili;
+	private SpinnerNumberModel durationInMilliModel;
+	private JSpinner durationInMili;
 	private JButton applyToAll;
 	
 	private boolean adjustingValues = false;	
@@ -35,6 +37,12 @@ public class JFrameDurationEditor extends JPanel {
 		setBackground(theme.getPrimaryHighlightColor());
 		setLayout(new GridBagLayout());		
 		
+		
+		durationInMilliModel = new SpinnerNumberModel(frameButton.getFrame().getDuration(), 2, Integer.MAX_VALUE, 50);
+		
+		durationInMili = new JSpinner(durationInMilliModel);
+		durationInMili.setBackground(theme.getSecondaryBaseColor());
+		
 		durationInFPS  = new JSlider();
 		durationInFPS.setMaximum(50);
 		durationInFPS.setMinimum(2);
@@ -44,18 +52,10 @@ public class JFrameDurationEditor extends JPanel {
 		durationInFPS.setPaintTicks(true);
 		durationInFPS.setBackground(theme.getSecondaryBaseColor());
 		
-		durationInMili = new JSlider();
-		durationInMili.setMaximum(500);
-		durationInMili.setMinimum(20);			
-		durationInMili.setValue((int) frameButton.getFrame().getDuration() / DURRATION_PRECISION);
-		durationInMili.setMajorTickSpacing(10);
-		durationInMili.setMinorTickSpacing(2);
-		durationInMili.setPaintTicks(true);	
-		durationInMili.setBackground(theme.getSecondaryBaseColor());
 		
 		labelFPS  = new JLabel("Frames Per Second (" + durationInFPS.getValue() + "):");
 		labelFPS.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 15));
-		labelMili = new JLabel("Durration In Mili: (" + durationInMili.getValue() * DURRATION_PRECISION + "):");		
+		labelMili = new JLabel("Durration In Mili: (" + durationInMilliModel.getNumber() + "):");		
 		labelMili.setFont(labelFPS.getFont());
 		
 		applyToAll   = new JButton("Apply Time to All Frames");
@@ -72,23 +72,23 @@ public class JFrameDurationEditor extends JPanel {
 				FrameTimeLine frameTimeLine = (FrameTimeLine) frameButton.getParent();
 				if(!adjustingValues) {
 					adjustingValues = true;				
-					durationInMili.setValue((int) ((1000.0 / DURRATION_PRECISION) / durationInFPS.getValue()));
+					durationInMilliModel.setValue(1000 / (int) Math.floor(durationInFPS.getValue()));
 					
-					frameButton.getFrame().setDuration(durationInMili.getValue() * DURRATION_PRECISION);
+					frameButton.getFrame().setDuration((int) durationInMilliModel.getValue());
 					frameButton.repaint();
 					adjustingValues = false;
 				}	
 				
 				frameTimeLine.flagDurrationChanged();
 			});
+		
 		durationInMili.addChangeListener(e -> {
-				labelMili.setText("Durration In Mili: (" + durationInMili.getValue() * DURRATION_PRECISION + "):");
 				FrameTimeLine frameTimeLine = (FrameTimeLine) frameButton.getParent();
 				if(!adjustingValues) {
 					adjustingValues = true;				
-					durationInFPS.setValue((int) (1000.0 / (durationInMili.getValue() * DURRATION_PRECISION)));
+					durationInFPS.setValue((int) (1000.0 / ((int) Math.floor((double) durationInMili.getValue()))));
 					
-					frameButton.getFrame().setDuration(durationInMili.getValue() * DURRATION_PRECISION);
+					frameButton.getFrame().setDuration((int) Math.floor((double) durationInMili.getValue()));
 					frameButton.repaint();
 					adjustingValues = false;
 					frameTimeLine.flagDurrationChanged();
@@ -99,7 +99,7 @@ public class JFrameDurationEditor extends JPanel {
 			FrameTimeLine frameTimeLine = (FrameTimeLine) frameButton.getParent();
 			for(Component c : frameTimeLine.getComponents())
 				if(c instanceof JFrameButton)
-					((JFrameButton) c).getFrame().setDuration(durationInMili.getValue() * DURRATION_PRECISION);
+					((JFrameButton) c).getFrame().setDuration((long) Math.floor((double) durationInMilliModel.getValue()));
 			
 			frameTimeLine.flagDurrationChanged();
 			

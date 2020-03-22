@@ -1,11 +1,20 @@
 package objectBinders;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 
-public class Frame {
-	private ArrayList<BufferedImage> layers;
+
+public class Frame implements Serializable {
+	
+	private static final long serialVersionUID = -6947541644075351604L;
+
+	private transient ArrayList<BufferedImage> layers;
 	
 	/**
 	 * Duration of the frame in Milliseconds.
@@ -61,4 +70,22 @@ public class Frame {
 	public void removeLayer(int index) {
 		layers.remove(index);
 	}
+
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeInt(layers.size()); // how many images are serialized?
+        for (BufferedImage eachImage : layers) {
+            ImageIO.write(eachImage, "png", out); // png is lossless
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        final int imageCount = in.readInt();
+        layers = new ArrayList<BufferedImage>(imageCount);
+        for (int i=0; i<imageCount; i++) {
+        	layers.add(ImageIO.read(in));
+        }
+    }
 }

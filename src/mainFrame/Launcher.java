@@ -3,8 +3,6 @@ package mainFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import utilities.PictureImporter;
-
 import java.io.File;
 
 public class Launcher {
@@ -16,21 +14,20 @@ public class Launcher {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			
 			System.out.println("-- Setting Up PictoralFin --");
-			PictoralFin pfk = new PictoralFin();
+			PictoralFin pictoralFin = new PictoralFin();
 
 			System.out.println("-- Importing Pictures --");
 			if (filePaths.length > 0) {
-				PictureImporter pictureImporter = pfk.getPictureImporter();
-				
-				File[] files = new File[filePaths.length];
-				for (int index = 0; index < files.length; index++)
-					files[index] = new File(filePaths[index]);
-
-				pictureImporter.importPictures(files);
+				File file = new File(filePaths[0]);
+				if(file.exists()) {
+					if(file.getName().contains(".pfp")) {
+						pictoralFin.openProject(file.getAbsolutePath());
+					}
+				}
 			}
 			
 			System.out.println("-- Launching PictoralFin --");
-			pfk.launch();
+			pictoralFin.launch();
 
 		} catch (Exception e) {
 			e.printStackTrace();

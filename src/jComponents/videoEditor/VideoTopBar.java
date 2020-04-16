@@ -10,20 +10,20 @@ import javax.swing.KeyStroke;
 
 import mainFrame.PictoralFin;
 import utilities.Constants;
+import utilities.VideoUtil;
 
 public class VideoTopBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 
-	private JMenu fileMenu, importFiles;
+	private JMenu fileMenu, importFiles, exportProject;
 	private JMenuItem importFrames, importAudio,   importVideo, importOtherFiles, 
-					  saveProject,  saveProjectAs, openProject;
+					  saveProject,  saveProjectAs, openProject, exportAsVideo;
 	
 	public VideoTopBar(PictoralFin pictoralFin){
 		
 		//---------{FILE MENU}-------------------------------------------------
 		fileMenu = new JMenu("File");
-		importFiles = new JMenu("Import...");
-		
+		importFiles = new JMenu("Import...");		
 		
 		importFrames = new JMenuItem("Import Frame(s)");
 		importFrames.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
@@ -50,6 +50,10 @@ public class VideoTopBar extends JMenuBar {
 		openProject.addActionListener(e->pictoralFin.openProject(null));
 		openProject.setAccelerator(KeyStroke.getKeyStroke('O', Constants.CTRL));
 		
+		exportProject = new JMenu("Export...");
+		exportAsVideo = new JMenuItem("Export Project As Video");
+		exportAsVideo.addActionListener(e->VideoUtil.generateAndSaveVideo(pictoralFin));
+		
 		fileMenu.add(importFiles);
 			importFiles.add(importFrames);
 			importFiles.add(importAudio);
@@ -61,6 +65,12 @@ public class VideoTopBar extends JMenuBar {
 		fileMenu.add(openProject);		
 		fileMenu.add(saveProject);
 		fileMenu.add(saveProjectAs);
+		
+		fileMenu.addSeparator();
+		
+		fileMenu.add(exportProject);
+			exportProject.add(exportAsVideo);
+		
 		
 		//---------{TOOLS MENU}-------------------------------------------------		
 		add(fileMenu);

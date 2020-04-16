@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import utilities.BufferedImageUtil;
+import utilities.Constants;
+
 
 public class Frame implements Serializable {
 	
@@ -35,8 +38,9 @@ public class Frame implements Serializable {
 	}
 	
 	public Frame(BufferedImage image, int duration) {
-		this(duration);		
-		layers.add(image);
+		this(duration);
+		
+		layers.add(BufferedImageUtil.setBufferedImageType(image, Constants.IMAGE_TYPE));
 	}
 	
 	public int getNumberOfLayers() {
@@ -48,7 +52,7 @@ public class Frame implements Serializable {
 	}
 	
 	public void addLayer(BufferedImage layer) {
-		layers.add(layer);
+		layers.add(BufferedImageUtil.setBufferedImageType(layer, Constants.IMAGE_TYPE));
 	}
 	
 	public void setDuration(long duration) {
@@ -74,9 +78,9 @@ public class Frame implements Serializable {
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        out.writeInt(layers.size()); // how many images are serialized?
+        out.writeInt(layers.size());
         for (BufferedImage eachImage : layers) {
-            ImageIO.write(eachImage, "png", out); // png is lossless
+            ImageIO.write(eachImage, "png", out);
         }
     }
 

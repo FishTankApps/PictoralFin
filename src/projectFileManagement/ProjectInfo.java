@@ -13,7 +13,7 @@ class ProjectInfo implements Serializable {
 
 	private ArrayList<AudioInfo> audioInfo;
 	private ArrayList<FrameInfo> frameInfo;
-	private ProjectSettings projectSettings;
+	private PictoralFinStaticProjectSettings projectSettings;
 		
 	public ProjectInfo(PictoralFin pictoralFin) {
 		
@@ -30,7 +30,7 @@ class ProjectInfo implements Serializable {
 				audioInfo.add(new AudioInfo(audioClip.getName(), audioClip.getStartTime(), audioClip.getEndTime(), audioClip.getVolume()));
 			
 		
-		projectSettings = new ProjectSettings(pictoralFin);
+		projectSettings = new PictoralFinStaticProjectSettings(pictoralFin);
 	}
 
 	public ArrayList<AudioInfo> getAudioInfo() {
@@ -39,7 +39,7 @@ class ProjectInfo implements Serializable {
 	public ArrayList<FrameInfo> getFrameInfo() {
 		return frameInfo;
 	}
-	public ProjectSettings getProjectSettings() {
+	public PictoralFinStaticProjectSettings getProjectSettings() {
 		return projectSettings;
 	}
 }

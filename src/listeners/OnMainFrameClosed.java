@@ -22,9 +22,8 @@ public class OnMainFrameClosed implements WindowListener{
 		if(!pictoralFin.getTimeLine().isEmpty()) {
 			int choice = JOptionPane.showConfirmDialog(null, "Would you like to save the current project?", "Save", JOptionPane.INFORMATION_MESSAGE);
 			
-			if(choice == JOptionPane.YES_OPTION)
-				if(!pictoralFin.saveProject())
-					return;
+			if(choice == JOptionPane.YES_OPTION) 
+				pictoralFin.saveProject();
 			else if(choice == JOptionPane.CANCEL_OPTION || choice == JOptionPane.CLOSED_OPTION)
 				return;
 		}

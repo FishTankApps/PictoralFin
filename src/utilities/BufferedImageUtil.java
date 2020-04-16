@@ -15,10 +15,13 @@ public class BufferedImageUtil {
 		
 		return target;
 	}
-	public static BufferedImage setBufferedImageType(BufferedImage toCopy, int type){
-		BufferedImage target = new BufferedImage(toCopy.getWidth(), toCopy.getHeight(), type);
+	public static BufferedImage setBufferedImageType(BufferedImage image, int type){
+		if(image.getType() == type)
+			return image;
+		
+		BufferedImage target = new BufferedImage(image.getWidth(), image.getHeight(), type);
 		Graphics targetGraphics = target.getGraphics();
-		targetGraphics.drawImage(toCopy, 0, 0, null);
+		targetGraphics.drawImage(image, 0, 0, null);
 		targetGraphics.dispose();	
 		
 		return target;

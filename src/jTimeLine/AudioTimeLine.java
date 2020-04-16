@@ -58,6 +58,20 @@ public class AudioTimeLine extends JPanel implements Themed {
 		 return audioClips;
 	}
 	
+	public AudioClipData[] getAudioClipData() {
+		if(getComponentCount() == 0)
+			return null;
+		
+		AudioClipData[] audioClips = new AudioClipData[getComponentCount()];
+		 int index = 0;
+		 
+		 for(Component c : getComponents()) 
+			 audioClips[index++] = ((AudioClip) c).getAudioClipData();
+		 
+		 
+		 return audioClips;
+	}
+	
 	public void addAudioClip(AudioClip audioClip) {
 		add(audioClip);		
 		audioClip.checker.passPictoralFin(pictoralFin);

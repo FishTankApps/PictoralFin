@@ -10,6 +10,8 @@ import javax.swing.JSplitPane;
 
 import mainFrame.PictoralFin;
 import objectBinders.Frame;
+import projectFileManagement.PictoralFinStaticProject;
+import projectFileManagement.PictoralFinStaticProjectSettings;
 import utilities.ChainGBC;
  
 public class JTimeLine extends JPanel {
@@ -55,6 +57,28 @@ public class JTimeLine extends JPanel {
 	public void empty() {
 		frameTimeLine.empty();
 		audioTimeLine.empty();
+	}
+	public PictoralFinStaticProject generatePictoralFinStaticProject() {
+		return new PictoralFinStaticProject(frameTimeLine.getFrames(), audioTimeLine.getAudioClipData(),
+				new PictoralFinStaticProjectSettings(pictoralFin));
+	}
+	
+	public void loadPictoralFinStaticProject(PictoralFinStaticProject project) {
+		pictoralFin.setStatus("Importing Images...");
+		if(project.getFrames() != null)
+			for(Frame frame : project.getFrames())
+				addFrame(frame);
+		
+		pictoralFin.setStatus("Importing Audio...");
+		if(project.getAudioData() != null)
+			for(AudioClipData data : project.getAudioData())
+				addAudioClip(new AudioClip(data, this));
+		
+		pictoralFin.setStatus("Applying Settings...");
+		project.getSettings().applySettings(pictoralFin);
+		
+		revalidate();
+		repaint();
 	}
 	
 	//----------{ FRAMES }-------------------------------------------------------------------------

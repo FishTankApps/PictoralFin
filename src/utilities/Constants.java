@@ -1,5 +1,7 @@
 package utilities;
 
+import java.awt.image.BufferedImage;
+
 public final class Constants {
 	private Constants() {}
 	
@@ -25,5 +27,5 @@ public final class Constants {
 	
 	public static final int MAX_SCALE = 300;
 	
-	public static final int PNG = 6;
+	public static final int IMAGE_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 }

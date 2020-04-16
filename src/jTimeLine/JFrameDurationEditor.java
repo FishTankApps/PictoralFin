@@ -74,7 +74,7 @@ public class JFrameDurationEditor extends JPanel {
 					adjustingValues = true;				
 					durationInMilliModel.setValue(1000 / (int) Math.floor(durationInFPS.getValue()));
 					
-					frameButton.getFrame().setDuration((int) durationInMilliModel.getValue());
+					frameButton.getFrame().setDuration(((Number) durationInMili.getValue()).intValue());
 					frameButton.repaint();
 					adjustingValues = false;
 				}	
@@ -86,9 +86,9 @@ public class JFrameDurationEditor extends JPanel {
 				FrameTimeLine frameTimeLine = (FrameTimeLine) frameButton.getParent();
 				if(!adjustingValues) {
 					adjustingValues = true;				
-					durationInFPS.setValue((int) (1000.0 / ((int) Math.floor((double) durationInMili.getValue()))));
+					durationInFPS.setValue((int) (1000.0 / ((Number) durationInMili.getValue()).intValue()));
 					
-					frameButton.getFrame().setDuration((int) Math.floor((double) durationInMili.getValue()));
+					frameButton.getFrame().setDuration(((Number) durationInMili.getValue()).intValue());
 					frameButton.repaint();
 					adjustingValues = false;
 					frameTimeLine.flagDurrationChanged();
@@ -99,7 +99,7 @@ public class JFrameDurationEditor extends JPanel {
 			FrameTimeLine frameTimeLine = (FrameTimeLine) frameButton.getParent();
 			for(Component c : frameTimeLine.getComponents())
 				if(c instanceof JFrameButton)
-					((JFrameButton) c).getFrame().setDuration((long) Math.floor((double) durationInMilliModel.getValue()));
+					((JFrameButton) c).getFrame().setDuration(((Number) durationInMili.getValue()).longValue());
 			
 			frameTimeLine.flagDurrationChanged();
 			

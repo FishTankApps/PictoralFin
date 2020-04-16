@@ -12,6 +12,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="images"/>
 	<classpathentry kind="src" path="dataFiles"/>
+	<classpathentry kind="src" path="projectTemp"/>
 	<classpathentry kind="lib" path="jarFiles/ffmpeg-3.4.2-1.4.1-windows-x86_64.jar"/>
 	<classpathentry kind="lib" path="jarFiles/ffmpeg-3.4.2-1.4.1.jar"/>
 	<classpathentry kind="lib" path="jarFiles/javacpp-1.2.jar"/>
@@ -19,5 +20,34 @@
 	<classpathentry kind="lib" path="jarFiles/opencv-3.4.1-1.4.1-windows-x86_64.jar"/>
 	<classpathentry kind="lib" path="jarFiles/opencv-3.4.1-1.4.1.jar"/>
 	<classpathentry kind="lib" path="jarFiles/jMTPe.jar"/>
+	<classpathentry kind="lib" path="jarFiles/artoolkitplus-2.3.1-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/ffmpeg-3.0.2-1.2.jar"/>
+	<classpathentry kind="lib" path="jarFiles/ffmpeg-3.4.2-1.4.1-windows-x86.jar"/>
+	<classpathentry kind="lib" path="jarFiles/ffmpeg-platform-3.4.2-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/flandmark-1.07-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/flycapture-2.11.3.121-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/flycapture-2.9.3.43-1.2.jar"/>
+	<classpathentry kind="lib" path="jarFiles/javacpp-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/javacv-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/libdc1394-2.2.4-1.2.jar"/>
+	<classpathentry kind="lib" path="jarFiles/libdc1394-2.2.5-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/libfreenect-0.5.3-1.2.jar"/>
+	<classpathentry kind="lib" path="jarFiles/libfreenect-0.5.3-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/libfreenect2-0.2.0-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/librealsense-1.12.1-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/opencv-3.1.0-1.2.jar"/>
+	<classpathentry kind="lib" path="jarFiles/opencv-3.4.1-1.4.1-windows-x86.jar"/>
+	<classpathentry kind="lib" path="jarFiles/opencv-platform-3.4.1-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/videoinput-0.200-1.2.jar"/>
+	<classpathentry kind="lib" path="jarFiles/videoinput-0.200-1.4.1.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jave-all-deps-2.7.3.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jave-core-2.7.3-sources.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jave-core-2.7.3.jar" sourcepath="C:/Users/Robots/.m2/repository/ws/schild/jave-core/2.7.3/jave-core-2.7.3-sources.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jave-nativebin-win64-2.7.3-sources.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jave-nativebin-win64-2.7.3.jar"/>
+	<classpathentry kind="lib" path="jarFiles/slf4j-api-1.7.26-sources.jar"/>
+	<classpathentry kind="lib" path="jarFiles/slf4j-api-1.7.26.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jave-nativebin-win32-2.7.3-sources.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jave-nativebin-win32-2.7.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

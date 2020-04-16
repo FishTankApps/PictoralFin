@@ -25,14 +25,16 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 	private JSpinner startMilli, lengthMilli;
 	private SpinnerNumberModel startingMilliModel, lengthMilliModel;
 	private JSlider volume;
-	private JLabel volumeLabel;
+	private JLabel volumeLabel, trackTitle;
 	private JButton playSample, removeAudio;
 	private Theme theme;
 	private MediaPlayer player;
+	private AudioClip audioClip;
 	
 	
 	
 	public AudioClipSettingsPanel(AudioClip audioClip, Theme theme) {
+		this.audioClip = audioClip;
 		player = audioClip.getMediaPlayer();
 		this.theme = theme;
 		
@@ -74,7 +76,7 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 		lengthLabel.setHorizontalAlignment(JLabel.RIGHT);
 		lengthLabel.setFont(labelFont);
 		
-		JLabel trackTitle = new JLabel("-----  " + audioClip.getName() + "  -----");
+		trackTitle = new JLabel("-----  " + audioClip.getName() + "  -----");
 		trackTitle.setHorizontalAlignment(JLabel.CENTER);
 		trackTitle.setFont(new Font(theme.getTitleFont(), Font.PLAIN, 23));
 		
@@ -107,6 +109,7 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 	}
 	
 	public void paintComponent(Graphics g) {
+		trackTitle.setText("-----  " + audioClip.getName() + "  -----");
 		super.paintComponent(g);
 		
 		g.setColor(theme.getPrimaryHighlightColor());

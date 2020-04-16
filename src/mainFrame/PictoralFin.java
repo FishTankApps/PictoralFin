@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -62,6 +64,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	private JTimeLine timeLine;
 	private JSplitPane verticalSplitPane;
 	private JProgressBar memoryUsageBar;
+	private JLabel statusLabel;
 	
 	private GlobalListenerToolKit globalListenerToolKit;
 	private GlobalImageKit globalImageKit;
@@ -81,6 +84,11 @@ public class PictoralFin extends JFrame implements Closeable {
 		} catch (IOException e) {
 			throw new RuntimeException("ERROR LOADING PICTURES");
 		}
+		
+		ScheduledThreadPoolExecutor threadpool = new ScheduledThreadPoolExecutor(1);
+		threadpool.scheduleAtFixedRate(()->{updateMemoryUsage();}, 5, 5, TimeUnit.SECONDS);
+		Thread[] listOfThreads = new Thread[Thread.activeCount()];
+		Thread.enumerate(listOfThreads);
 		
 		setUpFrame();
 		
@@ -107,6 +115,7 @@ public class PictoralFin extends JFrame implements Closeable {
 			JOptionPane.showMessageDialog(null, parts[1], parts[0], JOptionPane.INFORMATION_MESSAGE);
 		}
 		flags.clear();
+		setStatus("Launch Complete");
 	}
 	
 	// ----------{ SET-UP }-------------------------------------------------------------------------
@@ -125,8 +134,6 @@ public class PictoralFin extends JFrame implements Closeable {
 		mainPanel = createMainPanel();
 
 		add(mainPanel);
-
-
 	}
 
 	private JPanel createMainPanel() {
@@ -147,7 +154,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		verticalSplitPane.setForeground(Color.RED);
 		
 		JLabel memoryLabel = new JLabel("  Memory Usage:");
-		memoryLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.PLAIN, 11));
+		memoryLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 11));
 		
 		memoryUsageBar = new JProgressBar();
 		memoryUsageBar.setMinimumSize(new Dimension(500, 10));
@@ -155,10 +162,15 @@ public class PictoralFin extends JFrame implements Closeable {
 		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());
 		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 		
-		mainPanel.add(verticalSplitPane,          (new ChainGBC(0,0)).setFill(true)      .setPadding(0).setWidthAndHeight(3, 1));
-		mainPanel.add(memoryLabel,                (new ChainGBC(0,1)).setFill(false)      .setPadding(0, 10, 0, 0).setWidthAndHeight(1, 1));
-		mainPanel.add(memoryUsageBar,             (new ChainGBC(1,1)).setFill(false)      .setPadding(0).setWidthAndHeight(1, 1));
-		mainPanel.add(Box.createVerticalStrut(1), (new ChainGBC(2,1)).setFill(true, false).setPadding(0).setWidthAndHeight(1, 1));
+		statusLabel = new JLabel("Status: Launching");
+		statusLabel.setFont(memoryLabel.getFont());
+		
+		mainPanel.add(verticalSplitPane,          (new ChainGBC(0,0)).setFill(true)       .setPadding(0).setWidthAndHeight(4, 1));
+		mainPanel.add(statusLabel,                (new ChainGBC(0,1)).setFill(false)      .setPadding(10, 10, 0, 0).setWidthAndHeight(1, 1));
+		mainPanel.add(Box.createVerticalStrut(1), (new ChainGBC(1,1)).setFill(true, false).setPadding(0).setWidthAndHeight(1, 1));
+		mainPanel.add(memoryLabel,                (new ChainGBC(2,1)).setFill(false)      .setPadding(10, 10, 0, 0).setWidthAndHeight(1, 1));
+		mainPanel.add(memoryUsageBar,             (new ChainGBC(3,1)).setFill(false)      .setPadding(10, 10, 0, 0).setWidthAndHeight(1, 1));
+		
 		
 		return mainPanel;
 	}
@@ -229,26 +241,49 @@ public class PictoralFin extends JFrame implements Closeable {
 		return dateFile;
 	}
 		
-	public void openProject(String filePath) {
-		openProject = PictoralFinProjectManager.openProject(this, filePath);
-		
-		if(openProject != null)
-			setTitle("PictoralFin - " + openProject.getName());
+	public void setStatus(String status) {
+		statusLabel.setText("Status: " + status);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				statusLabel.repaint();
+			}
+		});	
 	}
 	
-	public boolean saveProject() {
-		openProject = PictoralFinProjectManager.saveProject(this, (openProject == null) ? null : openProject.getAbsolutePath());
-
-		if(openProject != null)
-			setTitle("PictoralFin - " + openProject.getName());
-		return openProject != null;
+	public void openProject(String filePath) {
+		new Thread(new Runnable() {
+			public void run() {
+				openProject = PictoralFinProjectManager.openProject(PictoralFin.this, filePath);
+				
+				if(openProject != null)
+					setTitle("PictoralFin - " + openProject.getName());
+			}
+			
+		}).start();
+		
 	}
-	public boolean saveProjectAs() {
-		openProject = PictoralFinProjectManager.saveProject(this, null);
+	
+	public void saveProject() {
+		new Thread(new Runnable() {
+			public void run() {
+				openProject = PictoralFinProjectManager.saveProject(PictoralFin.this, (openProject == null) ? null : openProject.getAbsolutePath());
 
-		if(openProject != null)
-			setTitle("PictoralFin - " + openProject.getName());
-		return openProject != null;
+				if(openProject != null)
+					setTitle("PictoralFin - " + openProject.getName());
+			}
+			
+		}).start();		
+	}
+	public void saveProjectAs() {
+		new Thread(new Runnable() {
+			public void run() {
+				openProject = PictoralFinProjectManager.saveProject(PictoralFin.this, null);
+
+				if(openProject != null)
+					setTitle("PictoralFin - " + openProject.getName());
+			}
+			
+		}).start();	
 	}
 	public VideoEditor getVideoEditor() {
 		return videoEditor;
@@ -259,9 +294,7 @@ public class PictoralFin extends JFrame implements Closeable {
 			System.gc();
 		
 		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());
-		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-		
-		
+		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));		
 		
 		memoryUsageBar.repaint();
 	}

@@ -110,7 +110,7 @@ public class Utilities {
 		
 		return gbc;
 	}
-
+	
 	public static PictoralFin getPictoralFin(Component childComponent) {		
 		Container container = childComponent.getParent();
 		
@@ -145,6 +145,26 @@ public class Utilities {
 			 System.out.println("There was an Error playing the sound: "+ fileName + "\n" + e.getMessage());
 		}		
 	}
+
+	public static long findGCDofArray(long arr[]) { 
+		long result = arr[0]; 
+        for (int i = 1; i < arr.length; i++){ 
+            result = gcd(arr[i], result); 
+  
+            if(result == 1) 
+            { 
+               return 1; 
+            } 
+        } 
+  
+        return result; 
+    } 
+	
+	private static long gcd(long a, long b)  { 
+        if (a == 0) 
+            return b; 
+        return gcd(b % a, a); 
+    } 
 }
 
 

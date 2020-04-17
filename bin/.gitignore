@@ -1,9 +1,12 @@
+/customExceptions/
+/exteneralDriveOpenner/
+/globalToolKits/
+/interfaces/
+/jComponents/
+/jTimeLine/
+/listeners/
 /mainFrame/
 /objectBinders/
 /playground/
 /projectFileManagement/
 /utilities/
-/jTimeLine/
-/audioFile-1.mp3
-/jComponents/
-/listeners/

@@ -5,20 +5,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import mainFrame.PictoralFin;
-import utilities.FileUtils;
 
 public class PictoralFinProjectManager {
 
 	private PictoralFinProjectManager() {}
-	
-	private static ArrayList<File> tempFiles = new ArrayList<>();
 		
 	public static File saveProject(PictoralFin pictoralFin, String filePath) {
 		File saveLocation = null;
@@ -269,7 +265,8 @@ public class PictoralFinProjectManager {
 	*/
 	
 	public static void clearTempFiles() {
-		for(File tempFile : tempFiles)
-			FileUtils.deleteFolder(tempFile);
+		File tempFolder = new File("projectTemp");
+		for(File tempFile : tempFolder.listFiles())
+			tempFile.delete();
 	}
 }

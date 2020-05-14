@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class AudioClipData implements Serializable {
 
 	private static final long serialVersionUID = 9080986784077301257L;
-	private static short audioFileCount = 1;
+	private static short audioFileCount = 0;
 	
 	private String name;
 	private long startTime, length;
@@ -39,9 +39,11 @@ public class AudioClipData implements Serializable {
         
     }
     
-    public File generateAudioTempFile() {
-    	File tempFile = new File("projectTemp/audioFile-" + audioFileCount++ + ".mp3");
+    public File generateAudioTempFile() {    	
     	try {
+    		File tempFile = File.createTempFile("PictoralFinAudioFile" + audioFileCount++, ".mp3");
+    		tempFile.deleteOnExit();
+
 			FileOutputStream out = new FileOutputStream(tempFile);
 			out.write(audioData);
 			out.close();

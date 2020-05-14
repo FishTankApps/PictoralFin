@@ -9,6 +9,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import mainFrame.PictoralFin;
+import mainFrame.StatusLogger;
 import objectBinders.Frame;
 import projectFileManagement.PictoralFinStaticProject;
 import projectFileManagement.PictoralFinStaticProjectSettings;
@@ -64,17 +65,17 @@ public class JTimeLine extends JPanel {
 	}
 	
 	public void loadPictoralFinStaticProject(PictoralFinStaticProject project) {
-		pictoralFin.setStatus("Importing Images...");
+		StatusLogger.logStatus("Importing Images...");
 		if(project.getFrames() != null)
 			for(Frame frame : project.getFrames())
 				addFrame(frame);
 		
-		pictoralFin.setStatus("Importing Audio...");
+		StatusLogger.logStatus("Importing Audio...");
 		if(project.getAudioData() != null)
 			for(AudioClipData data : project.getAudioData())
 				addAudioClip(new AudioClip(data, this));
 		
-		pictoralFin.setStatus("Applying Settings...");
+		StatusLogger.logStatus("Applying Settings...");
 		project.getSettings().applySettings(pictoralFin);
 		
 		revalidate();
@@ -101,6 +102,9 @@ public class JTimeLine extends JPanel {
 	public int getCurrentFrameIndex() {
 		return frameTimeLine.getSelectedIndex();
 	}
+	public long getMilliAtFrame(Frame f) {
+		return frameTimeLine.getMilliAtFrame(f);
+	}
 	public Frame getFrameAtMilli(long milli) {
 		return frameTimeLine.getFrameAtMilli(milli);
 	}
@@ -126,11 +130,9 @@ public class JTimeLine extends JPanel {
     //=====[ Add/Remove ]=================================================
     public void addFrame(Frame frame) {
 		frameTimeLine.addFrame(frame);
-		pictoralFin.updateMemoryUsage();
 	}
 	public void addFrame(BufferedImage image) {
 		frameTimeLine.addFrame(new Frame(image));
-		pictoralFin.updateMemoryUsage();
 	}
 	public void removeFrame(int index) {
 		frameTimeLine.removeFrame(index);

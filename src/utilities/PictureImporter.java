@@ -37,7 +37,6 @@ public class PictureImporter {
 			if(frame == null)
 				throw new Exception("frame = NULL");
 			pictoralFin.getTimeLine().addFrame(frame);
-			pictoralFin.updateMemoryUsage();
 		} catch (Exception e) {
 			System.out.println("Error: PictureImporter.simpleImportPicture()" +
 							   "Message: " + e.getMessage());
@@ -53,13 +52,13 @@ public class PictureImporter {
 	public void importPictures(File[] files) {	
 		new Thread(new Runnable() {
 			public void run() {
-				importFiles(files, pictoralFin.getTimeLine());	
+				importPictures(files, pictoralFin.getTimeLine());	
 			}			
 		}).start();
 		
 	}
 	
-	private void importFiles(File[] files, JTimeLine frameTimeLine) {
+	private void importPictures(File[] files, JTimeLine frameTimeLine) {
 			
 		JProgressDialog jpb = new JProgressDialog("Importing Pictures " + JProgressDialog.PERCENT, "Importing...", files.length);
 		ArrayList<String> failedFiles = new ArrayList<>();
@@ -71,27 +70,20 @@ public class PictureImporter {
 		try {
 			for(File file : files) {	
 				
-				try {				
-					if(file.getAbsolutePath().endsWith(".pfkp")) {
-						
-					} else if (file.getAbsolutePath().endsWith(".mp4")) {
-						//for(BufferedImage bi : VideoTools.mp4ToPictures(file.getAbsolutePath()))
-						//	frameTimeLine.addFrame(bi);
-					} else {
-						frame = ImageIO.read(file);
-						
-						widthRatio = ((double) frame.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-						heightRation = ((double) frame.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
-						
-						if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
-							ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
-							frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
-						}
-						
-						if(frame == null)
-							throw new Exception("frame = NULL");
-						frameTimeLine.addFrame(frame);
+				try {					
+					frame = ImageIO.read(file);
+					
+					widthRatio = ((double) frame.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
+					heightRation = ((double) frame.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+					
+					if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+						ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
+						frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
 					}
+					
+					if(frame == null)
+						throw new Exception("frame = NULL");
+					frameTimeLine.addFrame(frame);					
 				}catch(Exception ignore) {
 					Utilities.showMessage(ignore.getMessage(), "ERROR", true);
 					ignore.printStackTrace();

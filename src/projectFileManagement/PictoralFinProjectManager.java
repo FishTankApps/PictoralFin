@@ -11,15 +11,17 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import mainFrame.PictoralFin;
+import mainFrame.StatusLogger;
 
 public class PictoralFinProjectManager {
 
 	private PictoralFinProjectManager() {}
 		
-	public static File saveProject(PictoralFin pictoralFin, String filePath) {
-		File saveLocation = null;
-		
-		if(filePath == null) {
+	private static String staticFilePath;
+	
+	public static void saveProject(PictoralFin pictoralFin, String filePath) {
+		staticFilePath = filePath;
+		if(staticFilePath == null) {
 			JFileChooser jfc = new JFileChooser();
 			
 			jfc.setCurrentDirectory(new File(pictoralFin.getDataFile().getLastOpenProjectLocation()));
@@ -29,7 +31,7 @@ public class PictoralFinProjectManager {
 			jfc.addChoosableFileFilter(new FileNameExtensionFilter("Project Files", "pfp"));
 			
 			if(jfc.showOpenDialog(null) == JFileChooser.CANCEL_OPTION)
-				return null;
+				return;
 			
 			if(jfc.getSelectedFile().exists()) {
 				int choice = JOptionPane.showConfirmDialog(null, "The file \"" + jfc.getSelectedFile().getName() +
@@ -37,75 +39,91 @@ public class PictoralFinProjectManager {
 						"File Already Exists", JOptionPane.INFORMATION_MESSAGE);
 				
 				if(choice != JOptionPane.YES_OPTION) {
-					return null;
+					return;
 				}					
 			}
-			filePath = jfc.getSelectedFile().getPath();	
+			staticFilePath = jfc.getSelectedFile().getPath();	
 		}
+		String name = new File(staticFilePath).getName();
+		String[] splitName = name.split("\\.");
 		
-		saveLocation = new File(filePath);
-		
-		String[] splitName = saveLocation.getName().split("\\.");
 		if(splitName != null && splitName.length > 1) {
-			if(!saveLocation.getPath().split("\\.")[1].equals("pfp")) {
-				int choice = JOptionPane.showConfirmDialog(null, "The file \"" + saveLocation.getName() +
+			if(!splitName[1].equals("pfp")) {
+				int choice = JOptionPane.showConfirmDialog(null, "The file \"" + name +
 						"\" does not have the correct extension.\nWould you like to rename it to:\n\""+splitName[0]+".pfp\"?",
 						"Incorrect Extension", JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
 				
 				if(choice == JOptionPane.OK_OPTION)
-					saveLocation = new File(saveLocation.getParent() + "\\" + splitName[0] + ".pfp");
+					staticFilePath = new File(staticFilePath).getParent() + "\\" + splitName[0] + ".pfp";
 			}
 		}
 		
-		
-				
-		try {
-			ObjectOutputStream objectOutput = new ObjectOutputStream(new FileOutputStream(saveLocation));
-			pictoralFin.setStatus("Creating Project Object...");
-			PictoralFinStaticProject project = pictoralFin.getTimeLine().generatePictoralFinStaticProject();
-			pictoralFin.setStatus("Writing Project to File...");
-			objectOutput.writeObject(project);			
-			objectOutput.close();	
-			pictoralFin.setStatus("Project Saved!");
-			System.gc();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-		
-		return null;		
+		new Thread(new Runnable() {
+			public void run() {
+				saveProjectToFile(pictoralFin, staticFilePath);	
+				staticFilePath = null;				
+			}			
+		}).start();
 	}
 	
-	public static File openProject(PictoralFin pictoralFin, String filePath) {
-		File openLocation = null;
-		JFileChooser jfc = new JFileChooser();
-		
-		jfc.setCurrentDirectory(new File(pictoralFin.getDataFile().getLastOpenProjectLocation()));
-		jfc.setDialogTitle("Open Project");
-		jfc.setApproveButtonText("Open");
-		jfc.setAcceptAllFileFilterUsed(true);
-		jfc.addChoosableFileFilter(new FileNameExtensionFilter("Project Files", "pfp"));
-		
-		jfc.showOpenDialog(null);
-		
-		openLocation = jfc.getSelectedFile();
-		
+	public static void saveProjectToFile(PictoralFin pictoralFin, String filePath) {				
 		try {
-			pictoralFin.setStatus("Openning File...");
+			File saveLocation = new File(filePath);		
+			ObjectOutputStream objectOutput = new ObjectOutputStream(new FileOutputStream(saveLocation));
+			StatusLogger.logStatus("Creating Project Object...");
+			PictoralFinStaticProject project = pictoralFin.getTimeLine().generatePictoralFinStaticProject();
+			StatusLogger.logStatus("Writing Project to File...");
+			objectOutput.writeObject(project);			
+			objectOutput.close();	
+			StatusLogger.logStatus("Project Saved!");
+			System.gc();
+			pictoralFin.getDataFile().setLastOpenProjectLocation(saveLocation.getParent());
+			
+			pictoralFin.setOpenProjectFile(saveLocation);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	public static void openProject(PictoralFin pictoralFin, String filePath) {
+		staticFilePath = filePath;
+		if(staticFilePath == null) {
+			JFileChooser jfc = new JFileChooser();
+			jfc.setCurrentDirectory(new File(pictoralFin.getDataFile().getLastOpenProjectLocation()));
+			jfc.setDialogTitle("Open Project");
+			jfc.setApproveButtonText("Open");
+			jfc.setAcceptAllFileFilterUsed(true);
+			jfc.addChoosableFileFilter(new FileNameExtensionFilter("Project Files", "pfp"));
+			
+			if(jfc.showOpenDialog(null) == JFileChooser.CANCEL_OPTION)
+				return;
+			
+			staticFilePath = jfc.getSelectedFile().getAbsolutePath();
+		}
+		
+		new Thread(new Runnable() {
+			public void run() {
+				openProjectFromFile(pictoralFin, staticFilePath);	
+				staticFilePath = null;				
+			}			
+		}).start();
+	}
+	
+	public static void openProjectFromFile(PictoralFin pictoralFin, String filePath) {	
+		try {
+			File openLocation = new File(filePath);
+			StatusLogger.logStatus("Openning File...");
 			ObjectInputStream objectOutput = new ObjectInputStream(new FileInputStream(openLocation));
 			pictoralFin.getTimeLine().loadPictoralFinStaticProject((PictoralFinStaticProject) objectOutput.readObject());			
 			objectOutput.close();	
-			pictoralFin.setStatus("Project Openned!");
-			return openLocation;
+			StatusLogger.logStatus("Project Openned!");
+			
+			pictoralFin.getDataFile().setLastOpenProjectLocation(openLocation.getParent());
+			pictoralFin.setOpenProjectFile(openLocation);
+			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
-		
-		return null;
-	}
-
-	public static void clearTempFiles() {
-		File tempFolder = new File("projectTemp");
-		for(File tempFile : tempFolder.listFiles())
-			tempFile.delete();
+		pictoralFin.setOpenProjectFile(null);
 	}
 }

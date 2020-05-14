@@ -15,8 +15,7 @@ public class AudioUtil {
 		try {
 			if(toConvert == null || toConvert.getName().contains("mp3"))
 				return toConvert;
-			
-			File target = new File(toConvert.getParentFile() + "/" + toConvert.getName().split("\\.")[0] + ".mp3");
+			File target = File.createTempFile(toConvert.getName().split("\\.")[0], ".mp3");
 
 			// Audio Attributes
 			AudioAttributes audio = new AudioAttributes();
@@ -36,10 +35,37 @@ public class AudioUtil {
 			
 			return target;
 		} catch (Exception e) {
-			System.out.println("Empty Catch Block: AudioUtil.convertAudioFileToWAV()");
+			System.out.println("Empty Catch Block: AudioUtil.convertAudioFileToMp3()");
 			e.printStackTrace();
 		}
 		
 		return null;		
+	}
+
+	public static File extractAudioFromVideo(File videoFile) {
+		try {
+			File target = File.createTempFile(videoFile.getName().split("\\.")[0], "PictoralFinAudio");
+
+			AudioAttributes audioAttributes = new AudioAttributes();
+			audioAttributes.setCodec("libmp3lame")
+			    .setBitRate(new Integer(128000))
+			    .setChannels(new Integer(2))
+			    .setSamplingRate(new Integer(44100));
+			
+			EncodingAttributes encodingAttributes = new EncodingAttributes();
+			encodingAttributes.setFormat("mp3")
+			    .setAudioAttributes(audioAttributes);
+
+			Encoder encoder = new Encoder();
+			encoder.encode(new MultimediaObject(videoFile), target, encodingAttributes); 
+			
+			return target;
+		} catch (Exception e) {
+			System.out.println("Empty Catch Block: AudioUtil.extractAudioFromVideo()");
+			e.printStackTrace();
+		}
+		
+		return null;
+		
 	}
 }

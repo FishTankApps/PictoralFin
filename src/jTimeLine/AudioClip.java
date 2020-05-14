@@ -18,6 +18,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import mainFrame.PictoralFin;
+import objectBinders.Frame;
 import objectBinders.Theme;
 import utilities.AudioUtil;
 import utilities.Utilities;
@@ -97,13 +98,22 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		super.paint(g);
 		Theme theme = jTimeLine.getFrameTimeLine().theme;
 		
-		int buttonSize = jTimeLine.getFrameTimeLine().frameDimension;
-		int startIndex = (jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime()) * buttonSize) + (5 * jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime())); // 5 = H-Gap in FrameTimeLine's Buttons
-		int endIndex =   (jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime()+audioClipData.getLength())  * buttonSize) + (5 * jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime()+audioClipData.getLength()));
+		int buttonSize = jTimeLine.getFrameTimeLine().frameDimension + 5; // 5 = H-Gap in FrameTimeLine's Buttons
+		Frame endFrame =  jTimeLine.getFrameAtMilli(audioClipData.getStartTime()+audioClipData.getLength());
+		int startButton = jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime());
+		int endButton   = jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime()+audioClipData.getLength());
+		int leftOver =    (int) (jTimeLine.getMilliAtFrame(endFrame) - audioClipData.getStartTime() - audioClipData.getLength());
 		
-		if(jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime()) == -1) {
+		int startIndex = (startButton      * buttonSize);
+		int endIndex =   ((endButton - ((leftOver == 0) ? 2 : 1))  * buttonSize);
+		
+		if(endButton >= 0) {
+			endIndex += (int) ((buttonSize - 5) * ((endFrame.getDuration()-leftOver)/(double) endFrame.getDuration()));
+		}
+		
+		if(startButton == -1) {
 			startIndex = 0;
-		} else if(jTimeLine.getIndexOfFrameAtMilli(audioClipData.getStartTime()) == -2) {
+		} else if(startButton == -2) {
 			startIndex = (jTimeLine.numberOfFrame() * buttonSize) + (5 * jTimeLine.numberOfFrame());
 		}
 		

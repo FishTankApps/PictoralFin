@@ -199,6 +199,22 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		
 		return -1;
 	}
+	public long getMilliAtFrame(Frame f) {
+		if(getComponentCount() == 0 || getComponent(0) instanceof JButton)
+			return -1;
+		
+		long durration = 0;
+		for(Component c : getComponents()) {
+			JFrameButton button = (JFrameButton) c;
+			durration += button.getFrame().getDuration();
+			
+			if(button.getFrame() == f) {
+				return durration;
+			}
+		}
+		
+		return -1;
+	}
 	
 	public Frame getSelectedFrame() {
 		if(selectedJFrameButton == null)
@@ -283,9 +299,6 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		
 		button.setSelected(true);
 		
-		for(OnFrameSelectionChangedListener l : listenersOFSC)
-			l.frameSelectionChanged((selectedJFrameButton != null) ? selectedJFrameButton : null, button);
-		
 		selectedJFrameButton = button;
 	}
 	public int getIndexOfJFrameButton(JFrameButton button) {
@@ -317,7 +330,16 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		} else 
 			return;
 		
+		JFrameButton old = selectedJFrameButton;
+		
 		revalidate();
+		
+		setSelectedFrame(button.getFrame());		
+		
+		for(OnFrameSelectionChangedListener l : listenersOFSC)
+			l.frameSelectionChanged(button, old);
+		
+		
 		repaint();
 	}
 	
@@ -339,15 +361,13 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 			selectedJFrameButton.repaint();			
 		}		
 		
-		button.setSelected(true);
-		
-		if(button != selectedJFrameButton)
-			for(OnFrameSelectionChangedListener l : listenersOFSC)
-				l.frameSelectionChanged((selectedJFrameButton != null) ? selectedJFrameButton : null, button);
-		
+		button.setSelected(true);		
 		selectedJFrameButton = button;
 		
 		pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().attachSettingsPanel(selectedJFrameButton.generateSettingsPanel());
+		
+		for(OnFrameSelectionChangedListener l : listenersOFSC)
+			l.frameSelectionChanged((selectedJFrameButton != null) ? selectedJFrameButton : null, button);
 	}
 	void onJFrameButtonHighlighted(JFrameButton button) {				
 		highlightedJFrameButton = button;
@@ -358,7 +378,6 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 			highlightedJFrameButton = null;
 	}
 	
-
 	public void mousePressed(MouseEvent event) {
 		//System.out.println("PRESSED");
 		//dragListener.mousePressed(event);

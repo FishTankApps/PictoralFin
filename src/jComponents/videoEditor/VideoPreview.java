@@ -137,9 +137,7 @@ public class VideoPreview extends JPanel implements Themed {
 		controlPanel.add(videoTimeLine, BorderLayout.NORTH);
 		controlPanel.add(buttonPanel, BorderLayout.CENTER);
 		controlPanel.add(currentTime, BorderLayout.WEST);
-		controlPanel.add(videoDurration, BorderLayout.EAST);
-		
-				
+		controlPanel.add(videoDurration, BorderLayout.EAST);				
 		
 		videoPreviewThread = new Thread(new PreviewUpdater(this));		
 		videoPreviewThread.start();
@@ -217,10 +215,6 @@ public class VideoPreview extends JPanel implements Themed {
 		skipRight.setIcon(skipRightIcon);
 		skipLeft.setIcon(skipLeftIcon);		
 	}
-	public void setCurrentFrame(int cf) {
-		videoTimeLine.setValue(cf);
-		this.repaint();
-	}
 	public void setPreviewState(boolean previewState) {
 		this.previewState = previewState;
 	}	
@@ -237,7 +231,11 @@ public class VideoPreview extends JPanel implements Themed {
 		
 		if(timeLine == null && Utilities.getPictoralFin(this) != null) {
 			timeLine = Utilities.getPictoralFin(this).getTimeLine();
-			timeLine.addOnFrameSelectionChangeListener((oldFrame, newFrame) -> repaint());
+			timeLine.addOnFrameSelectionChangeListener((oldFrame, newFrame) -> {
+					if(timeLine.getMilliAtCurrentFrame() != -1)
+						currentMilli = timeLine.getMilliAtCurrentFrame(); 
+					repaint();
+				});
 			timeLine.addOnVideoDurrationChangedListener(e->repaint());
 		}
 		

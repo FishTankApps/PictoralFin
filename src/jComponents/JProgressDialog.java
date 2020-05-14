@@ -40,15 +40,16 @@ public class JProgressDialog {
 		dialog.setIconImage(i);
 	}
 	
-	public void moveForward() throws CanceledException {
+	public void moveForward() {
 		moveForward(1);
 	}
-	public void moveForward(int amount) throws CanceledException {
+	public void moveForward(int amount) {
 		setProgress(progress + amount);
 	}
-	public void setProgress(int progress) throws CanceledException {
+	public void setProgress(int progress) {
 		this.progress = progress;
 		jProgressBar.setValue(progress);
+		jProgressBar.repaint();
 		
 		dialog.setTitle(replaceKeys(title));
 		
@@ -57,6 +58,10 @@ public class JProgressDialog {
 		
 		if(!dialog.isVisible() && progress < completedValue)
 			throw new CanceledException();
+	}
+	
+	public void close() {
+		setProgress(completedValue + 2);
 	}
 	
 	public String replaceKeys(String string) {

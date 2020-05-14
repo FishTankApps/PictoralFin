@@ -32,7 +32,7 @@ public class VideoTopBar extends JMenuBar {
 		importAudio.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddAudioRequest);
 		
 		importVideo = new JMenuItem("Import Video(s)");
-		//importVideo.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
+		importVideo.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddVideoRequest);
 		
 		importOtherFiles = new JMenuItem("Import Other File(s)");
 		//importOtherFiles.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);

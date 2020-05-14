@@ -43,6 +43,7 @@ import utilities.BufferedImageUtil;
 import utilities.ChainGBC;
 import utilities.PictureImporter;
 import utilities.Utilities;
+import utilities.VideoImporter;
 
 public class PictoralFin extends JFrame implements Closeable {
 	
@@ -68,7 +69,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	
 	private GlobalListenerToolKit globalListenerToolKit;
 	private GlobalImageKit globalImageKit;
-	
+
 	public ArrayList<String> flags;
 	
 	public PictoralFin() {
@@ -76,6 +77,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		settings = Settings.openSettings();
 		settings.setTheme(Theme.OCEAN_THEME);
 		dateFile = DataFile.openDataFile();
+		StatusLogger.logger = new StatusLogger(this);
 		
 		globalListenerToolKit = new GlobalListenerToolKit(this);
 		
@@ -234,6 +236,9 @@ public class PictoralFin extends JFrame implements Closeable {
 	public AudioImporter getAudioImporter() {
 		return new AudioImporter(this);
 	}
+	public VideoImporter getVideoImporter() {
+		return new VideoImporter(this);
+	}
 	public Settings getSettings() {
 		return settings;
 	}
@@ -241,55 +246,36 @@ public class PictoralFin extends JFrame implements Closeable {
 		return dateFile;
 	}
 		
-	public void setStatus(String status) {
-		statusLabel.setText("Status: " + status);
+	void setStatus(String status) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				statusLabel.setText("Status: " + status);
 				statusLabel.repaint();
 			}
 		});	
 	}
+	public void setOpenProjectFile(File projectFile) {
+		openProject = projectFile;
+		
+		if(openProject != null)
+			setTitle("Pictoral Fin ~ " + openProject.getName());
+	}
 	
 	public void openProject(String filePath) {
-		new Thread(new Runnable() {
-			public void run() {
-				openProject = PictoralFinProjectManager.openProject(PictoralFin.this, filePath);
-				
-				if(openProject != null)
-					setTitle("PictoralFin - " + openProject.getName());
-			}
-			
-		}).start();
-		
+		PictoralFinProjectManager.openProject(this, filePath);	
 	}
 	
 	public void saveProject() {
-		new Thread(new Runnable() {
-			public void run() {
-				openProject = PictoralFinProjectManager.saveProject(PictoralFin.this, (openProject == null) ? null : openProject.getAbsolutePath());
-
-				if(openProject != null)
-					setTitle("PictoralFin - " + openProject.getName());
-			}
-			
-		}).start();		
+		PictoralFinProjectManager.saveProject(PictoralFin.this, (openProject == null) ? null : openProject.getAbsolutePath());	
 	}
 	public void saveProjectAs() {
-		new Thread(new Runnable() {
-			public void run() {
-				openProject = PictoralFinProjectManager.saveProject(PictoralFin.this, null);
-
-				if(openProject != null)
-					setTitle("PictoralFin - " + openProject.getName());
-			}
-			
-		}).start();	
+		PictoralFinProjectManager.saveProject(PictoralFin.this, null);
 	}
 	public VideoEditor getVideoEditor() {
 		return videoEditor;
 	}
 	
-	public void updateMemoryUsage(){
+	private void updateMemoryUsage(){
 		if(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() < 1000)
 			System.gc();
 		

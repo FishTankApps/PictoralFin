@@ -11,7 +11,7 @@ public class BufferedImageUtil {
 		BufferedImage target = new BufferedImage(toCopy.getWidth(), toCopy.getHeight(), toCopy.getType());
 		Graphics targetGraphics = target.getGraphics();
 		targetGraphics.drawImage(toCopy, 0, 0, null);
-		targetGraphics.dispose();	
+		targetGraphics.dispose();
 		
 		return target;
 	}
@@ -24,6 +24,8 @@ public class BufferedImageUtil {
 		targetGraphics.drawImage(image, 0, 0, null);
 		targetGraphics.dispose();	
 		
+		image = null;
+		
 		return target;
 	}
 	public static BufferedImage imageToBufferedImage(Image toConvert){
@@ -32,11 +34,15 @@ public class BufferedImageUtil {
 		returnImageGraphics.drawImage(toConvert, 0, 0, null);
 		returnImageGraphics.dispose();	
 		
+		toConvert = null;
+		
 		return returnImage;
 	}
 	
 	public static BufferedImage resizeBufferedImage(BufferedImage image, int width, int height, int scaleType){
 		Image scaled = image.getScaledInstance(width, height, scaleType);
+		image = null;
+		
 		return imageToBufferedImage(scaled);
 	}
 }

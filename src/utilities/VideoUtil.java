@@ -4,13 +4,19 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.mediatool.event.IVideoPictureEvent;
+import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IRational;
+import com.xuggle.xuggler.IStream;
 
 import customExceptions.CanceledException;
 import jComponents.JProgressDialog;
@@ -20,99 +26,100 @@ import mainFrame.PictoralFin;
 import mainFrame.StatusLogger;
 import objectBinders.DataFile;
 
-public class VideoUtil {	
+public class VideoUtil {
 	// EXPORTING VIDEO:
-	
+
 	private static int stepsCompleted = 0;
 	private static int totalSteps = 0;
 	private static File outputFile = null;
-	
+
 	private static JProgressDialog progressDialog = null;
-	
+
 	public static void generateAndSaveVideo(PictoralFin pictoralFin) {
-		new Thread(()->{
-				try {
-					generateAndSaveVideoThreaded(pictoralFin);
-				} catch (CanceledException e) {
-					StatusLogger.logStatus("Export Canceled");
-					
-					if(outputFile != null)
-						outputFile.delete();
-				}
-				
-			}).start();
+		new Thread(() -> {
+			try {
+				generateAndSaveVideoThreaded(pictoralFin);
+			} catch (CanceledException e) {
+				StatusLogger.logStatus("Export Canceled");
+
+				if (outputFile != null)
+					outputFile.delete();
+			}
+
+		}).start();
 	}
+
 	public static void generateAndSaveVideoThreaded(PictoralFin pictoralFin) {
+		StatusLogger.logStatus("Getting Target File...");
 		File videoFile = getFileToExportTo(pictoralFin.getDataFile());
 
 		if (videoFile == null)
 			return;
 
 		outputFile = videoFile;
-		
-		StatusLogger.logStatus("Setting Up Varibles...");
-		
+
+		StatusLogger.logStatus("Resizing Images...");
+
 		Dimension pictureSize = getOptimalPictureSize(pictoralFin);
 		ArrayList<BufferedImage> frames = resizeImages(pictoralFin, pictureSize);
-		FFmpegFrameRecorder frameRecorder = new FFmpegFrameRecorder(videoFile, (int) pictureSize.getWidth(),
-				(int) pictureSize.getHeight());
-
+		
+		StatusLogger.logStatus("Opening File...");
+		
+		IMediaWriter writer = ToolFactory.makeWriter(videoFile.getAbsolutePath());
+		
+		StatusLogger.logStatus("Getting Frame Durrations...");
 		long[] framesDurrationArray = new long[pictoralFin.getTimeLine().numberOfFrame()];
 		for (int count = 0; count < framesDurrationArray.length; count++)
 			framesDurrationArray[count] = pictoralFin.getTimeLine().getFrames()[count].getDuration();
 
-		try {		
+		try {
 			StatusLogger.logStatus("Applying Video Settings...");
 			long shortestframeDurration = Utilities.findGCDofArray(framesDurrationArray);
-			double framesPerSecond = 1000.0 / shortestframeDurration;		
+			double framesPerSecond = 1000.0 / shortestframeDurration;
 			
-			// Set Up Video Output
 			String videoExtension = videoFile.getName().split("\\.")[1];
-			frameRecorder.setVideoCodec((videoExtension.equals("mp4")) ? 13 : 22);
-			frameRecorder.setFormat(videoExtension);
-			frameRecorder.setFrameRate(framesPerSecond);
-			frameRecorder.setVideoQuality(1.0);
+			writer.addVideoStream(0, 0, ((videoExtension.equals("mp4")) ? ICodec.ID.CODEC_ID_MPEG4 : ICodec.ID.CODEC_ID_FLV1), 
+					IRational.make(framesPerSecond), (int) pictureSize.getWidth(), (int) pictureSize.getHeight());
 
 			// Set Up Audio Output
 			AudioClip[] clips = pictoralFin.getTimeLine().getAudioClips();
 			if (clips != null && clips.length > 0) {
-				frameRecorder.setSampleRate(44100);
-				frameRecorder.setAudioBitrate(128000);
-				frameRecorder.setAudioChannels(2);
-				frameRecorder.setAudioQuality(1.0);
+//				frameRecorder.setSampleRate(44100);
+//				frameRecorder.setAudioBitrate(128000);
+//				frameRecorder.setAudioChannels(2);
+//				frameRecorder.setAudioQuality(1.0);
 			}
-
-			frameRecorder.start();		
 			
 			// Set Up JProgressDialog
 			StatusLogger.logStatus("Estimating Work Load...");
-			
+
 			stepsCompleted = 0;
 			totalSteps = 0;
-			int framesToWrite = getImageFramesToWrite(frames, framesDurrationArray, shortestframeDurration, framesPerSecond);
+			int framesToWrite = getImageFramesToWrite(frames, framesDurrationArray, shortestframeDurration,	framesPerSecond);
 			totalSteps += framesToWrite;
-			totalSteps += getAudioFramesToWrite(frameRecorder, clips, framesToWrite);
-			
-			progressDialog = new JProgressDialog("Exporting Project... " + JProgressDialog.PERCENT, "Writing to Video File...", totalSteps);
-			
-			StatusLogger.logStatus("Writting Data... (0/" + totalSteps+")");
-			
-			// Write Data
-			writeImages(frameRecorder, frames, framesDurrationArray, shortestframeDurration, framesPerSecond);
-			writeAudio(frameRecorder, clips, framesToWrite);
+			//totalSteps += getAudioFramesToWrite(frameRecorder, clips, framesToWrite);
 
-			StatusLogger.logStatus("Saving File... (" + ++stepsCompleted + "/" + totalSteps+")");
-			frameRecorder.stop();
-			
+			progressDialog = new JProgressDialog("Exporting Project... " + JProgressDialog.PERCENT,
+					"Writing to Video File...", totalSteps);
+
+			StatusLogger.logStatus("Writting Data... (0/" + totalSteps + ")");
+
+			// Write Data
+			writeImages(writer, frames, framesDurrationArray, shortestframeDurration);
+			//writeAudio(frameRecorder, clips, framesToWrite);
+
+			StatusLogger.logStatus("Saving File... (" + ++stepsCompleted + "/" + totalSteps + ")");
+			writer.close();
+
 			progressDialog.close();
 			progressDialog = null;
 			outputFile = null;
-			
+
 			StatusLogger.logStatus("Export Finished!");
 		} catch (Exception e) {
-			if(e instanceof CanceledException)
+			if (e instanceof CanceledException)
 				throw (CanceledException) e;
-			
+
 			JOptionPane.showMessageDialog(null, "There was error exporting the video.\n" + e.getMessage(),
 					"Error Exporting", JOptionPane.ERROR_MESSAGE);
 			System.out.println("Error Exporting Video:");
@@ -188,74 +195,75 @@ public class VideoUtil {
 		return resizedImages;
 	}
 
-	private static void writeImages(FFmpegFrameRecorder frameRecorder, ArrayList<BufferedImage> images,
-			long[] frameDurrations, long shortestframeDurration, double framesPerSecond) throws Exception {
-		StatusLogger.logStatus("Recording Images... (" + stepsCompleted + "/" + totalSteps+")");
-		
-		Java2DFrameConverter converter = new Java2DFrameConverter();
+	private static void writeImages(IMediaWriter frameRecorder, ArrayList<BufferedImage> images, long[] frameDurrations, long shortestframeDurration) throws Exception {
+		StatusLogger.logStatus("Recording Images... (" + stepsCompleted + "/" + totalSteps + ")");
+
 		int count = 0;
 		for (BufferedImage image : images) {
 			for (int loop = 0; loop < (frameDurrations[count] / shortestframeDurration); loop++) {
-				frameRecorder.record(converter.convert(BufferedImageUtil.setBufferedImageType(image, Constants.IMAGE_TYPE)));
-				StatusLogger.logStatus("Recording Images... (" + ++stepsCompleted + "/" + totalSteps+")");
+				frameRecorder.encodeVideo(0, BufferedImageUtil.setBufferedImageType(image, Constants.IMAGE_TYPE), (count * shortestframeDurration), TimeUnit.MILLISECONDS);
+				StatusLogger.logStatus("Recording Images... (" + ++stepsCompleted + "/" + totalSteps + ")");
 				progressDialog.moveForward();
 			}
 			count++;
 		}
 	}
 
-	private static void writeAudio(FFmpegFrameRecorder frameRecorder, AudioClip[] audioClips, int imageFrameCount) {
+	private static void writeAudio(IMediaWriter writer, AudioClip[] audioClips, int imageFrameCount) {
 		if (audioClips == null || audioClips.length == 0)
 			return;
-		
+
 		for (AudioClip audioClip : audioClips) {
 			try {
 				File audioFile = AudioUtil.convertAudioFileToMP3(audioClip.getAudioFile());
 				if (audioFile == null)
 					break;
 
-				FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(audioFile);
-				int numOfFrames = getAudioFrameCounts(frameGrabber);
-				double framesPerSecond = (double) numOfFrames / (frameGrabber.getLengthInTime() / 1_000_000);
-				double audioFramesPerImageFrames = framesPerSecond / frameRecorder.getFrameRate();
-
-				frameGrabber.start();
-				for (int audioCount = 0; audioCount < imageFrameCount * audioFramesPerImageFrames; audioCount++) {
-					Frame audioFrame = frameGrabber.grab();
-					if (audioFrame != null) {
-						frameRecorder.record(audioFrame);
-					}
-					StatusLogger.logStatus("Recording Audio... (" + ++stepsCompleted + "/" + totalSteps+")");
-					progressDialog.moveForward();
-				}
-
-				frameGrabber.stop();
+				//writer.addAudioStream(arg0, arg1, arg2, arg3);
+//				FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(audioFile);
+//				int numOfFrames = getAudioFrameCounts(frameGrabber);
+//				double framesPerSecond = (double) numOfFrames / (frameGrabber.getLengthInTime() / 1_000_000);
+//				double audioFramesPerImageFrames = framesPerSecond / frameRecorder.getFrameRate();
+//
+//				frameGrabber.start();
+//				for (int audioCount = 0; audioCount < imageFrameCount * audioFramesPerImageFrames; audioCount++) {
+//					Frame audioFrame = frameGrabber.grab();
+//					if (audioFrame != null) {
+//						frameRecorder.record(audioFrame);
+//					}
+//					StatusLogger.logStatus("Recording Audio... (" + ++stepsCompleted + "/" + totalSteps + ")");
+//					progressDialog.moveForward();
+//				}
+//
+//				frameGrabber.stop();
 			} catch (Exception e) {
 				System.out.println("Empty Catch Block: VideoUtil.writeAudio()");
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	private static int getImageFramesToWrite(ArrayList<BufferedImage> images, long[] frameDurrations, 
+
+	private static int getImageFramesToWrite(ArrayList<BufferedImage> images, long[] frameDurrations,
 			long shortestframeDurration, double framesPerSecond) {
-			int count = 0;
-			int frameCount = 0;
-			for (@SuppressWarnings("unused") BufferedImage image : images) {
-				for (int loop = 0; loop < (frameDurrations[count] / shortestframeDurration); loop++) {
-					frameCount++;
-				}
-				count++;
+		int count = 0;
+		int frameCount = 0;
+		for (@SuppressWarnings("unused")
+		BufferedImage image : images) {
+			for (int loop = 0; loop < (frameDurrations[count] / shortestframeDurration); loop++) {
+				frameCount++;
 			}
-			return frameCount;
+			count++;
+		} 
+		return frameCount;
 	}
-	
-	private static int getAudioFramesToWrite(FFmpegFrameRecorder frameRecorder, AudioClip[] audioClips, int imageFrameCount) {
+
+	private static int getAudioFramesToWrite(FFmpegFrameRecorder frameRecorder, AudioClip[] audioClips,
+			int imageFrameCount) {
 		if (audioClips == null || audioClips.length == 0)
 			return 0;
-		
+
 		int count = 0;
-		
+
 		for (AudioClip audioClip : audioClips) {
 			try {
 				File audioFile = AudioUtil.convertAudioFileToMP3(audioClip.getAudioFile());
@@ -275,7 +283,7 @@ public class VideoUtil {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return count;
 	}
 
@@ -300,39 +308,110 @@ public class VideoUtil {
 	}
 
 	
+	
 	// IMPORTING VIDEO:
-	public static ArrayList<BufferedImage> videoToPictures(String mp4Path) {
-		StatusLogger.logStatus("Openning Video File...");
-		Java2DFrameConverter converter = new Java2DFrameConverter();
-		FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(mp4Path);
-		ArrayList<BufferedImage> toReturn;
-		Frame frame;
+	private static ArrayList<BufferedImage> frames;
+	private static int framesFound;
 
-		try {
-			
-			// TODO: Get this working
-			int count = 1;
-			frameGrabber.start();
-			toReturn = new ArrayList<BufferedImage>(frameGrabber.getLengthInFrames());
-			
-			System.out.println("Num Of Frames: " + frameGrabber.getLengthInFrames());
-			System.out.println("Frames Rate:   " + frameGrabber.getFrameRate());
-			
-			for (int i = 0; i < frameGrabber.getLengthInFrames(); i += frameGrabber.getFrameRate()) {
-				frame = frameGrabber.grabImage();
-				
-				BufferedImage bi = converter.convert(frame);
-				toReturn.add(bi);			
-				
-				StatusLogger.logStatus("Getting Frames... (" + count++ + "/" + frameGrabber.getLengthInFrames() + ")");
+	public static BufferedImage[] videoToPictures(String videoPath) {
+		frames = new ArrayList<>();
+		framesFound = 0;
+
+		StatusLogger.logStatus("Openning Video File...");
+
+		double frameCount = getVideoFrameCount(videoPath);
+		
+		IMediaReader reader = ToolFactory.makeReader(videoPath);
+		reader.setBufferedImageTypeToGenerate(Constants.IMAGE_TYPE);
+
+		reader.addListener(new MediaListenerAdapter() {
+
+			@Override
+			public void onVideoPicture(IVideoPictureEvent event) {
+				if (event.getImage() != null) {
+					frames.add(event.getImage());
+					StatusLogger.logStatus("Reading Video File... (" + (int) (100 * (++framesFound / frameCount)) + "%)");
+				}
+
 			}
-			
-			frameGrabber.stop();
-			return toReturn;
-		} catch (Exception e) {
-			e.printStackTrace();
+		});
+
+		while (reader.readPacket() == null) {
+			try {
+				Thread.sleep(0, 1);
+			} catch (Exception e) {
+				System.out.println("Thread Interrupted! VideoUtil.videoToPictures(String):");
+			}
+		}
+
+		reader.close();
+		
+		return frames.toArray(new BufferedImage[frames.size()]);
+	}
+
+	public static File extractAudioFromVideo(File videoFile) {
+		return AudioUtil.extractAudioFromVideo(videoFile);
+	}
+	
+	public static int getVideoFrameDurration(String filePath) {
+		IContainer container = IContainer.make();
+
+		if (container.open(filePath, IContainer.Type.READ, null) < 0)
+			throw new IllegalArgumentException("Error Openning the Video File");
+
+		int numStreams = container.getNumStreams();
+
+		int videoStreamId = -1;
+		IStream videoStream = null;
+		
+		for (int i = 0; i < numStreams; i++) {
+			IStream stream = container.getStream(i);
+			stream.getNumFrames();
+
+			if (stream.getStreamCoder().getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+				videoStreamId = i;
+				videoStream = stream;
+				break;
+			}
 		}
 		
-		return null;
+		if (videoStreamId == -1)
+			throw new RuntimeException("Could not find Video Stream");
+		
+		int frameDurration = (int) ((1.0 / (videoStream.getFrameRate().getDouble())) * 1000);
+		container.close();
+		
+		return frameDurration;
+	}
+	
+	public static int getVideoFrameCount(String filePath) {
+		IContainer container = IContainer.make();
+
+		if (container.open(filePath, IContainer.Type.READ, null) < 0)
+			throw new IllegalArgumentException("Error Openning the Video File");
+
+		int numStreams = container.getNumStreams();
+
+		int videoStreamId = -1;
+		IStream videoStream = null;
+		
+		for (int i = 0; i < numStreams; i++) {
+			IStream stream = container.getStream(i);
+			stream.getNumFrames();
+
+			if (stream.getStreamCoder().getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+				videoStreamId = i;
+				videoStream = stream;
+				break;
+			}
+		}
+		
+		if (videoStreamId == -1)
+			throw new RuntimeException("Could not find Video Stream");
+		
+		int frameDurration = (int) videoStream.getNumFrames();
+		container.close();
+		
+		return frameDurration;
 	}
 }

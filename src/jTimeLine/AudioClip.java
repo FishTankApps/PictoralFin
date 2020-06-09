@@ -51,7 +51,7 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	
 		checkerThread = new Thread(checker);
 		checkerThread.start();
-    }
+    }    
     
 	public AudioClip(String filePath, JTimeLine jTimeLine) {
 		this(new File(filePath), jTimeLine);
@@ -62,7 +62,8 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		this.jTimeLine = jTimeLine;
 		this.checker = new Checker();
 		
-		audioFile = AudioUtil.convertAudioFileToMP3(audioFile);		
+		if(!audioFile.getName().endsWith(".mp3"))
+			audioFile = AudioUtil.convertAudioFileToMP3(audioFile);		
 
 		audioClipData = new AudioClipData(audioFile);
 		audioClipData.setName(audioFile.getName());
@@ -79,7 +80,7 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		        }
 		    });
 		
-		while(audioClipData.getLength() == -1) {try {Thread.sleep(10);}catch(Exception e) {}}
+		//while(audioClipData.getLength() == -1) {try {Thread.sleep(10);}catch(Exception e) {}}
 		
 		
 		addMouseListener(this);

@@ -3,6 +3,8 @@ package mainFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import com.xuggle.xuggler.Global;
+
 import java.io.File;
 
 public class Launcher {
@@ -12,6 +14,11 @@ public class Launcher {
 		try {
 			System.out.println("-- Setting Look And Feel --");
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			
+			for(com.xuggle.ferry.Logger.Level c : com.xuggle.ferry.Logger.Level.values()) {
+				com.xuggle.ferry.Logger.setGlobalIsLogging(c, false);
+			}
+			Global.setFFmpegLoggingLevel(-1);
 			
 			System.out.println("-- Setting Up PictoralFin --");
 			PictoralFin pictoralFin = new PictoralFin();

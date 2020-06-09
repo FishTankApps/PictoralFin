@@ -2,13 +2,14 @@ package utilities;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import jTimeLine.AudioClip;
 import mainFrame.PictoralFin;
 import mainFrame.StatusLogger;
+import objectBinders.Frame;
 
 public class VideoImporter {
 	
@@ -45,28 +46,47 @@ public class VideoImporter {
 		
 		for(File videoFile : files) {		
 			count = 1;
-			ArrayList<BufferedImage> images = VideoUtil.videoToPictures(videoFile.getAbsolutePath());
-			numOfFrames = images.size();
-			for(BufferedImage frame : images) {
+			
+			// AUDIO:
+			StatusLogger.logStatus("Extracting Audio...");
+			File audioFile = VideoUtil.extractAudioFromVideo(videoFile);
+			
+			StatusLogger.logStatus("Importing Audio...");
+			if(audioFile != null) {
+				AudioClip audioClip = new AudioClip(audioFile, pictoralFin.getTimeLine());
+				audioClip.setName(videoFile.getName() + " Audio");
+				pictoralFin.getTimeLine().addAudioClip(audioClip);	
+			}
+			
+			// VIDEO:
+			BufferedImage[] images = VideoUtil.videoToPictures(videoFile.getAbsolutePath());
+			numOfFrames = images.length;
+			int frameDurration = VideoUtil.getVideoFrameDurration(videoFile.getAbsolutePath());
+			
+			for(BufferedImage image : images) {
 				try {
 					StatusLogger.logStatus("Importing Frames... (" + count++ + "/" + numOfFrames + ")");
-					if(frame == null)
+					if(image == null)
 						continue;
 					
-					widthRatio = ((double) frame.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-					heightRation = ((double) frame.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+					widthRatio = ((double) image.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
+					heightRation = ((double) image.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
 				
-					if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+					if(image.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || image.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
 						ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
-						frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
+						image = BufferedImageUtil.resizeBufferedImage(image, (int) (image.getWidth() / ratio), (int) (image.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
 					}
-				
-					pictoralFin.getTimeLine().addFrame(frame);
+					
+					pictoralFin.getTimeLine().addFrame(new Frame(image, frameDurration));
 				} catch (Exception e) {
 					System.out.println("Empty Catch Block VideoImporter.importVideo(File[]): ");
 					e.printStackTrace();
 				}				
-			}			
+			}
+			
+			
+			
+			StatusLogger.logStatus("Video Imported!");
 		}				
 	}
 }

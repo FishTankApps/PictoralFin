@@ -2,70 +2,107 @@ package utilities;
 
 import java.io.File;
 
-import ws.schild.jave.AudioAttributes;
-import ws.schild.jave.Encoder;
-import ws.schild.jave.EncodingAttributes;
-import ws.schild.jave.MultimediaObject;
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.mediatool.event.IAddStreamEvent;
+import com.xuggle.xuggler.IStreamCoder;
+
+import it.sauronsoftware.jave.AudioAttributes;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.EncodingAttributes;
+import mainFrame.StatusLogger;
 
 public class AudioUtil {
 
 	private AudioUtil() {}
-	
-	public static File convertAudioFileToMP3(File toConvert) {
-		try {
-			if(toConvert == null || toConvert.getName().contains("mp3"))
-				return toConvert;
-			File target = File.createTempFile(toConvert.getName().split("\\.")[0], ".mp3");
 
-			// Audio Attributes
+	public static File convertAudioFileToWAV(File toConvert) {
+
+		try {			
+			File target = File.createTempFile(toConvert.getName(), ".wav");
+			target.deleteOnExit();
+			
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Tempfile created at: " + target.getAbsolutePath());
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Created AudioAttributes... ");
+			
 			AudioAttributes audio = new AudioAttributes();
-			audio.setCodec("libmp3lame");
-			audio.setBitRate(128000);
-			audio.setChannels(2);
-			audio.setSamplingRate(44100);
+			audio.setCodec("pcm_s16le");
+			audio.setBitRate(new Integer(16));
+			audio.setChannels(new Integer(2));
+			audio.setSamplingRate(new Integer(48000));
 
-			// Encoding attributes
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Created EncodingAttributes... ");
 			EncodingAttributes attrs = new EncodingAttributes();
-			attrs.setFormat("mp3");
+			attrs.setFormat("wav");
 			attrs.setAudioAttributes(audio);
 
-			// Encode
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Created Encoder... ");
 			Encoder encoder = new Encoder();
-			encoder.encode(new MultimediaObject(toConvert), target, attrs);
+			
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Coverting... ");
+			encoder.encode(toConvert, target, attrs);
+			
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Coverting Completed without errors!");
 			
 			return target;
+		} catch (Exception e) {
+			System.out.println("Empty Catch Block: AudioUtil.convertAudioFileToWAV()");
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static File convertAudioFileToMP3(File toConvert) {
+		try {
+
+			File target = File.createTempFile(toConvert.getName().split("\\.")[0], ".mp3");
+			target.deleteOnExit();
+			Utilities.debug("AudioUtil.convertToMP3() - Tempfile created at: " + target.getAbsolutePath());
+			Utilities.debug("AudioUtil.convertToMP3() - Creating Readers and Writers...");
+
+			StatusLogger.logStatus("Converting Audio File... (Creating Readers/Writers)");
+			IMediaReader mediaReader = ToolFactory.makeReader(toConvert.getPath());
+			IMediaWriter mediaWriter = ToolFactory.makeWriter(target.getPath(), mediaReader);
+
+			Utilities.debug("AudioUtil.convertToMP3() - Adding Listeners...");
+			StatusLogger.logStatus("Converting Audio File... (Adding Listeners)");
+			mediaReader.addListener(mediaWriter);
+
+			mediaWriter.addListener(new MediaListenerAdapter() {
+				@Override
+				public void onAddStream(IAddStreamEvent event) {
+					IStreamCoder streamCoder = event.getSource().getContainer().getStream(event.getStreamIndex())
+							.getStreamCoder();
+					streamCoder.setBitRate(Constants.DEFAULT_KBS);
+					streamCoder.setBitRateTolerance(0);
+					streamCoder.setChannels(2);
+				}
+			});
+
+			StatusLogger.logStatus("Converting Audio File... (Converting)");
+			Utilities.debug("AudioUtil.convertToMP3() - Converting...");
+
+			while (mediaReader.readPacket() == null)
+				Utilities.doNothing();
+
+			StatusLogger.logStatus("Done Converting Audio File!");
+
+			Utilities.debug("AudioUtil.convertToMP3() - Converting Complete!");
+
+			return target;
+
 		} catch (Exception e) {
 			System.out.println("Empty Catch Block: AudioUtil.convertAudioFileToMp3()");
 			e.printStackTrace();
 		}
-		
-		return null;		
+
+		return null;
 	}
 
 	public static File extractAudioFromVideo(File videoFile) {
-		try {
-			File target = File.createTempFile(videoFile.getName().split("\\.")[0], "PictoralFinAudio");
-
-			AudioAttributes audioAttributes = new AudioAttributes();
-			audioAttributes.setCodec("libmp3lame")
-			    .setBitRate(new Integer(128000))
-			    .setChannels(new Integer(2))
-			    .setSamplingRate(new Integer(44100));
-			
-			EncodingAttributes encodingAttributes = new EncodingAttributes();
-			encodingAttributes.setFormat("mp3")
-			    .setAudioAttributes(audioAttributes);
-
-			Encoder encoder = new Encoder();
-			encoder.encode(new MultimediaObject(videoFile), target, encodingAttributes); 
-			
-			return target;
-		} catch (Exception e) {
-			System.out.println("Empty Catch Block: AudioUtil.extractAudioFromVideo()");
-			e.printStackTrace();
-		}
-		
-		return null;
-		
+		return convertAudioFileToWAV(videoFile);
 	}
 }

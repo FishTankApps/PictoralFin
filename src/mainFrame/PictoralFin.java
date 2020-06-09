@@ -88,7 +88,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		}
 		
 		ScheduledThreadPoolExecutor threadpool = new ScheduledThreadPoolExecutor(1);
-		threadpool.scheduleAtFixedRate(()->{updateMemoryUsage();}, 5, 5, TimeUnit.SECONDS);
+		threadpool.scheduleAtFixedRate(()->{updateMemoryUsage();}, 2, 1, TimeUnit.SECONDS);
 		Thread[] listOfThreads = new Thread[Thread.activeCount()];
 		Thread.enumerate(listOfThreads);
 		
@@ -276,7 +276,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	}
 	
 	private void updateMemoryUsage(){
-		if(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() < 1000)
+		if(Runtime.getRuntime().freeMemory() < 10000)
 			System.gc();
 		
 		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());

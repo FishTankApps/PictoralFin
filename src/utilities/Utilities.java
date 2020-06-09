@@ -17,6 +17,11 @@ import mainFrame.PictoralFin;
 public class Utilities {
 	private Utilities(){}
 	
+	public static final void debug(String message) {
+		if(Constants.DEBUG)
+			System.out.println(message);
+	}
+	
 	public static final String getFileName(String filePath){
 		int startIndex = filePath.lastIndexOf("\\") + 1;
 		
@@ -111,7 +116,7 @@ public class Utilities {
 		return gbc;
 	}
 	
-	public static PictoralFin getPictoralFin(Component childComponent) {		
+	public static final PictoralFin getPictoralFin(Component childComponent) {		
 		Container container = childComponent.getParent();
 		
 		while(true)
@@ -122,7 +127,7 @@ public class Utilities {
 				container = container.getParent();
 	}
 
-	public static String formatFrameLength(long durration) {
+	public static final String formatFrameLength(long durration) {
 		int minutes = (int) (durration / 60_000);
 		int seconds = (int) ((durration - (60_000 * minutes)) / 1_000);
 		int millis = (int) ((durration - (1_000 * seconds) - (60_000 * minutes)));
@@ -131,11 +136,11 @@ public class Utilities {
 		+  ((millis < 100) ? ((millis < 10) ? "00" : "0") : "") + millis;
 	}
 	
-	public static Color invertColor(Color c) {
+	public static final Color invertColor(Color c) {
 		return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
 	}
 
-	public static void playSound(String fileName) {
+	public static final void playSound(String fileName) {
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Utilities.class.getResourceAsStream(fileName));
 	        Clip clip = AudioSystem.getClip();
@@ -146,7 +151,7 @@ public class Utilities {
 		}		
 	}
 
-	public static long findGCDofArray(long arr[]) { 
+	public static final long findGCDofArray(long arr[]) { 
 		long result = arr[0]; 
         for (int i = 1; i < arr.length; i++){ 
             result = gcd(arr[i], result); 
@@ -160,11 +165,22 @@ public class Utilities {
         return result; 
     } 
 	
-	private static long gcd(long a, long b)  { 
+	private static final long gcd(long a, long b)  { 
         if (a == 0) 
             return b; 
         return gcd(b % a, a); 
     } 
+
+	/**
+	 * Use in while loops so it rechecks the case.
+	 */
+	public static final void doNothing() {
+		try {
+			Thread.sleep(0,1);
+		} catch(Exception e) {
+			
+		}
+	}
 }
 
 

@@ -1,0 +1,7 @@
+
+
+- Convert Audio to use RawAudioFile
+- Edit export to tie one generated WAV file to the video
+
+- Write Picture Editor (Static)
+- Write Audio Editor (Wave)

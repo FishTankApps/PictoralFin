@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 public final class Constants {
 	private Constants() {}
 	
+	public static final boolean DEBUG = true;
+	
 	// ----------{ KEYBOARD SHORT CUTS }------------------------------------------------------------
 	public static final int CTRL = 2;
 	public static final int SHIFT = 1;
@@ -23,9 +25,9 @@ public final class Constants {
 	public static final int META_CTRL_ALT_SHIFT = 15;
 	public static final int JUST_THE_KEY = 16;
 	
-	public static final String NOT_INSTALLED = "Not Installed";
-	
 	public static final int MAX_SCALE = 300;
 	
 	public static final int IMAGE_TYPE = BufferedImage.TYPE_3BYTE_BGR;
+	
+	public static final int DEFAULT_KBS = 128 * 1000;
 }

@@ -1,37 +1,29 @@
 package jTimeLine;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.Clip;
+
+import objectBinders.RawAudioFile;
 
 public class AudioClipData implements Serializable {
 
 	private static final long serialVersionUID = 9080986784077301257L;
-	private static short audioFileCount = 0;
 	
 	private String name;
 	private long startTime, length;
 	private double volume = 1.0;	
 
-    private byte[] audioData;
+	private transient RawAudioFile rawAudioFile;
+    
     public AudioClipData(File audioFile) {
     	try {
-    		FileInputStream fileInput = new FileInputStream(audioFile);
-            ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-            audioData = new byte[2048];
-
-            for (int readNum; (readNum = fileInput.read(audioData)) != -1;) {
-                byteArrayStream.write(audioData, 0, readNum);
-            }
-            
-            fileInput.close();
-
-            audioData = byteArrayStream.toByteArray();
-            byteArrayStream.close();
+    		rawAudioFile = new RawAudioFile(audioFile);
     	} catch (Exception e) {
     		System.out.println("Empty Catch Block: AudioClipData.AudioClipData(File);");
     		e.printStackTrace();
@@ -39,28 +31,18 @@ public class AudioClipData implements Serializable {
         
     }
     
-    public File generateAudioTempFile() {    	
-    	try {
-    		File tempFile = File.createTempFile("PictoralFinAudioFile" + audioFileCount++, ".mp3");
-    		tempFile.deleteOnExit();
-
-			FileOutputStream out = new FileOutputStream(tempFile);
-			out.write(audioData);
-			out.close();
-			
-			return tempFile;
-		} catch (Exception e) {
-			System.out.println("Empty Catch Block AudioClipData.generateAudioTempFile(): ");
-			e.printStackTrace();
-		}
-    	
-		return null;    	
+    public File generateAudioTempFile() {
+    	return  rawAudioFile.createTempWavFile(name);	
     }
 
-    public InputStream getAudioInputStream(){
-        return new ByteArrayInputStream(audioData);
+    public Clip getAudioClip() {
+    	return rawAudioFile.getPlayableClip();
     }
-
+    
+    public RawAudioFile getRawAudioFile() {
+    	return rawAudioFile;
+    }
+    
 	public String getName() {
 		return name;
 	}
@@ -93,4 +75,36 @@ public class AudioClipData implements Serializable {
 	public void setVolume(double volume) {
 		this.volume = volume;
 	}
+
+	
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		
+        out.writeInt(rawAudioFile.getRawAudioData().length);
+        
+        out.write(rawAudioFile.getRawAudioData());
+        
+        AudioFormat format = rawAudioFile.getAudioFormat();
+        
+        out.writeFloat(format.getSampleRate());
+        out.writeInt(format.getSampleSizeInBits());
+        out.writeInt(format.getChannels());
+        out.writeBoolean(format.isBigEndian());
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        
+        int dataLength = in.readInt();
+        byte[] audioData = new byte[dataLength];
+
+        in.readFully(audioData);
+        
+        float sampleRate = in.readFloat();
+        int sampleSizeInBits = in.readInt();
+        int channels = in.readInt();
+        boolean bigEndian = in.readBoolean();
+        
+        rawAudioFile = new RawAudioFile(new AudioFormat(sampleRate, sampleSizeInBits, channels, true, bigEndian), audioData);
+    }
 }

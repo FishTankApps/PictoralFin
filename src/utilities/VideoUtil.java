@@ -13,18 +13,21 @@ import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
+import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream;
+import com.xuggle.xuggler.IStreamCoder;
 
 import customExceptions.CanceledException;
 import jComponents.JProgressDialog;
 import jComponents.JVideoFileChooser;
-import jTimeLine.AudioClip;
 import mainFrame.PictoralFin;
 import mainFrame.StatusLogger;
 import objectBinders.DataFile;
+import objectBinders.RawAudioFile;
 
 public class VideoUtil {
 	// EXPORTING VIDEO:
@@ -63,6 +66,9 @@ public class VideoUtil {
 		Dimension pictureSize = getOptimalPictureSize(pictoralFin);
 		ArrayList<BufferedImage> frames = resizeImages(pictoralFin, pictureSize);
 		
+		StatusLogger.logStatus("Generating Sound File...");
+		RawAudioFile rawAudioFile = AudioUtil.combineAudioClips(pictoralFin.getTimeLine().getVideoDurration(), pictoralFin.getTimeLine().getAudioClips());
+
 		StatusLogger.logStatus("Opening File...");
 		
 		IMediaWriter writer = ToolFactory.makeWriter(videoFile.getAbsolutePath());
@@ -80,15 +86,6 @@ public class VideoUtil {
 			String videoExtension = videoFile.getName().split("\\.")[1];
 			writer.addVideoStream(0, 0, ((videoExtension.equals("mp4")) ? ICodec.ID.CODEC_ID_MPEG4 : ICodec.ID.CODEC_ID_FLV1), 
 					IRational.make(framesPerSecond), (int) pictureSize.getWidth(), (int) pictureSize.getHeight());
-
-			// Set Up Audio Output
-			AudioClip[] clips = pictoralFin.getTimeLine().getAudioClips();
-			if (clips != null && clips.length > 0) {
-//				frameRecorder.setSampleRate(44100);
-//				frameRecorder.setAudioBitrate(128000);
-//				frameRecorder.setAudioChannels(2);
-//				frameRecorder.setAudioQuality(1.0);
-			}
 			
 			// Set Up JProgressDialog
 			StatusLogger.logStatus("Estimating Work Load...");
@@ -97,16 +94,15 @@ public class VideoUtil {
 			totalSteps = 0;
 			int framesToWrite = getImageFramesToWrite(frames, framesDurrationArray, shortestframeDurration,	framesPerSecond);
 			totalSteps += framesToWrite;
-			//totalSteps += getAudioFramesToWrite(frameRecorder, clips, framesToWrite);
 
 			progressDialog = new JProgressDialog("Exporting Project... " + JProgressDialog.PERCENT,
 					"Writing to Video File...", totalSteps);
 
-			StatusLogger.logStatus("Writting Data... (0/" + totalSteps + ")");
+			StatusLogger.logStatus("Writting Audio... (0/" + totalSteps + ")");
 
-			// Write Data
+			// Write Data			
+			writeAudio(writer, rawAudioFile);
 			writeImages(writer, frames, framesDurrationArray, shortestframeDurration);
-			//writeAudio(frameRecorder, clips, framesToWrite);
 
 			StatusLogger.logStatus("Saving File... (" + ++stepsCompleted + "/" + totalSteps + ")");
 			writer.close();
@@ -209,37 +205,27 @@ public class VideoUtil {
 		}
 	}
 
-	private static void writeAudio(IMediaWriter writer, AudioClip[] audioClips, int imageFrameCount) {
-		if (audioClips == null || audioClips.length == 0)
-			return;
+	private static void writeAudio(IMediaWriter writer, RawAudioFile rawAudio) {
 
-		for (AudioClip audioClip : audioClips) {
-			try {
-				File audioFile = AudioUtil.convertAudioFileToMP3(audioClip.getAudioFile());
-				if (audioFile == null)
-					break;
+		if (rawAudio != null) {
+			File audioFile = rawAudio.createTempWavFile("VideoAudio"); 
+			IContainer containerAudio = IContainer.make();
+			containerAudio.open(audioFile.getPath(), IContainer.Type.READ, null);
+			
+			 IStreamCoder coderAudio = containerAudio.getStream(0).getStreamCoder();
+			 if (coderAudio.open(null, null) < 0)
+			      throw new RuntimeException("Cant open audio coder");
+			 IPacket packetaudio = IPacket.make();
+			 
+			 writer.addAudioStream(1, 0, coderAudio.getChannels(), coderAudio.getSampleRate());
 
-				//writer.addAudioStream(arg0, arg1, arg2, arg3);
-//				FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(audioFile);
-//				int numOfFrames = getAudioFrameCounts(frameGrabber);
-//				double framesPerSecond = (double) numOfFrames / (frameGrabber.getLengthInTime() / 1_000_000);
-//				double audioFramesPerImageFrames = framesPerSecond / frameRecorder.getFrameRate();
-//
-//				frameGrabber.start();
-//				for (int audioCount = 0; audioCount < imageFrameCount * audioFramesPerImageFrames; audioCount++) {
-//					Frame audioFrame = frameGrabber.grab();
-//					if (audioFrame != null) {
-//						frameRecorder.record(audioFrame);
-//					}
-//					StatusLogger.logStatus("Recording Audio... (" + ++stepsCompleted + "/" + totalSteps + ")");
-//					progressDialog.moveForward();
-//				}
-//
-//				frameGrabber.stop();
-			} catch (Exception e) {
-				System.out.println("Empty Catch Block: VideoUtil.writeAudio()");
-				e.printStackTrace();
-			}
+			 IAudioSamples samples;
+			 do {
+			     samples = IAudioSamples.make(512, coderAudio.getChannels(), IAudioSamples.Format.FMT_S32);
+			     containerAudio.readNextPacket(packetaudio);
+			     coderAudio.decodeAudio(samples, packetaudio, 0);
+			     writer.encodeAudio(1, samples);
+			} while (samples.isComplete());
 		}
 	}
 
@@ -255,59 +241,7 @@ public class VideoUtil {
 			count++;
 		} 
 		return frameCount;
-	}
-
-	private static int getAudioFramesToWrite(FFmpegFrameRecorder frameRecorder, AudioClip[] audioClips,
-			int imageFrameCount) {
-		if (audioClips == null || audioClips.length == 0)
-			return 0;
-
-		int count = 0;
-
-		for (AudioClip audioClip : audioClips) {
-			try {
-				File audioFile = AudioUtil.convertAudioFileToMP3(audioClip.getAudioFile());
-				if (audioFile == null)
-					break;
-
-				FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(audioFile);
-				int numOfFrames = getAudioFrameCounts(frameGrabber);
-				double framesPerSecond = (double) numOfFrames / (frameGrabber.getLengthInTime() / 1_000_000);
-				double audioFramesPerImageFrames = framesPerSecond / frameRecorder.getFrameRate();
-
-				count += imageFrameCount * audioFramesPerImageFrames;
-
-				frameGrabber.stop();
-			} catch (Exception e) {
-				System.out.println("Empty Catch Block: VideoUtil.getAudioFramesToWrite()");
-				e.printStackTrace();
-			}
-		}
-
-		return count;
-	}
-
-	private static int getAudioFrameCounts(FFmpegFrameGrabber audioGrabbers) {
-		Frame frame;
-		int count = 0;
-
-		try {
-			audioGrabbers.restart();
-			do {
-				frame = audioGrabbers.grab();
-				count++;
-			} while (frame != null);
-
-			audioGrabbers.restart();
-		} catch (Exception e) {
-			System.out.println("Empty Catch Block: VideoUtil.getAudioFrameCount()");
-			e.printStackTrace();
-		}
-
-		return count;
-	}
-
-	
+	}	
 	
 	// IMPORTING VIDEO:
 	private static ArrayList<BufferedImage> frames;

@@ -1,7 +1,4 @@
 
 
-- Convert Audio to use RawAudioFile
-- Edit export to tie one generated WAV file to the video
-
-- Write Picture Editor (Static)
-- Write Audio Editor (Wave)
+ - Fix frame duration on export
+ - Fix audio screeching

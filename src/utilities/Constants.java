@@ -29,5 +29,5 @@ public final class Constants {
 	
 	public static final int IMAGE_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 	
-	public static final int DEFAULT_KBS = 128 * 1000;
+	public static final int DEFAULT_SAMPLE_RATE = 48000;
 }

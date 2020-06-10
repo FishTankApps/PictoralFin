@@ -9,8 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import interfaces.Themed;
-import javafx.embed.swing.JFXPanel;
-import javafx.util.Duration;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
 
@@ -21,12 +19,8 @@ public class AudioTimeLine extends JPanel implements Themed {
 	private JButton addAudio;
 	private JTimeLine jTimeLine;
 	private PictoralFin pictoralFin;
-	
-	@SuppressWarnings("unused")
-	private transient JFXPanel panel;
 
 	public AudioTimeLine(PictoralFin pictoralFin, JTimeLine jTimeLine) {
-		panel = new JFXPanel();
 		this.jTimeLine = jTimeLine;
 		this.pictoralFin = pictoralFin;
 		this.theme = pictoralFin.getSettings().getTheme();
@@ -109,7 +103,7 @@ public class AudioTimeLine extends JPanel implements Themed {
 	public void seekTo(long milli) {
 		for(Component c : getComponents()) {
 			if(c instanceof AudioClip) {
-				((AudioClip) c).getMediaPlayer().seek(Duration.millis(milli));
+				((AudioClip) c).getPlayableClip().setMicrosecondPosition(milli * 1000);
 			}
 		}
 	}	

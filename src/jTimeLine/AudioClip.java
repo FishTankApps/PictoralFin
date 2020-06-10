@@ -8,26 +8,23 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 
+import javax.sound.sampled.Clip;
 import javax.swing.JComponent;
 
 import interfaces.Closeable;
 import interfaces.SettingsPanel;
 import interfaces.SettingsPanelOOI;
 import interfaces.Themed;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 import mainFrame.PictoralFin;
 import objectBinders.Frame;
 import objectBinders.Theme;
-import utilities.AudioUtil;
 import utilities.Utilities;
 
 public class AudioClip extends JComponent implements MouseListener, Themed, SettingsPanelOOI, Closeable {
 
 	private static final long serialVersionUID = 5730191032565741283L;
 	private File audioFile;
-	private MediaPlayer mediaPlayer;
+	private Clip playableAudioClip;
 	private JTimeLine jTimeLine;
 	boolean hovering = false, selected = false;
 	
@@ -45,7 +42,7 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		this.jTimeLine = jTimeLine;
 		this.checker = new Checker();
 		
-		mediaPlayer = new MediaPlayer(new Media(audioFile.toURI().toString()));		
+		playableAudioClip = audioClipData.getAudioClip();
 		
 		addMouseListener(this);
 	
@@ -61,34 +58,22 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		this.audioFile = audioFile;
 		this.jTimeLine = jTimeLine;
 		this.checker = new Checker();
-		
-		if(!audioFile.getName().endsWith(".mp3"))
-			audioFile = AudioUtil.convertAudioFileToMP3(audioFile);		
 
 		audioClipData = new AudioClipData(audioFile);
+		playableAudioClip = audioClipData.getAudioClip();
+		
 		audioClipData.setName(audioFile.getName());
 		audioClipData.setStartTime(0);
-		audioClipData.setLength(-1);
 		
-		mediaPlayer = new MediaPlayer(new Media(audioFile.toURI().toString()));
-
 		
-		mediaPlayer.setOnReady(new Runnable() {
-		        public void run() {
-		        	audioClipData.setLength((jTimeLine.getVideoDurration() < mediaPlayer.getTotalDuration().toMillis()) ? 
-		            		jTimeLine.getVideoDurration() : (int) mediaPlayer.getTotalDuration().toMillis());
-		        }
-		    });
-		
-		//while(audioClipData.getLength() == -1) {try {Thread.sleep(10);}catch(Exception e) {}}
+		audioClipData.setLength((jTimeLine.getVideoDurration() < getMaxLength()) ? 
+        		jTimeLine.getVideoDurration() : (int) getMaxLength());		
 		
 		
 		addMouseListener(this);
 	
 		checkerThread = new Thread(checker);
 		checkerThread.start();
-		
-		setVolume(.75);
 	}
 	
 	public Dimension getPreferredSize() {
@@ -149,8 +134,8 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	public long getLength() {
 		return audioClipData.getLength();
 	}
-	public long getMaxLength() {
-		return (long) mediaPlayer.getTotalDuration().toMillis();
+	public long getMaxLength() {		
+		return (long) (playableAudioClip.getMicrosecondLength() / 1000);
 	}
 	public double getVolume() {
 		return audioClipData.getVolume();
@@ -170,15 +155,12 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		audioClipData.setLength(length);
 		repaint();
 	}
-	public void setVolume(double volume) {
-		mediaPlayer.setVolume(volume);
-	}
 	public void setName(String name) {
 		audioClipData.setName(name);
 	}
 	
-	public MediaPlayer getMediaPlayer() {
-		 return mediaPlayer;
+	public Clip getPlayableClip() {
+		return playableAudioClip;
 	}
 
 	public AudioClipData getAudioClipData() {
@@ -226,14 +208,14 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 						currentMillis = pictoralFin.getVideoEditor().getVideoPreview().currentMilli;
 						
 						if(!playerIsPlaying && currentMillis > audioClipData.getStartTime() && currentMillis < audioClipData.getStartTime()+audioClipData.getLength()) {
-							mediaPlayer.seek(Duration.millis(currentMillis - audioClipData.getStartTime()));
-							mediaPlayer.play();		
+							playableAudioClip.setMicrosecondPosition((currentMillis - audioClipData.getStartTime()) * 1000);
+							playableAudioClip.start();		
 							playerIsPlaying = true;
 						} else if (playerIsPlaying && (currentMillis >= audioClipData.getStartTime()+audioClipData.getLength())) 
 							break;				
 					}	
 					
-					mediaPlayer.pause();
+					playableAudioClip.stop();
 					playerIsPlaying = false;
 					
 					while(!playing) {Thread.sleep(10);}
@@ -271,10 +253,8 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	public void applyTheme(Theme theme) {
 		repaint();		
 	}
-
 	
 	public void close() {
-		mediaPlayer.dispose();		
+		playableAudioClip.close();		
 	}
-
 }

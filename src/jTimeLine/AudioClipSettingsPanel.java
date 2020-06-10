@@ -7,6 +7,7 @@ import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -14,8 +15,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import interfaces.SettingsPanel;
-import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 import objectBinders.Theme;
 import utilities.ChainGBC;
 
@@ -28,14 +27,14 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 	private JLabel volumeLabel, trackTitle;
 	private JButton playSample, removeAudio;
 	private Theme theme;
-	private MediaPlayer player;
+	private Clip playableClip;
 	private AudioClip audioClip;
 	
 	
 	
 	public AudioClipSettingsPanel(AudioClip audioClip, Theme theme) {
 		this.audioClip = audioClip;
-		player = audioClip.getMediaPlayer();
+		playableClip = audioClip.getPlayableClip();
 		this.theme = theme;
 		
 		Font labelFont = new Font(theme.getPrimaryFont(), Font.BOLD, 17);
@@ -57,7 +56,7 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 		lengthMilli = new JSpinner(lengthMilliModel);
 		
 		volume = new JSlider(0, 100, (int) (audioClip.getVolume() * 100));
-		volume.addChangeListener(e->{volumeLabel.setText("Volume (" + volume.getValue() + "%):"); audioClip.setVolume((volume.getValue() / 100.0));});
+		volume.addChangeListener(e->{volumeLabel.setText("Volume (" + volume.getValue() + "%):");});
 		volumeLabel = new JLabel("Volume (" + volume.getValue() + "%):");
 		volumeLabel.setFont(labelFont);
 		volumeLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -98,12 +97,12 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 		public void mouseExited(MouseEvent arg0) {}
 
 		public void mousePressed(MouseEvent arg0) {
-			player.seek(Duration.millis(-5000));
-			player.play();
+			playableClip.setMicrosecondPosition(0);
+			playableClip.start();
 		}
 
 		public void mouseReleased(MouseEvent arg0) {
-			player.pause();
+			playableClip.stop();
 		}
 		
 	}

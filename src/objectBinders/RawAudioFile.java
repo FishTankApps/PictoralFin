@@ -136,6 +136,14 @@ public class RawAudioFile {
 		return numOfChannels;
 	}
 
+	public int getNumberOfSamples() {
+		if(shortChannel1 != null)
+			return shortChannel1.length;
+		
+		return -1;
+	}
+	
+	
 	public AudioFormat getAudioFormat() {
 		return format;
 	}

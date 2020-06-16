@@ -84,16 +84,12 @@ public class VideoUtil {
 			double framesPerSecond = 1000.0 / shortestframeDurration;
 			
 			String videoExtension = videoFile.getName().split("\\.")[1];
-			writer.addVideoStream(0, 0, ((videoExtension.equals("mp4")) ? ICodec.ID.CODEC_ID_MPEG4 : ICodec.ID.CODEC_ID_FLV1), 
+			int videoStreamIndex = writer.addVideoStream(0, 0, ((videoExtension.equals("mp4")) ? ICodec.ID.CODEC_ID_MPEG4 : ICodec.ID.CODEC_ID_FLV1), 
 					IRational.make(framesPerSecond), (int) pictureSize.getWidth(), (int) pictureSize.getHeight());
 			
 			// Set Up JProgressDialog
-			StatusLogger.logStatus("Estimating Work Load...");
-
 			stepsCompleted = 0;
-			totalSteps = 0;
-			int framesToWrite = getImageFramesToWrite(frames, framesDurrationArray, shortestframeDurration,	framesPerSecond);
-			totalSteps += framesToWrite;
+			totalSteps = frames.size();
 
 			progressDialog = new JProgressDialog("Exporting Project... " + JProgressDialog.PERCENT,
 					"Writing to Video File...", totalSteps);
@@ -102,14 +98,15 @@ public class VideoUtil {
 
 			// Write Data			
 			writeAudio(writer, rawAudioFile);
-			writeImages(writer, frames, framesDurrationArray, shortestframeDurration);
+			writeImages(writer, frames, framesDurrationArray, shortestframeDurration, videoStreamIndex);
 
 			StatusLogger.logStatus("Saving File... (" + ++stepsCompleted + "/" + totalSteps + ")");
-			writer.close();
+			writer.close();	
 
 			progressDialog.close();
 			progressDialog = null;
 			outputFile = null;
+			writer = null;
 
 			StatusLogger.logStatus("Export Finished!");
 		} catch (Exception e) {
@@ -180,28 +177,29 @@ public class VideoUtil {
 		ArrayList<BufferedImage> resizedImages = new ArrayList<>();
 
 		for (objectBinders.Frame f : pictoralFin.getTimeLine().getFrames()) {
-			BufferedImage i = new BufferedImage((int) newSize.getWidth(), (int) newSize.getHeight(), 6);
+			BufferedImage i = new BufferedImage((int) newSize.getWidth(), (int) newSize.getHeight(), Constants.IMAGE_TYPE);
 			BufferedImage frame = f.getLayer(0);
 			i.getGraphics().drawImage(frame, i.getWidth() / 2 - frame.getWidth() / 2,
 					i.getHeight() / 2 - frame.getHeight() / 2, frame.getWidth(), frame.getHeight(), null);
-
+			
 			resizedImages.add(i);
 		}
 
 		return resizedImages;
 	}
 
-	private static void writeImages(IMediaWriter frameRecorder, ArrayList<BufferedImage> images, long[] frameDurrations, long shortestframeDurration) throws Exception {
+	private static void writeImages(IMediaWriter frameRecorder, ArrayList<BufferedImage> images, long[] frameDurrations, long shortestframeDurration, int videoStreamIndex) throws Exception {
 		StatusLogger.logStatus("Recording Images... (" + stepsCompleted + "/" + totalSteps + ")");
-
-		int count = 0;
-		for (BufferedImage image : images) {
-			for (int loop = 0; loop < (frameDurrations[count] / shortestframeDurration); loop++) {
-				frameRecorder.encodeVideo(0, BufferedImageUtil.setBufferedImageType(image, Constants.IMAGE_TYPE), (count * shortestframeDurration), TimeUnit.MILLISECONDS);
-				StatusLogger.logStatus("Recording Images... (" + ++stepsCompleted + "/" + totalSteps + ")");
-				progressDialog.moveForward();
-			}
-			count++;
+		
+		int count = 0;	
+		
+		int imageIndex = 0;
+		for (BufferedImage image : images) {			
+			frameRecorder.encodeVideo(videoStreamIndex, BufferedImageUtil.setBufferedImageType(image, Constants.IMAGE_TYPE), imageIndex, TimeUnit.MILLISECONDS);
+			StatusLogger.logStatus("Recording Images... (" + ++stepsCompleted + "/" + totalSteps + ")");
+			
+			imageIndex += (frameDurrations[count++] / shortestframeDurration);
+			progressDialog.moveForward();
 		}
 	}
 
@@ -225,23 +223,17 @@ public class VideoUtil {
 			     containerAudio.readNextPacket(packetaudio);
 			     coderAudio.decodeAudio(samples, packetaudio, 0);
 			     writer.encodeAudio(1, samples);
-			} while (samples.isComplete());
+			} while (samples.isComplete());			 
+			 
+			 coderAudio.close();
+			 containerAudio.close();
+			 
+			 containerAudio = null;
+			 packetaudio = null;
+			 coderAudio = null;
+			 samples = null;
 		}
 	}
-
-	private static int getImageFramesToWrite(ArrayList<BufferedImage> images, long[] frameDurrations,
-			long shortestframeDurration, double framesPerSecond) {
-		int count = 0;
-		int frameCount = 0;
-		for (@SuppressWarnings("unused")
-		BufferedImage image : images) {
-			for (int loop = 0; loop < (frameDurrations[count] / shortestframeDurration); loop++) {
-				frameCount++;
-			}
-			count++;
-		} 
-		return frameCount;
-	}	
 	
 	// IMPORTING VIDEO:
 	private static ArrayList<BufferedImage> frames;

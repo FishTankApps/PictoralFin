@@ -32,7 +32,7 @@ public class JProgressDialog {
 		pane.add(jProgressBar, 1);
 		
 		dialog = pane.createDialog(replaceKeys(title));
-		dialog.setModalityType(JDialog.ModalityType.APPLICATION_MODAL); // MODELESS = not on top
+		dialog.setModalityType(JDialog.ModalityType.MODELESS); // MODELESS = not on top
 		dialog.setVisible(true);
 	}
 

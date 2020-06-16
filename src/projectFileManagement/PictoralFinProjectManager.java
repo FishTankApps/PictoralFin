@@ -93,7 +93,10 @@ public class PictoralFinProjectManager {
 			jfc.setDialogTitle("Open Project");
 			jfc.setApproveButtonText("Open");
 			jfc.setAcceptAllFileFilterUsed(true);
-			jfc.addChoosableFileFilter(new FileNameExtensionFilter("Project Files", "pfp"));
+			
+			FileNameExtensionFilter projectFiles = new FileNameExtensionFilter("Project Files", "pfp");
+			jfc.addChoosableFileFilter(projectFiles);
+			jfc.setFileFilter(projectFiles);
 			
 			if(jfc.showOpenDialog(null) == JFileChooser.CANCEL_OPTION)
 				return;

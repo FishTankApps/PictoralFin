@@ -55,39 +55,55 @@ public class AudioUtil {
 		return convertAudioFileToWAV(videoFile);
 	}
 	
-	public static RawAudioFile combineAudioClips(long lengthInMilli, AudioClip[] clips) {		
-		if(clips == null || clips.length == 0)
+	public static RawAudioFile combineAudioClips(long outputLengthInMilli, AudioClip[] audioClips) {		
+		if(audioClips == null || audioClips.length == 0)
 			return null;
 		
 		short[] leftChannel, rightChannel;
-		int[] sampleCountPerClip = new int[clips.length];
+		int[] sampleCountPerClip = new int[audioClips.length];
 		
-		for(int count = 0; count < sampleCountPerClip.length; count++)
-			sampleCountPerClip[count] = 0;
+		for(int setToZeroCounter = 0; setToZeroCounter < sampleCountPerClip.length; setToZeroCounter++)
+			sampleCountPerClip[setToZeroCounter] = 0;
 		
-		AudioFormat format = clips[0].getAudioClipData().getRawAudioFile().getAudioFormat();
+		AudioFormat audioFormat = audioClips[0].getAudioClipData().getRawAudioFile().getAudioFormat();
 		
-		float samplesPerMilli = format.getSampleRate() / 1000;
-		int length = (int) (samplesPerMilli * lengthInMilli);
+		float samplesPerMilli = audioFormat.getSampleRate() / 1000;
+		int lengthInSamples = (int) (samplesPerMilli * outputLengthInMilli);
 		
-		leftChannel = new short[length];
-		rightChannel = new short[length];
+		leftChannel = new short[lengthInSamples];
+		rightChannel = new short[lengthInSamples];
 		
 		long currentMillis = 0;
-		for(int count = 0; count < length; count++) {
-			leftChannel[count] = 0;
-			rightChannel[count] = 0;
+		int leftValueTemp, rightValueTemp;
+		for(int sampleIndex = 0; sampleIndex < lengthInSamples; sampleIndex++) {
+			leftChannel[sampleIndex] = 0;
+			rightChannel[sampleIndex] = 0;
 			
-			currentMillis = (long) (count / samplesPerMilli);
+			currentMillis = (long) (sampleIndex / samplesPerMilli);
 			
-			for(int clipIndex = 0; clipIndex < clips.length; clipIndex++) {
-				if(currentMillis >= clips[clipIndex].getStartTime() && currentMillis <= clips[clipIndex].getEndTime()) {					
-					leftChannel[count]  += clips[clipIndex].getAudioClipData().getRawAudioFile().getChannel(RawAudioFile.LEFT_CHANNEL) [sampleCountPerClip[clipIndex]];
-					rightChannel[count] += clips[clipIndex].getAudioClipData().getRawAudioFile().getChannel(RawAudioFile.RIGHT_CHANNEL)[sampleCountPerClip[clipIndex]++];
+			for(int clipIndex = 0; clipIndex < audioClips.length; clipIndex++) {
+				
+				// Make sure all the audioClip is at the right time:
+				//  Must be:   After start time
+				//             Before end time
+				//             More audio data
+				if(     currentMillis >= audioClips[clipIndex].getStartTime() && 
+						currentMillis <= audioClips[clipIndex].getEndTime()   &&
+						sampleCountPerClip[clipIndex] < audioClips[clipIndex].getAudioClipData().getRawAudioFile().getNumberOfSamples()) {	
+					
+					leftValueTemp  = audioClips[clipIndex].getAudioClipData().getRawAudioFile()
+							.getChannel(RawAudioFile.LEFT_CHANNEL) [sampleCountPerClip[clipIndex]]  + leftChannel[sampleIndex];
+					
+					rightValueTemp = audioClips[clipIndex].getAudioClipData().getRawAudioFile()
+							.getChannel(RawAudioFile.RIGHT_CHANNEL)[sampleCountPerClip[clipIndex]] + rightChannel[sampleIndex];
+					
+					leftChannel[sampleIndex]   = (leftValueTemp  > Short.MAX_VALUE) ? Short.MAX_VALUE : ((leftValueTemp  < Short.MIN_VALUE) ? Short.MIN_VALUE : (short) leftValueTemp);
+					rightChannel[sampleIndex]  = (rightValueTemp > Short.MAX_VALUE) ? Short.MAX_VALUE : ((rightValueTemp < Short.MIN_VALUE) ? Short.MIN_VALUE : (short) rightValueTemp);
+					sampleCountPerClip[clipIndex]++;
 				}
 			}
 		}
 		
-		return new RawAudioFile(clips[0].getAudioClipData().getRawAudioFile().getAudioFormat(), leftChannel, rightChannel);		
+		return new RawAudioFile(audioClips[0].getAudioClipData().getRawAudioFile().getAudioFormat(), leftChannel, rightChannel);		
 	}
 }

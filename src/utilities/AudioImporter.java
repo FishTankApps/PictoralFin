@@ -5,8 +5,10 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import jComponents.JProgressDialog;
 import jTimeLine.AudioClip;
 import mainFrame.PictoralFin;
+import mainFrame.StatusLogger;
 
 public class AudioImporter {
 	private PictoralFin pictoralFin;
@@ -19,7 +21,7 @@ public class AudioImporter {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
 		fileChooser.setCurrentDirectory(new File(pictoralFin.getDataFile().getLastOpenAudioLocation()));
-		fileChooser.setDialogTitle("Import Music");
+		fileChooser.setDialogTitle("Import Audio");
 		fileChooser.setApproveButtonText("Import");
 		
 		fileChooser.setAcceptAllFileFilterUsed(true);
@@ -35,9 +37,15 @@ public class AudioImporter {
 		}		
 	}
 	
-	public void importAudio(File[] files) {				
-		for(File file : files) 
-			pictoralFin.getTimeLine().addAudioClip(new AudioClip(file, pictoralFin.getTimeLine()));
-				
+	public void importAudio(File[] files) {
+		new Thread(()->{
+			JProgressDialog progressDialog = new JProgressDialog("Importing Audio " + JProgressDialog.VALUE_IN_PARENTHESES, "Importing...", files.length);
+			for(File file : files) {
+				pictoralFin.getTimeLine().addAudioClip(new AudioClip(file, pictoralFin.getTimeLine()));
+				progressDialog.moveForward();
+			}	
+			
+			StatusLogger.logStatus(files.length + " Audio File(s) Imported!");
+		}).start();
 	}
 }

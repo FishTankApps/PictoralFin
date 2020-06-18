@@ -4,6 +4,9 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -13,6 +16,7 @@ import mainFrame.StatusLogger;
 import objectBinders.Frame;
 import projectFileManagement.PictoralFinStaticProject;
 import projectFileManagement.PictoralFinStaticProjectSettings;
+import utilities.BufferedImageUtil;
 import utilities.ChainGBC;
  
 public class JTimeLine extends JPanel {
@@ -27,9 +31,14 @@ public class JTimeLine extends JPanel {
 	private JScrollPane scrollPane;
 	private JPanel timeLinePanel;
 	private PictoralFin pictoralFin;
+	private JButton zoomIn, zoomOut;
+	
+	private int size = 150;
 
 	
-	public JTimeLine(PictoralFin pictoralFin) {		
+	public JTimeLine(PictoralFin pictoralFin) {
+		super(new GridBagLayout());
+		
 		this.pictoralFin = pictoralFin;
 		
 		frameTimeLine = new FrameTimeLine(pictoralFin);		
@@ -49,7 +58,22 @@ public class JTimeLine extends JPanel {
 		timeLinePanel.add(frameTimeLine, new ChainGBC(0, 0).setFill(true).setPadding(0, 0, 10, 10));
 		timeLinePanel.add(audioTimeLine, new ChainGBC(0, 1).setFill(true).setPadding(0, 0, 0, 10));
 		
-		add(scrollPane);
+		zoomIn = new JButton("+");
+		zoomOut = new JButton("-");
+		zoomOut.addActionListener(e->{size -= (size > 10) ? 10 : 0; updateSizes();});
+		zoomIn.addActionListener( e->{size += 10; updateSizes();});
+		
+		JLabel label = new JLabel();
+		BufferedImage zoomIcon = pictoralFin.getGlobalImageKit().readImage("ZoomIcon.png");
+		BufferedImageUtil.applyColorThemeToImage(zoomIcon, pictoralFin.getSettings().getTheme());
+		label.setIcon(new ImageIcon(zoomIcon));
+		
+		add(scrollPane, new ChainGBC(0, 0).setFill(true).setPadding(0).setWidthAndHeight(1,3));
+		add(zoomIn, new ChainGBC(1, 0).setFill(false).setPadding(0).setWidthAndHeight(1,1));
+		add(label, new ChainGBC(1, 1).setFill(false, true).setPadding(0).setWidthAndHeight(1,1));
+		add(zoomOut, new ChainGBC(1, 2).setFill(false).setPadding(0).setWidthAndHeight(1,1));
+		
+		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 	}
 
 	public boolean isEmpty() {
@@ -145,17 +169,16 @@ public class JTimeLine extends JPanel {
 	}
 	
 	//=====[ Interactors ]================================================
-	public void updateSizes() {
-		frameTimeLine.setHeight(250);
-		
+	public void updateSizes() {		
 		JSplitPane jsp = ((JSplitPane) getParent());
 		
 		Dimension parentDimension = getParent().getSize();
 		Dimension preferedSize = new Dimension(parentDimension.width, 
 				parentDimension.height - jsp.getDividerLocation() - scrollPane.getHorizontalScrollBar().getHeight());
 
-		frameTimeLine.setHeight((int) (preferedSize.height * .85));
-		scrollPane.setPreferredSize(preferedSize);		
+		frameTimeLine.setHeight(size);
+		
+		scrollPane.setPreferredSize(preferedSize);
 		setPreferredSize(preferedSize);
 	
 		setMinimumSize(new Dimension(1, 100));

@@ -77,7 +77,7 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	}
 	
 	public Dimension getPreferredSize() {
-		return new Dimension(getParent().getSize().width, jTimeLine.getFrameTimeLine().frameDimension/7);
+		return new Dimension(getParent().getSize().width, 20);
 	}
 	
 	public void paint(Graphics g) {
@@ -115,9 +115,11 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 			g.fillRoundRect(startIndex, 0, (endIndex - startIndex), getHeight(), 10, 10);
 		
 		g.setColor(theme.getPrimaryBaseColor());
-		g.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, (jTimeLine.getFrameTimeLine().frameDimension/7) - 5));
-		for(int count = startIndex + buttonSize; count < (endIndex - startIndex); count+=(5*buttonSize)) {
-			g.drawString(getName(), count, (jTimeLine.getFrameTimeLine().frameDimension/7) - 5);
+		g.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 15));
+		int nameWidth = g.getFontMetrics().stringWidth(getName());
+		
+		for(int count = startIndex + nameWidth * 2; count < (endIndex - startIndex); count+=(nameWidth*2)) {
+			g.drawString(getName(), count, 17);
 		}
 		
 	}

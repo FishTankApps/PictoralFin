@@ -19,7 +19,7 @@ public class FileImportPanel extends JPanel implements Themed {
 
 	private static final long serialVersionUID = -8225882191341895849L;
 
-	private JButton importPicture, importAudio, importVideo, importFiles;
+	private JButton importPicture, importAudio, importVideo;
 	private PictoralFin pictoralFin;
 	
 	public FileImportPanel(PictoralFin pictoralFin) {
@@ -30,17 +30,15 @@ public class FileImportPanel extends JPanel implements Themed {
 		importPicture = new JButton(" Import Pictures");
 		importAudio   = new JButton(" Import Audio Files");
 		importVideo   = new JButton(" Import Videos");
-		importFiles   = new JButton(" Import Files");
 		
 		importPicture.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
 		importAudio.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddAudioRequest);
+		importVideo.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddVideoRequest);
 		
 		importPicture.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(pictoralFin.getGlobalImageKit().pictureIcon, 25, 25, BufferedImage.SCALE_FAST)));
 		importPicture.setFont(font);
 		importAudio.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(pictoralFin.getGlobalImageKit().audioIcon, 25, 25, BufferedImage.SCALE_FAST)));
 		importAudio.setFont(font);
-		importFiles.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(pictoralFin.getGlobalImageKit().videoIcon, 25, 25, BufferedImage.SCALE_FAST)));
-		importFiles.setFont(font);
 		importVideo.setIcon(new ImageIcon(BufferedImageUtil.resizeBufferedImage(pictoralFin.getGlobalImageKit().videoIcon, 25, 25, BufferedImage.SCALE_FAST)));
 		importVideo.setFont(font);
 		
@@ -50,7 +48,6 @@ public class FileImportPanel extends JPanel implements Themed {
 		add(importPicture, new ChainGBC(0, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
 		add(importAudio, new ChainGBC(1, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
 		add(importVideo, new ChainGBC(2, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
-		add(importFiles, new ChainGBC(3, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(10));
 		
 		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 	}

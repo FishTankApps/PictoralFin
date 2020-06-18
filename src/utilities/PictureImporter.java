@@ -11,6 +11,7 @@ import jComponents.JFileChooserWithImagePreview;
 import jComponents.JProgressDialog;
 import jTimeLine.JTimeLine;
 import mainFrame.PictoralFin;
+import mainFrame.StatusLogger;
 
 public class PictureImporter {
 	
@@ -21,7 +22,7 @@ public class PictureImporter {
 	}
 	
 	public void simpleImportPicture(File picture) {
-		try {
+		try {			
 			double width, height, ratio;
 			BufferedImage frame;
 			frame = ImageIO.read(picture);
@@ -60,10 +61,13 @@ public class PictureImporter {
 	
 	private void importPictures(File[] files, JTimeLine frameTimeLine) {
 			
+		StatusLogger.logStatus("Importing Pictures...");
+		
 		JProgressDialog jpb = new JProgressDialog("Importing Pictures " + JProgressDialog.PERCENT, "Importing...", files.length);
 		ArrayList<String> failedFiles = new ArrayList<>();
 		double widthRatio, heightRation, ratio;
 		BufferedImage frame;
+		int fileImportedCount = 0;
 		
 		jpb.setIcon(pictoralFin.getGlobalImageKit().pictoralFinIcon);		
 		
@@ -83,7 +87,9 @@ public class PictureImporter {
 					
 					if(frame == null)
 						throw new Exception("frame = NULL");
-					frameTimeLine.addFrame(frame);					
+					
+					frameTimeLine.addFrame(frame);		
+					fileImportedCount++;
 				}catch(Exception ignore) {
 					Utilities.showMessage(ignore.getMessage(), "ERROR", true);
 					ignore.printStackTrace();
@@ -104,7 +110,9 @@ public class PictureImporter {
 			for(String fileName: failedFiles)
 				fileList += fileName + "\n";
 			
-			Utilities.showMessage(failedFiles.size() + " Files failed to import:\n" + fileList + "The others files succesfully where imported", failedFiles.size() + " Import Failed", true);
+			Utilities.showMessage(failedFiles.size() + " Files failed to import:\n" + fileList + "The others files succesfully where imported", failedFiles.size() + " Import(s) Failed", true);
 		}	
+		
+		StatusLogger.logStatus(fileImportedCount + " Picture(s) Imported!");
 	}
 }

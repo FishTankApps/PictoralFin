@@ -15,4 +15,11 @@ public class GlobalImageKit {
 		audioIcon =       ImageIO.read(GlobalImageKit.class.getResourceAsStream("BiggerAudioIcon.png"));
 	}
 	
+	public BufferedImage readImage(String fileName) {
+		try {
+			return ImageIO.read(GlobalImageKit.class.getResourceAsStream(fileName));
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

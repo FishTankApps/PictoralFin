@@ -69,7 +69,7 @@ public class JDriveExplorer extends JPanel {
 		refresh.addActionListener(e -> refreshTree());
 		refresh.setPreferredSize(new Dimension(300, 50));
 		
-		scan = new JButton("Begin Scanning");
+		scan = new JButton("Begin Scanning for New Files");
 		scan.setFont(refresh.getFont());
 		scan.addActionListener(e -> {
 			if(!enabled || !hasSelectedFolder) {
@@ -79,7 +79,7 @@ public class JDriveExplorer extends JPanel {
 			
 			if(scanning) {
 				scanning = false;
-				scan.setText("Begin Scanning");
+				scan.setText("Begin Scanning for New Files");
 			} else {
 				int choice = JOptionPane.showConfirmDialog(null, "Would you like to import the current files?", "Import Files", JOptionPane.INFORMATION_MESSAGE);
 				
@@ -324,6 +324,6 @@ public class JDriveExplorer extends JPanel {
 		if(theme.isSharp())
 			g.fillRect(0, 0, getWidth(), getHeight());
 		else
-			g.fillRoundRect(0, -30, getWidth(), getHeight() + 30, 30, 30);
+			g.fillRoundRect(0, 0, getWidth(), getHeight() + 30, 30, 30);
 	}
 }

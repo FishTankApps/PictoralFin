@@ -15,14 +15,14 @@ import utilities.VideoUtil;
 public class VideoTopBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 
-	private JMenu fileMenu, importFiles, exportProject;
-	private JMenuItem importFrames, importAudio,   importVideo, importOtherFiles, 
-					  saveProject,  saveProjectAs, openProject, exportAsVideo;
+	private JMenu fileMenu, importFiles, exportProject, editMenu;
+	private JMenuItem importFrames, importAudio,   importVideo,
+					  saveProject,  saveProjectAs, openProject, exportAsVideo, preferences;
 	
 	public VideoTopBar(PictoralFin pictoralFin){
 		
 		//---------{FILE MENU}-------------------------------------------------
-		fileMenu = new JMenu("File");
+		fileMenu = new JMenu(" File ");
 		importFiles = new JMenu("Import...");		
 		
 		importFrames = new JMenuItem("Import Frame(s)");
@@ -33,9 +33,6 @@ public class VideoTopBar extends JMenuBar {
 		
 		importVideo = new JMenuItem("Import Video(s)");
 		importVideo.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddVideoRequest);
-		
-		importOtherFiles = new JMenuItem("Import Other File(s)");
-		//importOtherFiles.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
 			
 		
 		saveProject = new JMenuItem("Save Project");
@@ -54,11 +51,16 @@ public class VideoTopBar extends JMenuBar {
 		exportAsVideo = new JMenuItem("Export Project As Video");
 		exportAsVideo.addActionListener(e->VideoUtil.generateAndSaveVideo(pictoralFin));
 		
+		editMenu = new JMenu(" Edit ");
+		
+		preferences = new JMenuItem("Prefereces");
+		preferences.setAccelerator(KeyStroke.getKeyStroke('P', Constants.CTRL));
+		preferences.addActionListener(e->pictoralFin.getSettings().openSettingsEditor(pictoralFin.getGlobalImageKit().pictoralFinIcon));
+		
 		fileMenu.add(importFiles);
 			importFiles.add(importFrames);
 			importFiles.add(importAudio);
 			importFiles.add(importVideo);
-			importFiles.add(importOtherFiles);
 		
 		fileMenu.addSeparator();
 		
@@ -70,10 +72,14 @@ public class VideoTopBar extends JMenuBar {
 		
 		fileMenu.add(exportProject);
 			exportProject.add(exportAsVideo);
+			
+			
+		editMenu.add(preferences);
 		
 		
 		//---------{TOOLS MENU}-------------------------------------------------		
 		add(fileMenu);
+		add(editMenu);
 	}
 	
 	class OnItemClicked implements ActionListener{

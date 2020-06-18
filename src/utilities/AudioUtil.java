@@ -8,6 +8,7 @@ import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncodingAttributes;
 import jTimeLine.AudioClip;
+import mainFrame.StatusLogger;
 import objectBinders.RawAudioFile;
 
 public class AudioUtil {
@@ -16,7 +17,8 @@ public class AudioUtil {
 
 	public static File convertAudioFileToWAV(File toConvert) {
 
-		try {			
+		try {
+			StatusLogger.logStatus("Converting File " + toConvert.getName());
 			File target = File.createTempFile(toConvert.getName(), ".wav");
 			target.deleteOnExit();
 			
@@ -41,6 +43,8 @@ public class AudioUtil {
 			encoder.encode(toConvert, target, attrs);
 			
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Coverting Completed without errors!");
+			
+			StatusLogger.logStatus("Convertion Complete! ");
 			
 			return target;
 		} catch (Exception e) {

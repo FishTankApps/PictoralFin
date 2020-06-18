@@ -19,7 +19,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
@@ -36,7 +35,6 @@ import listeners.OnMainFrameClosed;
 import listeners.OnWindowResizedListener;
 import objectBinders.DataFile;
 import objectBinders.Settings;
-import objectBinders.Theme;
 import projectFileManagement.PictoralFinProjectManager;
 import utilities.AudioImporter;
 import utilities.BufferedImageUtil;
@@ -75,7 +73,6 @@ public class PictoralFin extends JFrame implements Closeable {
 	public PictoralFin() {
 		flags = new ArrayList<>();
 		settings = Settings.openSettings();
-		settings.setTheme(Theme.OCEAN_THEME);
 		dateFile = DataFile.openDataFile();
 		StatusLogger.logger = new StatusLogger(this);
 		
@@ -114,7 +111,12 @@ public class PictoralFin extends JFrame implements Closeable {
 		for(String flag : flags) {
 			String[] parts = flag.split("\\$");
 			
-			JOptionPane.showMessageDialog(null, parts[1], parts[0], JOptionPane.INFORMATION_MESSAGE);
+			if(!settings.getMessagesToNotShow().contains(parts[0])) {
+				boolean dontShowAgain = Utilities.showDoNotShowAgainDialog(parts[1], parts[0], false);
+				
+				if(dontShowAgain)
+					settings.addMessageToNotShow(parts[0]);
+			}
 		}
 		flags.clear();
 		setStatus("Launch Complete");

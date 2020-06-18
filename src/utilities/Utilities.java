@@ -10,7 +10,10 @@ import java.util.ArrayList;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import mainFrame.PictoralFin;
 
@@ -74,6 +77,24 @@ public class Utilities {
 
 	public static final void showMessage(String message, String title, boolean alert){
 		JOptionPane.showMessageDialog(null, message, title, (alert) ? JOptionPane.ERROR_MESSAGE: JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	public static final boolean showDoNotShowAgainDialog(String message, String title, boolean alert) {
+		JCheckBox doNotShowAgain;
+		JOptionPane pane = new JOptionPane("", (alert) ? JOptionPane.ERROR_MESSAGE: JOptionPane.INFORMATION_MESSAGE, JOptionPane.OK_OPTION, null, new Object[] {"OK"});
+
+		pane.setMessage(message);
+
+		doNotShowAgain = new JCheckBox("Don't show again");
+		doNotShowAgain.setAlignmentX(JCheckBox.RIGHT_ALIGNMENT);
+		
+		((JPanel) pane.getComponent(1)).add(doNotShowAgain,0);
+		
+		JDialog dialog = pane.createDialog(title);
+		dialog.setModalityType(JDialog.ModalityType.APPLICATION_MODAL); // MODELESS = not on top
+		dialog.setVisible(true);
+		
+		return doNotShowAgain.isSelected();
 	}
 
 	public static final GridBagConstraints generateGBC(int x, int y, int width, int height){

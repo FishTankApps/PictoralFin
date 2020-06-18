@@ -5,6 +5,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import mainFrame.PictoralFin;
+import utilities.Utilities;
+
 class FramePopUpMenu{
 	
 	private JPopupMenu menu;
@@ -15,10 +18,13 @@ class FramePopUpMenu{
 		frameTimeLine.removeFrame(button);
 		menu.setVisible(false);
 		
-		JTimeLine timeLine = (JTimeLine) frameTimeLine.getParent().getParent().getParent().getParent();
+		PictoralFin pictoralFin = Utilities.getPictoralFin(frameTimeLine);		
 		
-		timeLine.revalidate();			
-		timeLine.repaint();
+		
+		pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().dettachSettingsPanel();
+		
+		pictoralFin.getTimeLine().revalidate();			
+		pictoralFin.getTimeLine().repaint();
 	};
 	
 	public FramePopUpMenu(JFrameButton button, int x, int y){		

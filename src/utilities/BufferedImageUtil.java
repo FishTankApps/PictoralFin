@@ -1,8 +1,11 @@
 package utilities;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+
+import objectBinders.Theme;
 
 public class BufferedImageUtil {
 	private BufferedImageUtil(){}
@@ -45,4 +48,41 @@ public class BufferedImageUtil {
 		
 		return imageToBufferedImage(scaled);
 	}
+	
+	/**
+	 * Syntax:
+	 * <p>
+	 *     Pixels that are (0,0,0) [Black] will be set to the highlightColor,
+	 *     <p>
+	 *     Pixels that are anything else will be set to the backgroundColor.
+	 */
+	public static void applyColorThemeToImage(BufferedImage image, Color backgroundColor, Color highlightColor) {
+		int backgroundRGB = backgroundColor.getRGB();
+		int highlightRGB  = highlightColor.getRGB();
+		
+		final int blackRGB = -16777216;
+		
+		for(int x = 0; x < image.getWidth(); x++)
+			for(int y = 0; y < image.getHeight(); y++) {
+				if(image.getRGB(x, y) == blackRGB)
+					image.setRGB(x, y, highlightRGB);
+				else
+					image.setRGB(x, y, backgroundRGB);
+			}
+	}
+	public static void applyColorThemeToImage(BufferedImage image, Theme theme) {
+		int backgroundRGB = theme.getPrimaryBaseColor().getRGB();
+		int highlightRGB  = theme.getPrimaryBaseColor().darker().getRGB();
+		
+		final int blackRGB = -16777216;
+		
+		for(int x = 0; x < image.getWidth(); x++)
+			for(int y = 0; y < image.getHeight(); y++) {
+				if(image.getRGB(x, y) == blackRGB)
+					image.setRGB(x, y, highlightRGB);
+				else
+					image.setRGB(x, y, backgroundRGB);
+			}
+	}
+	
 }

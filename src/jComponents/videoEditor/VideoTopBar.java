@@ -1,8 +1,5 @@
 package jComponents.videoEditor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -80,15 +77,5 @@ public class VideoTopBar extends JMenuBar {
 		//---------{TOOLS MENU}-------------------------------------------------		
 		add(fileMenu);
 		add(editMenu);
-	}
-	
-	class OnItemClicked implements ActionListener{
-
-		public void actionPerformed(ActionEvent arg0) {
-			//if(arg0.getSource() == importFrames)
-				//PictureImporter.importPictures(pfk.getFrameTimeLine());
-			//else if(arg0.getSource() == exportAsVideo)
-			//	VideoTools.exportImagesAVideo(pfk.getVideoEditor().generateSettings());
-		}	
 	}
 }

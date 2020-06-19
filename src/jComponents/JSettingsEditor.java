@@ -180,7 +180,6 @@ public class JSettingsEditor extends JFrame{
 		
 		Object[] path = settingsTree.getSelectionPath().getPath();
 		Object selectedObject = path[path.length - 1];
-		System.out.println(selectedObject);
 		
 		if(selectedObject.toString().equals("Apperance")) {
 			settingsPanel.removeAll();

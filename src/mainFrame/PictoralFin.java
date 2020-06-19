@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 import globalToolKits.GlobalImageKit;
 import globalToolKits.GlobalListenerToolKit;
 import interfaces.Closeable;
+import jComponents.pictureEditor.ImageEditor;
 import jComponents.videoEditor.VideoEditor;
 import jComponents.videoEditor.VideoTopBar;
 import jTimeLine.JTimeLine;
@@ -54,6 +55,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	// =======[ TABS ]---------
 	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
+	private ImageEditor pictureEditor;
 	private Settings settings;
 	private DataFile dateFile;
 	public File openProject = null;
@@ -186,7 +188,8 @@ public class PictoralFin extends JFrame implements Closeable {
 		tabbedPane.setBackground(settings.getTheme().getPrimaryBaseColor());
 
 		videoEditor = new VideoEditor(settings.getTheme(), this);
-
+		pictureEditor = new ImageEditor(this);
+		
 		ImageIcon kineticIcon = null, staticIcon = null, audioIcon = null;
 		try {
 			kineticIcon = new ImageIcon(globalImageKit.videoIcon);
@@ -198,7 +201,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		
 		
 		tabbedPane.addTab("  Kinetic", kineticIcon, videoEditor);
-		tabbedPane.addTab("  Static", staticIcon, new JButton("TEST"));
+		tabbedPane.addTab("  Static", staticIcon, pictureEditor);
 		tabbedPane.addTab("  Wave", audioIcon, new JButton("TEST"));
 
 		tabbedPane.addChangeListener(e -> {

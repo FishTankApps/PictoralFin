@@ -1,6 +1,7 @@
 package objectBinders;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,7 +9,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
+import jComponents.JFileChooserWithImagePreview;
+import mainFrame.PictoralFin;
 import utilities.BufferedImageUtil;
 import utilities.Constants;
 
@@ -91,5 +95,29 @@ public class Frame implements Serializable {
         for (int i=0; i<imageCount; i++) {
         	layers.add(ImageIO.read(in));
         }
+    }
+
+    public static void addLayerToFrame(PictoralFin pictoralFin, Frame frame) {
+    	File newLayer = JFileChooserWithImagePreview.openFile(pictoralFin);
+    	
+    	if(newLayer != null) {
+    		try {
+    			double width, height, ratio;
+    			BufferedImage image;
+    			image = ImageIO.read(newLayer);
+    			
+    			width = image.getWidth() / pictoralFin.getSettings().getMaxPictureSize().getWidth();
+    			height = image.getHeight() / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+    			
+    			if(image.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() && image.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+    				ratio = (width > height) ? width : height;								
+    				image = BufferedImageUtil.resizeBufferedImage(image, (int) (image.getWidth() / ratio), (int) (image.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
+    			}
+    			
+    			frame.addLayer(image);
+    		} catch (Exception e) {
+    			JOptionPane.showMessageDialog(null, "Error adding layer from file: " + newLayer.getName() + "\nException Message: \n" + e.getMessage(), "Error Adding Layer", JOptionPane.ERROR_MESSAGE);
+    		}
+    	}
     }
 }

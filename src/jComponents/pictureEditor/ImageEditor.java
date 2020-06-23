@@ -4,54 +4,64 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
 
 import mainFrame.PictoralFin;
+import objectBinders.Frame;
 
 public class ImageEditor extends JPanel {
 	
 	private static final long serialVersionUID = 5126222855352762720L;
 	private ImagePreview imagePreview;
-	private LayerSelecter layerSelector;
+	private LayerSelecter layerSelecter;
 	private EffectsPanel effectsPanel;
+	private Frame selectedFrame = null;
+
 	
 	public ImageEditor(PictoralFin pictoralFin) {
 		super(new BorderLayout());
 		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		imagePreview = new ImagePreview(pictoralFin);
-		layerSelector = new LayerSelecter(pictoralFin);
+		layerSelecter = new LayerSelecter(pictoralFin);
 		effectsPanel = new EffectsPanel();
 		
 		JSplitPane leftAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		JSplitPane rightAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		
-		leftAndCenterSplit.setLeftComponent(layerSelector);
+		leftAndCenterSplit.setLeftComponent(layerSelecter);
 		leftAndCenterSplit.setRightComponent(imagePreview);
-		leftAndCenterSplit.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, e->{layerSelector.setButtonWidth(((int) e.getNewValue()) - 40);});
+		leftAndCenterSplit.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, e->{layerSelecter.setButtonWidth(((int) e.getNewValue()) - 40);});
 		leftAndCenterSplit.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		leftAndCenterSplit.setResizeWeight(0.10);		
 		
-		
+		layerSelecter.setButtonWidth(((int) leftAndCenterSplit.getDividerLocation()) - 40);
 		
 		rightAndCenterSplit.setLeftComponent(leftAndCenterSplit);
 		rightAndCenterSplit.setRightComponent(effectsPanel);
 		rightAndCenterSplit.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
-		SwingUtilities.invokeLater(()->{
-			leftAndCenterSplit.setDividerLocation(200);
-			rightAndCenterSplit.setDividerLocation(.75);
-		});
+		rightAndCenterSplit.setResizeWeight(0.80);		
 		
-		
-		add(rightAndCenterSplit, BorderLayout.CENTER);
-		
-				
+		add(rightAndCenterSplit, BorderLayout.CENTER);				
 		
 		pictoralFin.getTimeLine().addOnFrameSelectionChangeListener((old, newFrame) -> {
-				imagePreview.setSelectedFrame(newFrame.getFrame());
-				layerSelector.setSelectedFrame(newFrame.getFrame());
+				imagePreview.setSelectedLayer(newFrame.getFrame().getLayer(0));
+				layerSelecter.setSelectedFrame(newFrame.getFrame());
+				selectedFrame = newFrame.getFrame();
 				repaint();
+			});
+		
+		layerSelecter.addOnSelectionLayerChangedListener((old, newFrame) -> {
+				imagePreview.setSelectedLayer(newFrame.getLayer());
+				imagePreview.repaint();
 			});
 	}
 	
+	public Frame getSelectedFrame() {
+		return selectedFrame;
+	}
+	
+	public LayerSelecter getLayerSelecter() {
+		return layerSelecter;
+	}
 }

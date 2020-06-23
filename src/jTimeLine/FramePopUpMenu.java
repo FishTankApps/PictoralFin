@@ -33,7 +33,7 @@ class FramePopUpMenu{
 		
 		JMenuItem removeFrame = new JMenuItem("Remove");
 		removeFrame.addActionListener(REMOVE_FRAME);
-
+		
 		menu.add(removeFrame);
 		menu.show(button, x, y);
 	}

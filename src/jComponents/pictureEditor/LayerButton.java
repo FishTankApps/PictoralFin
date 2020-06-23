@@ -17,10 +17,13 @@ public class LayerButton extends JComponent implements MouseListener {
 
 	private static final long serialVersionUID = -6457692933405341223L;	
 	
+	static final byte ADD_LAYER_INDEX = -1;
 	static final byte LEFT = 0;
 	static final byte RIGHT = 1;
 	static final byte END = 2;
 	static final byte BEGINNING = 3;
+	
+	private byte layerIndex;
 	
 	private BufferedImage layer;
 	private Theme theme;
@@ -30,17 +33,24 @@ public class LayerButton extends JComponent implements MouseListener {
 	private boolean selected = false;
 	private boolean highlighted = false;
 	
-	public LayerButton(BufferedImage layer, Theme theme) {
+	public LayerButton(BufferedImage layer, Theme theme, byte layerIndex, int buttonsize) {
 		this.layer = layer;
 		this.theme = theme;
+		this.layerIndex = layerIndex;
 		
 		enableInputMethods(true);   
 		addMouseListener(this);
 		setFocusable(true);
 		
-		setPreferredSize(new Dimension(200,200));
-		setMinimumSize(new Dimension(200,200));
-		setMaximumSize(new Dimension(200,200));
+		setThumbnailSize(buttonsize);
+	}
+	
+	public byte getLayerIndex() {
+		return layerIndex;
+	}
+	
+	public BufferedImage getLayer() {
+		return layer;
 	}
 	
 	public void setThumbnailSize(int newSize) {
@@ -79,30 +89,22 @@ public class LayerButton extends JComponent implements MouseListener {
 			
 			g2d.setColor(boarderColor);
 			g2d.drawRoundRect(0, 0, thumbnailSize, thumbnailSize, thumbnailSize / 7, thumbnailSize / 7);	
-		}	
-		
-		
+		}		
 	}
 	
 	public void mouseClicked(MouseEvent mouseEvent) {
-//		FrameTimeLine ftl = (FrameTimeLine) getParent();
-//		ftl.onJFrameButtonClicked(this);
+		LayerSelecter layerSelector = (LayerSelecter) getParent().getParent().getParent().getParent();
+		layerSelector.onLayerButtonClicked(this);
 		
-		requestFocus();
-		
+		requestFocus();		
 		repaint();
 	}
-	public void mouseEntered(MouseEvent arg0) {
-//		if(getParent() instanceof FrameTimeLine)
-//			((FrameTimeLine) getParent()).onJFrameButtonHighlighted(this);
-		
+	public void mouseEntered(MouseEvent arg0) {		
 		highlighted = true;
 		repaint();		
 	}
-	public void mouseExited(MouseEvent arg0) {
-//		if(getParent() instanceof FrameTimeLine)
-//			((FrameTimeLine) getParent()).onJFrameButtonUnHighlighted(this);
-		
+	
+	public void mouseExited(MouseEvent arg0) {		
 		highlighted = false;
 		repaint();		
 	}	

@@ -24,14 +24,13 @@ import javax.swing.JSlider;
 import listeners.LayerMouseListener;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
-import utilities.Utilities;
 
 public class ImagePreview extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener {
 
 	private static final long serialVersionUID = -9021549379360151600L;
 	private static final int PREF_BOARDER = 20;
 	
-	private int imageX = 0, imageY = 0, clickStartX, clickStartY;
+	private int imageX = 0, imageY = 0, clickStartX, clickStartY, mouseX, mouseY;
 	private double magnification = 1;
 	
 	private Thread dragThread;
@@ -44,6 +43,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	private ArrayList<LayerMouseListener> layerMouseListeners;
 	private BufferedImage pictoralFinIcon, layer;
 	private Theme theme;
+	private JPanel bottomPanel;
 	
 	public ImagePreview(PictoralFin pictoralFin) {
 		super(new BorderLayout());
@@ -60,7 +60,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 				repaint();
 			});
 		
-		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)) {
+		bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)) {
 
 			private static final long serialVersionUID = 1L;
 			
@@ -100,13 +100,24 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	
 	public void setSelectedLayer(BufferedImage layer) {
 		this.layer = layer;
+		
+		bottomPanel.setVisible(layer != null);
+		
 		centerAndFitImage();
+	}
+	
+	public Point getMousePointOnImage() {
+		if(mouseX == -1 || mouseY == -1)
+			return null;
+		
+		return new Point(mouseX, mouseY);
 	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
 		if(layer == null) {
+			
 			int displayWidth = getWidth() - PREF_BOARDER * 2;
 			int displayHeight = getHeight() - PREF_BOARDER * 2 - 10;
 			
@@ -120,6 +131,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 			g.drawImage(pictoralFinIcon, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER ,
 					adjustedImageWidth, adjustedImageHeight, null);
 		} else {
+
 			
 			int adjustedImageWidth = (int) (layer.getWidth() * magnification); 
 			int adjustedImageHeight = (int) (layer.getHeight() * magnification);
@@ -130,6 +142,9 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	}
 
 	public void centerAndFitImage() {
+		if(layer == null)
+			return;
+		
 		imageX = imageY = 0;		
 		double heightRatio, widthRatio;
 		
@@ -148,7 +163,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	}
 		
 	public void mousePressed(MouseEvent e) {
-		if(e.getButton() == 3) {
+		if(e.getButton() == 3 && layer != null) {
 			clickStartX = e.getXOnScreen();
 			clickStartY = e.getYOnScreen();					
 			
@@ -171,8 +186,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-		
+	
 		if(dragThread != null)
 			dragThread.interrupt();
 		
@@ -185,13 +199,16 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	}
 
 	public void mouseMoved(MouseEvent e) {
-		if(layer == null)
+		if(layer == null) {
+			this.setCursor(Cursor.getDefaultCursor());
+			mouseX = mouseY = -1;			
 			return;
+		}
 		
-		int x = (int) ((e.getX() - (Math.ceil((getWidth()  / 2) - (layer.getWidth()  * magnification)/2 + imageX))) / magnification);
-		int y = (int) ((e.getY() - (Math.ceil((getHeight() / 2) - (layer.getHeight() * magnification)/2 + imageY))) / magnification);
+		mouseX = (int) ((e.getX() - (Math.ceil((getWidth()  / 2) - (layer.getWidth()  * magnification)/2 + imageX))) / magnification);
+		mouseY = (int) ((e.getY() - (Math.ceil((getHeight() / 2) - (layer.getHeight() * magnification)/2 + imageY))) / magnification);		
 		
-		if(x >= 0 && x < layer.getWidth() && y >= 0 && y < layer.getHeight()) {
+		if(mouseX >= 0 && mouseX < layer.getWidth() && mouseY >= 0 && mouseY < layer.getHeight()) {
 			if(!dragging)
 				this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 		} else if(!dragging)
@@ -200,7 +217,8 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	}	
 	
 	public void onRightClick(int x, int y) {
-		new ImagePreviewPopUpMenu(this, ((ImageEditor) getParent().getParent().getParent()).getLayerSelecter().getSelectedLayerButton(), x, y);
+		if(layer != null)		
+			new ImagePreviewPopUpMenu(this, ((ImageEditor) getParent().getParent().getParent()).getLayerSelecter().getSelectedLayerButton(), x, y);
 	}
 	
 	private class DragRunnable implements Runnable {
@@ -228,7 +246,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 					repaint();
 				}
 			} catch (InterruptedException e) {
-				Utilities.debug("ImagePreview.DragRunnable.run() - Picture Dragging Thread Closed");
+
 			}
 			
 			final int MIN_DRAG_AMOUNT = 5;

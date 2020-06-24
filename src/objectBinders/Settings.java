@@ -84,6 +84,24 @@ public class Settings implements Serializable{
 		return settings;
 	}
 	
+	public Settings copySettings() {
+		Settings copy = new Settings();
+		
+		copy.theme = theme;
+		copy.lookAndFeel = lookAndFeel;	
+		copy.maxPictureSize = maxPictureSize;		
+		copy.messagesToNotShow = messagesToNotShow;	
+		
+		return copy;
+	}
+	
+	public void applySettings(Settings settings) {		
+		theme = settings.theme;
+		lookAndFeel = settings.lookAndFeel;	
+		maxPictureSize = settings.maxPictureSize;		
+		messagesToNotShow = settings.messagesToNotShow;	
+	}
+	
 	public void saveSettings() {
 		try {
 			File outputFile = new File("dataFiles/settings.pfd");

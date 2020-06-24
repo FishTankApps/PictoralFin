@@ -1,8 +1,9 @@
 package jComponents;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
@@ -34,12 +35,12 @@ public class JSettingsEditor extends JFrame{
 	private JTree settingsTree;
 	private DefaultMutableTreeNode treeRoot, general, advanced, apperance, ignoredMessages, memoryManagment;
 	private JSplitPane splitPane;
-	private JPanel settingsPanel, apperancePanel, ignoredMessagesPanel;
+	private JPanel settingsPanel, apperancePanel, ignoredMessagesPanel, applyClosePanel;
 	private Settings settings;
 	
 	
 	public JSettingsEditor(Settings s, BufferedImage icon) {
-		settings = s;
+		settings = s.copySettings();
 		
 		setSize(600, 600);
 		setResizable(false);
@@ -65,7 +66,20 @@ public class JSettingsEditor extends JFrame{
 		treeRoot.add(advanced);
 			advanced.add(memoryManagment);
 		
-		settingsPanel = new JPanel(new GridLayout(1,1,0,0));
+		settingsPanel = new JPanel(new BorderLayout());
+		
+		applyClosePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		
+		JButton applyAndClose = new JButton("Apply and Close");
+		JButton cancel = new JButton("Cancel");
+		
+		cancel.addActionListener(e-> dispose());
+		applyAndClose.addActionListener(e->{s.applySettings(settings); dispose();});
+		
+		applyClosePanel.add(applyAndClose);
+		applyClosePanel.add(cancel);
+		
+		settingsPanel.add(applyClosePanel, BorderLayout.SOUTH);
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);	
 		
@@ -84,7 +98,7 @@ public class JSettingsEditor extends JFrame{
 			public void windowActivated(WindowEvent e) {}
 
 			public void windowDeactivated(WindowEvent e) {
-				JSettingsEditor.this.dispose();	
+				dispose();	
 			}
 		
 		});
@@ -183,13 +197,15 @@ public class JSettingsEditor extends JFrame{
 		
 		if(selectedObject.toString().equals("Apperance")) {
 			settingsPanel.removeAll();
-			settingsPanel.add(apperancePanel);
+			settingsPanel.add(apperancePanel, BorderLayout.CENTER);
+			settingsPanel.add(applyClosePanel, BorderLayout.SOUTH);
 			
 			settingsPanel.revalidate();
 			settingsPanel.repaint();
 		} else if(selectedObject.toString().equals("Ignored Messages")) {
 			settingsPanel.removeAll();
-			settingsPanel.add(ignoredMessagesPanel);
+			settingsPanel.add(ignoredMessagesPanel, BorderLayout.CENTER);
+			settingsPanel.add(applyClosePanel, BorderLayout.SOUTH);
 			
 			settingsPanel.revalidate();
 			settingsPanel.repaint();

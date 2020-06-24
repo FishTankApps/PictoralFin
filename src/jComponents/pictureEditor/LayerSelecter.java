@@ -70,9 +70,6 @@ public class LayerSelecter extends JPanel {
 	public void setSelectedFrame(Frame frame) {
 		selectedFrame = frame;
 		refresh();
-		
-		if(buttonPanel.getComponent(0) instanceof LayerButton)
-			(selectedLayerButton = ((LayerButton) buttonPanel.getComponent(0))).setSelected(true);
 	}
 	
 	public LayerButton getSelectedLayerButton() {
@@ -109,11 +106,18 @@ public class LayerSelecter extends JPanel {
 		
 		byte index = 0;
 		
-		if(selectedFrame != null)
+		if(selectedFrame != null) {
 			for(BufferedImage i : selectedFrame.getLayers())
 				buttonPanel.add(new LayerButton(i, pictoralFin.getSettings().getTheme(), index++, buttonWidth));
 		
-		buttonPanel.add(addNewLayer);
+			buttonPanel.add(addNewLayer);
+			
+			if(buttonPanel.getComponent(0) instanceof LayerButton)
+				(selectedLayerButton = ((LayerButton) buttonPanel.getComponent(0))).setSelected(true);
+			
+			for(OnSelectedLayerChangedListener listener : listeners)
+				listener.selectedlayerChanged(null, selectedLayerButton);
+		}
 		
 		revalidate();
 		repaint();

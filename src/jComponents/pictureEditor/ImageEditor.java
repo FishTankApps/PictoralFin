@@ -23,7 +23,7 @@ public class ImageEditor extends JPanel {
 		
 		imagePreview = new ImagePreview(pictoralFin);
 		layerSelecter = new LayerSelecter(pictoralFin);
-		effectsPanel = new EffectsPanel();
+		effectsPanel = new EffectsPanel(pictoralFin, this);
 		
 		JSplitPane leftAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		JSplitPane rightAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -45,9 +45,17 @@ public class ImageEditor extends JPanel {
 		add(rightAndCenterSplit, BorderLayout.CENTER);				
 		
 		pictoralFin.getTimeLine().addOnFrameSelectionChangeListener((old, newFrame) -> {
-				imagePreview.setSelectedLayer(newFrame.getFrame().getLayer(0));
-				layerSelecter.setSelectedFrame(newFrame.getFrame());
-				selectedFrame = newFrame.getFrame();
+				if(newFrame != null && newFrame.getFrame() != null) {
+					imagePreview.setSelectedLayer(newFrame.getFrame().getLayer(0));
+					layerSelecter.setSelectedFrame(newFrame.getFrame());
+					selectedFrame = newFrame.getFrame();
+				} else {
+					imagePreview.setSelectedLayer(null);
+					layerSelecter.setSelectedFrame(null);
+					selectedFrame = null;
+				}
+			
+				
 				repaint();
 			});
 		
@@ -61,7 +69,15 @@ public class ImageEditor extends JPanel {
 		return selectedFrame;
 	}
 	
-	public LayerSelecter getLayerSelecter() {
+	EffectsPanel getEffectsPanel() {
+		return effectsPanel;
+	}
+	
+	LayerSelecter getLayerSelecter() {
 		return layerSelecter;
+	}
+	
+	ImagePreview getImagePreview() {
+		return imagePreview;
 	}
 }

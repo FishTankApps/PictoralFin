@@ -55,7 +55,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	// =======[ TABS ]---------
 	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
-	private ImageEditor pictureEditor;
+	private ImageEditor imageEditor;
 	private Settings settings;
 	private DataFile dateFile;
 	public File openProject = null;
@@ -188,7 +188,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		tabbedPane.setBackground(settings.getTheme().getPrimaryBaseColor());
 
 		videoEditor = new VideoEditor(settings.getTheme(), this);
-		pictureEditor = new ImageEditor(this);
+		imageEditor = new ImageEditor(this);
 		
 		ImageIcon kineticIcon = null, staticIcon = null, audioIcon = null;
 		try {
@@ -201,7 +201,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		
 		
 		tabbedPane.addTab("  Kinetic", kineticIcon, videoEditor);
-		tabbedPane.addTab("  Static", staticIcon, pictureEditor);
+		tabbedPane.addTab("  Static", staticIcon, imageEditor);
 		tabbedPane.addTab("  Wave", audioIcon, new JButton("TEST"));
 
 		tabbedPane.addChangeListener(e -> {
@@ -278,6 +278,9 @@ public class PictoralFin extends JFrame implements Closeable {
 	}
 	public VideoEditor getVideoEditor() {
 		return videoEditor;
+	}
+	public ImageEditor getImageEditor() {
+		return imageEditor;
 	}
 	
 	private void updateMemoryUsage(){

@@ -2,6 +2,7 @@ package jComponents;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
@@ -19,8 +20,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -35,7 +38,7 @@ public class JSettingsEditor extends JFrame{
 	private JTree settingsTree;
 	private DefaultMutableTreeNode treeRoot, general, advanced, apperance, ignoredMessages, memoryManagment;
 	private JSplitPane splitPane;
-	private JPanel settingsPanel, apperancePanel, ignoredMessagesPanel, applyClosePanel;
+	private JPanel settingsPanel, apperancePanel, ignoredMessagesPanel, applyClosePanel, memoryManagmentPanel;
 	private Settings settings;
 	
 	
@@ -113,6 +116,7 @@ public class JSettingsEditor extends JFrame{
 	private void setUpPanels() {
 		setUpApperancePanel();
 		setUpIgnoredMessagesPanel();
+		setUpMemoryManagmentPanel();
 	}
 	
 	private void setUpApperancePanel() {
@@ -162,7 +166,6 @@ public class JSettingsEditor extends JFrame{
 		apperancePanel.add(Box.createGlue(),   new ChainGBC(0,2).setFill(true, true).setWidthAndHeight(2, 1).setPadding(10, 10, 10, 10));
 		apperancePanel.add(callForRestart,   new ChainGBC(0,3).setFill(true, false).setWidthAndHeight(2, 1).setPadding(10, 10, 10, 10));
 	}
-	
 	private void setUpIgnoredMessagesPanel() {
 		ignoredMessagesPanel = new JPanel(new GridBagLayout());
 		ignoredMessagesPanel.setBorder(BorderFactory.createTitledBorder("Ignored Messages"));
@@ -187,6 +190,65 @@ public class JSettingsEditor extends JFrame{
 		ignoredMessagesPanel.add(ignoredMessages, new ChainGBC(0,0).setFill(true).setPadding(10, 10, 50, 10));
 		ignoredMessagesPanel.add(removeFromIgnoredList, new ChainGBC(0,1).setFill(false).setPadding(10));
 	}
+	private void setUpMemoryManagmentPanel() {
+		memoryManagmentPanel = new JPanel(new GridBagLayout());
+		memoryManagmentPanel.setBorder(BorderFactory.createTitledBorder("Memory Managment"));
+		
+		
+		
+		
+		JPanel maxImageDimensions = new JPanel(new GridBagLayout());
+		maxImageDimensions.setBorder(BorderFactory.createTitledBorder("Max Image Size: "));
+		
+		SpinnerNumberModel heightSpinnerModel = new SpinnerNumberModel(settings.getMaxPictureSize().height, 100, Integer.MAX_VALUE, 100);
+		SpinnerNumberModel widthSpinnerModel = new SpinnerNumberModel(settings.getMaxPictureSize().width, 100, Integer.MAX_VALUE, 100);
+		
+		JSpinner heightSpinner = new JSpinner(heightSpinnerModel);
+		JSpinner widthSpinner  = new JSpinner(widthSpinnerModel);
+		
+		widthSpinner.addChangeListener(e->settings.setMaxPictureSize(new Dimension((int) widthSpinnerModel.getValue(), (int) heightSpinnerModel.getValue()))); 
+		heightSpinner.addChangeListener(e->settings.setMaxPictureSize(new Dimension((int) widthSpinnerModel.getValue(), (int) heightSpinnerModel.getValue()))); 
+		
+		maxImageDimensions.add(new JLabel("Max Image Height:", JLabel.RIGHT), new ChainGBC(0,0).setFill(false, false).setPadding(10));
+		maxImageDimensions.add(heightSpinner,                                 new ChainGBC(1,0).setFill(true,  false).setPadding(10));
+		maxImageDimensions.add(new JLabel("Max Image Width:", JLabel.RIGHT),  new ChainGBC(0,1).setFill(false, false).setPadding(10));
+		maxImageDimensions.add(widthSpinner,                                  new ChainGBC(1,1).setFill(true,  false).setPadding(10));
+				
+		
+		
+		
+		JPanel audioSampleRatePanel = new JPanel(new GridBagLayout());
+		audioSampleRatePanel.setBorder(BorderFactory.createTitledBorder("Audio Sample Rate: "));
+		
+		SpinnerNumberModel sampleRateSpinnerModel = new SpinnerNumberModel(settings.getAudioSampleRate(), 1000, Integer.MAX_VALUE, 1000);		
+		JSpinner sampleRateSpinner = new JSpinner(sampleRateSpinnerModel);		
+		sampleRateSpinner.addChangeListener(e-> settings.setAudioSampleRate((int) sampleRateSpinnerModel.getValue()));
+		
+		audioSampleRatePanel.add(new JLabel("Audio Sample Rate: ", JLabel.RIGHT), new ChainGBC(0,0).setFill(false, false).setPadding(10));
+		audioSampleRatePanel.add(sampleRateSpinner                              , new ChainGBC(1,0).setFill(true,  false).setPadding(10));
+		
+		
+		
+		
+		JPanel setToDefaultPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		
+		JButton setToDefaults = new JButton("Restore to Defaults");
+		setToDefaults.addActionListener(e-> {
+				settings.applySettings(Settings.DEFAULT_SETTINGS);
+				sampleRateSpinnerModel.setValue(settings.getAudioSampleRate());
+				widthSpinnerModel.setValue(settings.getMaxPictureSize().width);
+				heightSpinnerModel.setValue(settings.getMaxPictureSize().height);
+				
+				memoryManagmentPanel.repaint();
+			});
+		
+		setToDefaultPanel.add(setToDefaults);
+		
+		memoryManagmentPanel.add(maxImageDimensions, new ChainGBC(0,0).setFill(true, false).setPadding(20));
+		memoryManagmentPanel.add(audioSampleRatePanel, new ChainGBC(0,1).setFill(true, false).setPadding(20));	
+		memoryManagmentPanel.add(Box.createHorizontalGlue(), new ChainGBC(0,2).setFill(true, true).setPadding(20));
+		memoryManagmentPanel.add(setToDefaultPanel, new ChainGBC(0,3).setFill(true, false).setPadding(10));	
+	}
 	
 	private void updateSettingsPanel(Object source) {
 		if(settingsTree.getSelectionPath() == null)
@@ -205,6 +267,13 @@ public class JSettingsEditor extends JFrame{
 		} else if(selectedObject.toString().equals("Ignored Messages")) {
 			settingsPanel.removeAll();
 			settingsPanel.add(ignoredMessagesPanel, BorderLayout.CENTER);
+			settingsPanel.add(applyClosePanel, BorderLayout.SOUTH);
+			
+			settingsPanel.revalidate();
+			settingsPanel.repaint();
+		} else if(selectedObject.toString().equals("Memory Managment")) {
+			settingsPanel.removeAll();
+			settingsPanel.add(memoryManagmentPanel, BorderLayout.CENTER);
 			settingsPanel.add(applyClosePanel, BorderLayout.SOUTH);
 			
 			settingsPanel.revalidate();

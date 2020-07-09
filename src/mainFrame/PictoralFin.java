@@ -29,6 +29,7 @@ import globalToolKits.GlobalImageKit;
 import globalToolKits.GlobalListenerToolKit;
 import interfaces.Closeable;
 import jComponents.pictureEditor.ImageEditor;
+import jComponents.pictureEditor.ImageTopBar;
 import jComponents.videoEditor.VideoEditor;
 import jComponents.videoEditor.VideoTopBar;
 import jTimeLine.JTimeLine;
@@ -65,10 +66,13 @@ public class PictoralFin extends JFrame implements Closeable {
 	private JTimeLine timeLine;
 	private JSplitPane verticalSplitPane;
 	private JProgressBar memoryUsageBar;
-	private JLabel statusLabel;
+	private JLabel statusLabel, memoryLabel;
 	
 	private GlobalListenerToolKit globalListenerToolKit;
 	private GlobalImageKit globalImageKit;
+	
+	private VideoTopBar videoTopBar;
+	private ImageTopBar imageTopBar;
 
 	public ArrayList<String> flags;
 	
@@ -77,6 +81,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		settings = Settings.openSettings();
 		dateFile = DataFile.openDataFile();
 		StatusLogger.logger = new StatusLogger(this);
+		//FrameManager.frameManager = new FrameManager(this);
 		
 		globalListenerToolKit = new GlobalListenerToolKit(this);
 		
@@ -135,7 +140,10 @@ public class PictoralFin extends JFrame implements Closeable {
 		addWindowListener(new OnMainFrameClosed(this));
 		addComponentListener(new OnWindowResizedListener(this));
 
-		setJMenuBar(new VideoTopBar(this));
+		videoTopBar = new VideoTopBar(this);
+		imageTopBar = new ImageTopBar(this);
+		
+		setJMenuBar(videoTopBar);
 		
 		mainPanel = createMainPanel();
 
@@ -159,7 +167,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		verticalSplitPane.setBackground(settings.getTheme().getSecondaryBaseColor());
 		verticalSplitPane.setForeground(Color.RED);
 		
-		JLabel memoryLabel = new JLabel("  Memory Usage:");
+		memoryLabel = new JLabel("Loading...");
 		memoryLabel.setFont(new Font(settings.getTheme().getPrimaryFont(), Font.BOLD, 11));
 		
 		memoryUsageBar = new JProgressBar();
@@ -207,18 +215,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		tabbedPane.addChangeListener(e -> {
 			videoEditor.pausePreview();
 			
-//			frame.setJMenuBar((tabbedPane.getSelectedIndex() == 0) ? videoTopBar : pictureTopBar);
-//			openView = tabbedPane.getSelectedIndex();
-//			if (tabbedPane.getSelectedIndex() == 1) {
-//				videoEditor.detachFrameTimeLine();
-//				pictureEditor.attachFrameTimeLine();
-//				frameTimeLine.setBackground(settings.getTheme().getPrimaryBaseColor());
-//			} else {
-//				pictureEditor.detachFrameTimeLine();
-//				videoEditor.attachFrameTimeLine();
-//				frameTimeLine.setBackground(settings.getTheme().getPrimaryHighlightColor());
-//			}
-
+			setJMenuBar((tabbedPane.getSelectedIndex() == 0) ? videoTopBar : imageTopBar);
 		});
 
 		return tabbedPane;
@@ -284,8 +281,20 @@ public class PictoralFin extends JFrame implements Closeable {
 	}
 	
 	private void updateMemoryUsage(){
-		if(Runtime.getRuntime().freeMemory() < 10000)
-			System.gc();
+		
+		double usableMeg =  (Runtime.getRuntime().totalMemory() / 1_000_000.0);
+		double usedMeg   = ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_000_000.0);
+		
+		String usableMemory, usedMemory;
+		if(usableMeg > 1000) {
+			usableMemory = String.format("%.2f", usableMeg  / 1000.0) + " GB";
+			usedMemory =   String.format("%.2f", usedMeg    / 1000.0) + " GB";
+		} else {
+			usableMemory = String.format("%.2f", usableMeg) + " MB";
+			usedMemory =   String.format("%.2f", usedMeg)   + " MB";
+		}
+		
+		memoryLabel.setText("Memory Usage (" + usedMemory + "/" + usableMemory + ") :");
 		
 		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());
 		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));		

@@ -17,16 +17,20 @@ import jComponents.JSettingsEditor;
 public class Settings implements Serializable{
 	private static final long serialVersionUID = -1163643096786559533L;
 	
+	public static final Settings DEFAULT_SETTINGS = new Settings();
+	
 	private Theme theme;
 	private Dimension maxPictureSize;
 	private ArrayList<String> messagesToNotShow;
 	private String lookAndFeel;
+	private int audioSampleRate;
 	
 	private Settings() {
 		theme = Theme.OCEAN_THEME;
-		maxPictureSize = new Dimension(720, 1280);
+		maxPictureSize = new Dimension(1280, 720);
 		messagesToNotShow = new ArrayList<>();
 		lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+		audioSampleRate = 48000;
 	}
 
 	public final Theme getTheme() {
@@ -64,10 +68,17 @@ public class Settings implements Serializable{
 	public String getLookAndFeel() {
 		return lookAndFeel;
 	}
-
 	public void setLookAndFeel(String lookAndFeel) {
 		this.lookAndFeel = lookAndFeel;
 	}
+	
+	public int getAudioSampleRate() {
+		return audioSampleRate;
+	}
+	public void setAudioSampleRate(int audioSampleRate) {
+		this.audioSampleRate = audioSampleRate;
+	}
+	
 
 	public static Settings openSettings() {
 		Settings settings;
@@ -79,29 +90,11 @@ public class Settings implements Serializable{
 		} catch (Exception e) {
 			System.out.println("CATCH BLOCK: Settings.openSettings()");
 			settings = new Settings();
+			settings.saveSettings();
 		}
 		
 		return settings;
 	}
-	
-	public Settings copySettings() {
-		Settings copy = new Settings();
-		
-		copy.theme = theme;
-		copy.lookAndFeel = lookAndFeel;	
-		copy.maxPictureSize = maxPictureSize;		
-		copy.messagesToNotShow = messagesToNotShow;	
-		
-		return copy;
-	}
-	
-	public void applySettings(Settings settings) {		
-		theme = settings.theme;
-		lookAndFeel = settings.lookAndFeel;	
-		maxPictureSize = settings.maxPictureSize;		
-		messagesToNotShow = settings.messagesToNotShow;	
-	}
-	
 	public void saveSettings() {
 		try {
 			File outputFile = new File("dataFiles/settings.pfd");
@@ -117,7 +110,27 @@ public class Settings implements Serializable{
 			System.out.println("EMPTY CATCH BLOCK: Settings.saveSettings()\n" + e.getMessage());
 		}
 	}
-
+	
+	public Settings copySettings() {
+		Settings copy = new Settings();
+		
+		copy.theme = theme;
+		copy.lookAndFeel = lookAndFeel;
+		copy.maxPictureSize = maxPictureSize;
+		copy.audioSampleRate = audioSampleRate;				
+		copy.messagesToNotShow = messagesToNotShow;	
+		
+		return copy;
+	}	
+	public void applySettings(Settings settings) {		
+		theme = settings.theme;
+		lookAndFeel = settings.lookAndFeel;	
+		maxPictureSize = settings.maxPictureSize;
+		audioSampleRate = settings.audioSampleRate;
+		messagesToNotShow = settings.messagesToNotShow;	
+	}
+	
+	
 	public void openSettingsEditor(BufferedImage icon) {
 		new JSettingsEditor(this, icon);
 	}

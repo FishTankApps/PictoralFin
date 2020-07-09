@@ -1,4 +1,4 @@
-package jComponents.videoEditor;
+package jComponents.pictureEditor;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -9,20 +9,20 @@ import mainFrame.PictoralFin;
 import utilities.Constants;
 import utilities.VideoUtil;
 
-public class VideoTopBar extends JMenuBar {
+public class ImageTopBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 
 	private JMenu fileMenu, importFiles, exportProject, editMenu;
 	private JMenuItem importFrames, importAudio,   importVideo,
 					  saveProject,  saveProjectAs, openProject, exportAsVideo, preferences;
 	
-	public VideoTopBar(PictoralFin pictoralFin){
+	public ImageTopBar(PictoralFin pictoralFin){
 		
 		//---------{FILE MENU}-------------------------------------------------
 		fileMenu = new JMenu(" File ");
 		importFiles = new JMenu("Import...");		
 		
-		importFrames = new JMenuItem("Import Frame(s)");
+		importFrames = new JMenuItem("Import Frame(s) HERE");
 		importFrames.addActionListener(pictoralFin.getGlobalListenerToolKit().onAddPictureRequest);
 		
 		importAudio = new JMenuItem("Import Audio(s)");
@@ -72,7 +72,7 @@ public class VideoTopBar extends JMenuBar {
 			
 			
 		editMenu.add(preferences);
-		editMenu.addSeparator();			
+		
 		
 		//---------{TOOLS MENU}-------------------------------------------------		
 		add(fileMenu);

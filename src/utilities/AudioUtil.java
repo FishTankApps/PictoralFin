@@ -8,18 +8,25 @@ import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncodingAttributes;
 import jTimeLine.AudioClip;
+import mainFrame.PictoralFin;
 import mainFrame.StatusLogger;
 import objectBinders.RawAudioFile;
 
 public class AudioUtil {
 
 	private AudioUtil() {}
+	
+	private static PictoralFin pictoralFin;
+	
+	public static void passPictoralFin(PictoralFin pictoralFin) {
+		AudioUtil.pictoralFin = pictoralFin;
+	}
 
 	public static File convertAudioFileToWAV(File toConvert) {
 
 		try {
 			StatusLogger.logStatus("Converting File " + toConvert.getName());
-			File target = File.createTempFile(toConvert.getName(), ".wav");
+			File target = FileUtils.createTempFile(toConvert.getName(), ".wav");
 			target.deleteOnExit();
 			
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Tempfile created at: " + target.getAbsolutePath());
@@ -29,7 +36,7 @@ public class AudioUtil {
 			audio.setCodec("pcm_s16le");
 			audio.setBitRate(new Integer(16));
 			audio.setChannels(new Integer(2));
-			audio.setSamplingRate(new Integer(Constants.DEFAULT_SAMPLE_RATE));
+			audio.setSamplingRate(new Integer(pictoralFin.getSettings().getAudioSampleRate()));
 
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Created EncodingAttributes... ");
 			EncodingAttributes attrs = new EncodingAttributes();
@@ -59,7 +66,7 @@ public class AudioUtil {
 		return convertAudioFileToWAV(videoFile);
 	}
 	
-	public static RawAudioFile combineAudioClips(long outputLengthInMilli, AudioClip[] audioClips) {		
+	public static RawAudioFile combineAudioClips(long outputLengthInMilli, AudioClip[] audioClips) {
 		if(audioClips == null || audioClips.length == 0)
 			return null;
 		

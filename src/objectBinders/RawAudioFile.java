@@ -13,6 +13,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import utilities.AudioUtil;
+import utilities.FileUtils;
 
 public class RawAudioFile {
 
@@ -162,7 +163,7 @@ public class RawAudioFile {
 
 	public File createTempWavFile(String name) {
 		try {
-			File output = File.createTempFile(name, ".wav");
+			File output = FileUtils.createTempFile(name, ".wav");
 			output.deleteOnExit();
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(rawAudioData);

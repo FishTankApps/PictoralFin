@@ -101,9 +101,7 @@ public class JFileChooserWithImagePreview extends JFrame {
 		jfcwip.jf.setCurrentDirectory((lastOpened.isDirectory()) ? lastOpened : lastOpened.getParentFile());
 
 		jfcwip.jf.setAcceptAllFileFilterUsed(true);
-		jfcwip.jf.addChoosableFileFilter(new FileNameExtensionFilter("Importable files", "pfkp", "jpg", "jpeg", "png"));
-		jfcwip.jf.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "png"));
-		jfcwip.jf.addChoosableFileFilter(new FileNameExtensionFilter("Project files", "pfkp"));
+		jfcwip.jf.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", ImageIO.getReaderFormatNames()));
 		
 
 		jfcwip.jf.addPropertyChangeListener(jfcwip.onNewItemSelected);

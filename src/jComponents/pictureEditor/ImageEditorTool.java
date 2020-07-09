@@ -33,10 +33,17 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 		editor.getEffectsPanel().requestToolFocus(this);
 	}
 	
-	public Point getMousePointOnImage() {
+	protected Point getMousePointOnImage() {
 		return editor.getImagePreview().getMousePointOnImage();
 	}
 	
+	protected void callForRepaint() {
+		editor.getImagePreview().repaint();
+	}
+	
+	protected void logUndoableChange() {
+		editor.logUndoableChange();
+	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -45,9 +52,8 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 		g.fillRect(0, 0, getWidth(), getHeight());
 	}
 	
-	abstract void onMouseReleased(int clickX, int clickY, BufferedImage layer);
-	abstract void onMousePressed(int clickX, int clickY, BufferedImage layer);
-
+	protected abstract void onMouseReleased(int clickX, int clickY, BufferedImage layer);
+	protected abstract void onMousePressed(int clickX, int clickY, BufferedImage layer);
 	
 	public void mouseClicked(MouseEvent e) {
 		requestToolFocus();

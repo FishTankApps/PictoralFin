@@ -163,6 +163,7 @@ public class VideoUtil {
 		int width = 0, height = 0;
 
 		for (objectBinders.Frame f : pictoralFin.getTimeLine().getFrames()) {
+//			f.loadImagesUnThreaded();
 			if (f.getLayer(0).getWidth() > width)
 				width = f.getLayer(0).getWidth();
 

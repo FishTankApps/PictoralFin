@@ -55,6 +55,11 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		
+//		listenersOFSC.add((oldFrame, newFrame) -> {
+//			if(newFrame != null)
+//				newFrame.getFrame().loadImages();
+//		});
 	}
 	
 	public void addFrame(Frame frame) {	

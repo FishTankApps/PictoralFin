@@ -6,6 +6,7 @@ import javax.swing.UIManager;
 import com.xuggle.xuggler.Global;
 
 import objectBinders.Settings;
+import utilities.AudioUtil;
 
 import java.io.File;
 
@@ -20,7 +21,7 @@ public class Launcher {
 			for(com.xuggle.ferry.Logger.Level c : com.xuggle.ferry.Logger.Level.values()) {
 				com.xuggle.ferry.Logger.setGlobalIsLogging(c, false);
 			}
-			Global.setFFmpegLoggingLevel(-1);		
+			Global.setFFmpegLoggingLevel(-1);	
 			
 			System.out.println("-- Setting Up PictoralFin --");
 			PictoralFin pictoralFin = new PictoralFin();			
@@ -34,6 +35,8 @@ public class Launcher {
 					}
 				}
 			}
+			
+			AudioUtil.passPictoralFin(pictoralFin);
 			
 			System.out.println("-- Launching PictoralFin --");
 			pictoralFin.launch();

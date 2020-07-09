@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.Box;
 import javax.swing.JPanel;
 
+import jComponents.pictureEditor.ImageEditorTools.DrawingTool;
+import jComponents.pictureEditor.ImageEditorTools.ImageResizer;
 import listeners.LayerMouseListener;
 import mainFrame.PictoralFin;
 import objectBinders.Theme;
@@ -60,9 +62,9 @@ public class EffectsPanel extends JPanel{
 	}
 		
 	public void addInstalledEditors(ImageEditor imageEditor, Theme theme) {
-		int heightIndex = 0;
-		
-		//new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10)
+		int heightIndex = 0;		
+		add(new DrawingTool(imageEditor, theme),  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));
+		add(new ImageResizer(imageEditor, theme), new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));
 		
 		add(Box.createHorizontalGlue(), new ChainGBC(0, heightIndex++).setFill(true, true));
 	}

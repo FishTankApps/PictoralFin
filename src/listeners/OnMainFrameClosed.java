@@ -6,6 +6,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JOptionPane;
 
 import mainFrame.PictoralFin;
+import utilities.FileUtils;
 public class OnMainFrameClosed implements WindowListener{
 	
 	private PictoralFin pictoralFin;
@@ -28,6 +29,8 @@ public class OnMainFrameClosed implements WindowListener{
 		pictoralFin.close();
 		pictoralFin.getSettings().saveSettings();
 		pictoralFin.getDataFile().saveDataFile();
+		
+		FileUtils.deleteTempFolder();
 		
 		try {
 			pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().getJDriveExplorer().closeDevices();

@@ -98,6 +98,7 @@ public class LayerSelecter extends JPanel {
 		Frame.addLayerToFrame(pictoralFin, selectedFrame);
 		
 		refresh();
+		
 		pictoralFin.getTimeLine().repaint();
 	}
 	

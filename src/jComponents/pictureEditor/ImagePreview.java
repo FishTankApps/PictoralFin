@@ -17,6 +17,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -29,9 +30,10 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 
 	private static final long serialVersionUID = -9021549379360151600L;
 	private static final int PREF_BOARDER = 20;
+	private static final byte SCROLL_AMOUNT = 20;
 	
-	private int imageX = 0, imageY = 0, clickStartX, clickStartY, mouseX, mouseY;
-	private double magnification = 1;
+	int imageX = 0, imageY = 0, clickStartX, clickStartY, mouseX, mouseY;
+	double magnification = 1;
 	
 	private Thread dragThread;
 	
@@ -84,11 +86,17 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 				}
 			}
 		};
-		
 		bottomPanel.setBackground(new Color(0,0,0,0));
+		bottomPanel.setCursor(Cursor.getDefaultCursor());
+		bottomPanel.setVisible(false);
 		
 		bottomPanel.add(magnificationLabel);
 		bottomPanel.add(magnificationSlider);		
+		
+		JButton undo = new JButton("UNDO");
+		undo.addActionListener(e->pictoralFin.getImageEditor().undo());
+		undo.setCursor(Cursor.getDefaultCursor());
+		add(undo, BorderLayout.NORTH);
 		
 		addMouseListener(this);
 		addMouseWheelListener(this);
@@ -102,13 +110,19 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		this.layer = layer;
 		
 		bottomPanel.setVisible(layer != null);
+		repaint();
 		
 		centerAndFitImage();
 	}
 	
 	public Point getMousePointOnImage() {
-		if(mouseX == -1 || mouseY == -1)
+		if(getMousePosition() == null)
 			return null;
+		
+		
+		
+		int mouseX = (int) ((getMousePosition().getX() - (Math.ceil((getWidth()  / 2) - (layer.getWidth()  * magnification)/2 + imageX))) / magnification);
+		int mouseY = (int) ((getMousePosition().getY() - (Math.ceil((getHeight() / 2) - (layer.getHeight() * magnification)/2 + imageY))) / magnification);		
 		
 		return new Point(mouseX, mouseY);
 	}
@@ -194,8 +208,26 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 			listener.onMouseReleased(e.getX() + imageX, e.getY() + imageY, layer);
 	}
 	
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		magnificationSlider.setValue(magnificationSlider.getValue() - (e.getWheelRotation() * 5));
+	public void mouseWheelMoved(MouseWheelEvent e) {	
+		if(layer == null)
+			return;		
+		
+		double xBefore = ((e.getX() - (getWidth() /2) + (layer.getWidth()  * magnification)/2 - imageX)) / magnification;
+		double yBefore = ((e.getY() - (getHeight()/2) + (layer.getHeight() * magnification)/2 - imageY)) / magnification;		
+		
+		double afterMagnification;
+		if(magnificationSlider.getValue() - (e.getWheelRotation() * SCROLL_AMOUNT) < magnificationSlider.getMaximum())
+			afterMagnification = (magnificationSlider.getValue() - (e.getWheelRotation() * SCROLL_AMOUNT)) / 100.0;	
+		else 
+			afterMagnification = (magnificationSlider.getMaximum()) / 100.0;	
+		
+		double xAfter = ((e.getX() - (getWidth()  / 2) + (layer.getWidth()  * afterMagnification)/2 - imageX)) / afterMagnification;
+		double yAfter = ((e.getY() - (getHeight() / 2) + (layer.getHeight() * afterMagnification)/2 - imageY)) / afterMagnification;
+		
+		imageX -= (int) ((xBefore - xAfter) * afterMagnification);
+		imageY -= (int) ((yBefore - yAfter) * afterMagnification);
+		
+		magnificationSlider.setValue(magnificationSlider.getValue() - (e.getWheelRotation() * SCROLL_AMOUNT));	
 	}
 
 	public void mouseMoved(MouseEvent e) {
@@ -264,5 +296,4 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {}
 	public void mouseDragged(MouseEvent e) {}
-
 }

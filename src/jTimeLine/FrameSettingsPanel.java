@@ -35,6 +35,7 @@ public class FrameSettingsPanel extends SettingsPanel {
 	private JFrameButton frameButton;
 	private JFrameDurationEditor durationEditor;
 	private JButton removeFrame, editImage, moveLeft, moveRight, moveToEnd, moveToBeginning;	
+	private JLabel imageSize;
 	
 	private Theme theme;
 	
@@ -58,6 +59,9 @@ public class FrameSettingsPanel extends SettingsPanel {
 		moveToEnd =       new JButton(">>");
 		moveToEnd.addActionListener(e->toEdit.move(JFrameButton.END));
 		
+		imageSize = new JLabel("Size: " + toEdit.getFrame().getLayer(0).getWidth() + "x" + toEdit.getFrame().getLayer(0).getHeight(), JLabel.CENTER);
+		imageSize.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 12));
+		
 		durationEditor = new JFrameDurationEditor(toEdit, theme);
 		
 		removeFrame.addActionListener(REMOVE_FRAME);
@@ -73,6 +77,7 @@ public class FrameSettingsPanel extends SettingsPanel {
 		
 		add(moveToBeginning, new ChainGBC(1, 2).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
 		add(moveLeft,        new ChainGBC(2, 2).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
+		add(imageSize,       new ChainGBC(3, 2).setPadding(5).setWidthAndHeight(1, 1).setFill(false));
 		add(moveRight,       new ChainGBC(4, 2).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
 		add(moveToEnd,       new ChainGBC(5, 2).setPadding(5).setWidthAndHeight(1, 1).setFill(true));
 		

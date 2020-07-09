@@ -49,8 +49,35 @@ public class FileUtils {
 		folder.delete();
 	}
 
+	private static File pictoralFinTempFolder = null;
+	public static File createTempFile(String name, String suffix) {
+		try {
+			if(pictoralFinTempFolder == null) {			
+				File locator = File.createTempFile("LocatorFile", "locator");				
+				pictoralFinTempFolder = new File(locator.getParent() + "\\PictoralFinTemp");
+				pictoralFinTempFolder.mkdirs();
+				
+				pictoralFinTempFolder.deleteOnExit();
+				locator.delete();
+			}
+			
+			File temp = File.createTempFile(name, suffix, pictoralFinTempFolder);
+			temp.deleteOnExit();
+			
+			return temp;
+			
+		} catch (Exception e) {}
+		
+		return null;
+	}
+	public static void deleteTempFolder() {
+		if(pictoralFinTempFolder != null)
+			deleteFolder(pictoralFinTempFolder);
+		
+		pictoralFinTempFolder = null;
+	}
 	
-
+	
 	public static void zipFolder(File folderLocation, String zipFilePath) {
 		SOURCE_FOLDER = folderLocation.getAbsolutePath();
 		ArrayList<String> fileList = new ArrayList<>();

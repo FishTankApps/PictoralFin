@@ -15,10 +15,14 @@ public class ImageEditor extends JPanel {
 	private LayerSelecter layerSelecter;
 	private EffectsPanel effectsPanel;
 	private Frame selectedFrame = null;
+	
+	private PictoralFin pictoralFin;
 
 	
 	public ImageEditor(PictoralFin pictoralFin) {
 		super(new BorderLayout());
+		this.pictoralFin = pictoralFin;
+		
 		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
 		
 		imagePreview = new ImagePreview(pictoralFin);
@@ -54,7 +58,6 @@ public class ImageEditor extends JPanel {
 					layerSelecter.setSelectedFrame(null);
 					selectedFrame = null;
 				}
-			
 				
 				repaint();
 			});
@@ -79,5 +82,47 @@ public class ImageEditor extends JPanel {
 	
 	ImagePreview getImagePreview() {
 		return imagePreview;
+	}
+
+	public boolean undo() {		
+		if(selectedFrame == null)
+			return false;
+			
+		int beforeImageX = imagePreview.imageX, beforeImageY = imagePreview.imageY;
+		double beforeMagnification = imagePreview.magnification;
+		
+		if(selectedFrame.undo()) {
+			layerSelecter.refresh();
+			
+			imagePreview.imageX = beforeImageX;
+			imagePreview.imageY = beforeImageY;
+			imagePreview.magnification = beforeMagnification;
+			
+			pictoralFin.repaint();
+			return true;
+		}
+		
+;
+		
+		return false;
+	}
+	
+	public boolean redo() {
+		if(selectedFrame == null)
+			return false;
+			
+		if(selectedFrame.redo()) {
+			layerSelecter.refresh();
+			pictoralFin.repaint();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public void logUndoableChange() {
+		
+		if(selectedFrame != null)
+			selectedFrame.logUndoableChange();	
 	}
 }

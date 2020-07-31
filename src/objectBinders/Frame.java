@@ -47,7 +47,7 @@ public class Frame implements Serializable {
 
 	public Frame(long duration) {
 		this.duration = duration;
-		layers = new ArrayList<>(2);
+		layers = new ArrayList<>();
 		history = new ArrayList<>();
 	}
 

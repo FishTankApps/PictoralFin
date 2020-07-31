@@ -55,6 +55,7 @@ public class VideoImporter {
 			if(audioFile != null) {
 				AudioClip audioClip = new AudioClip(audioFile, pictoralFin.getTimeLine());
 				audioClip.setName(videoFile.getName() + " Audio");
+				audioClip.setLength(audioClip.getMaxLength());
 				pictoralFin.getTimeLine().addAudioClip(audioClip);	
 			}
 			

@@ -214,7 +214,7 @@ public class PictoralFin extends JFrame implements Closeable {
 
 		tabbedPane.addChangeListener(e -> {
 			videoEditor.pausePreview();
-			
+			timeLine.getAudioTimeLine().pause();
 			setJMenuBar((tabbedPane.getSelectedIndex() == 0) ? videoTopBar : imageTopBar);
 		});
 

@@ -269,6 +269,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	public void saveProjectAs() {
 		PictoralFinProjectManager.saveProject(PictoralFin.this, null);
 	}
+	
 	public VideoEditor getVideoEditor() {
 		return videoEditor;
 	}

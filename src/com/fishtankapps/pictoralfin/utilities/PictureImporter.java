@@ -2,6 +2,8 @@ package com.fishtankapps.pictoralfin.utilities;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -13,6 +15,7 @@ import com.fishtankapps.pictoralfin.jComponents.JProgressDialog;
 import com.fishtankapps.pictoralfin.jTimeLine.JTimeLine;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
+import com.fishtankapps.pictoralfin.objectBinders.Frame;
 
 public class PictureImporter {
 	
@@ -68,7 +71,7 @@ public class PictureImporter {
 		JProgressDialog jpb = new JProgressDialog("Importing Pictures " + JProgressDialog.PERCENT, "Importing...", files.length);
 		ArrayList<String> failedFiles = new ArrayList<>();
 		double widthRatio, heightRation, ratio;
-		BufferedImage frame;
+		BufferedImage image;
 		int fileImportedCount = 0;
 
 		jpb.setIcon(GlobalImageKit.pictoralFinIcon);		
@@ -76,21 +79,31 @@ public class PictureImporter {
 		try {
 			for(File file : files) {	
 				
-				try {					
-					frame = ImageIO.read(file);
-					
-					widthRatio = ((double) frame.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-					heightRation = ((double) frame.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
-					
-					if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
-						ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
-						frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
+				try {
+					if(file.getName().endsWith(".pff")) {
+						ObjectInputStream input = new ObjectInputStream(new FileInputStream(file));
+						Frame frame = (Frame) input.readObject();
+						
+						input.close();
+						
+						frameTimeLine.addFrame(frame);
+					} else {
+						image = ImageIO.read(file);
+						
+						widthRatio = ((double) image.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
+						heightRation = ((double) image.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+						
+						if(image.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || image.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+							ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
+							image = BufferedImageUtil.resizeBufferedImage(image, (int) (image.getWidth() / ratio), (int) (image.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
+						}
+						
+						if(image == null)
+							throw new Exception("frame = NULL");
+						
+						frameTimeLine.addFrame(image);		
 					}
 					
-					if(frame == null)
-						throw new Exception("frame = NULL");
-					
-					frameTimeLine.addFrame(frame);		
 					fileImportedCount++;
 				}catch(Exception ignore) {
 					Utilities.showMessage(ignore.getMessage(), "ERROR", true);

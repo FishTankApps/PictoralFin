@@ -9,6 +9,8 @@ import com.xuggle.xuggler.Global;
 
 import javafx.embed.swing.JFXPanel;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 
 public class Launcher {
@@ -23,6 +25,18 @@ public class Launcher {
 				com.xuggle.ferry.Logger.setGlobalIsLogging(c, false);
 			}
 			Global.setFFmpegLoggingLevel(-1);	
+			
+			System.out.println("-- Loading Fonts --");
+			
+			try {
+				 GraphicsEnvironment ge = 
+				         GraphicsEnvironment.getLocalGraphicsEnvironment();
+				     ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("fonts/lcd.ttf")));
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "There was an error loading fonts:\n" +e.getMessage(), "Error Loading Fonts", JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+			 
 			
 			System.out.println("-- Setting Up PictoralFin --");
 			PictoralFin pictoralFin = new PictoralFin();

@@ -17,7 +17,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -93,11 +92,6 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		
 		bottomPanel.add(magnificationLabel);
 		bottomPanel.add(magnificationSlider);		
-		
-		JButton undo = new JButton("UNDO");
-		undo.addActionListener(e->pictoralFin.getImageEditor().undo());
-		undo.setCursor(Cursor.getDefaultCursor());
-		add(undo, BorderLayout.NORTH);
 		
 		addMouseListener(this);
 		addMouseWheelListener(this);

@@ -12,6 +12,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="images"/>
 	<classpathentry kind="src" path="dataFiles"/>
+	<classpathentry kind="src" path="fonts"/>
 	<classpathentry kind="lib" path="jarFiles/jMTPe.jar"/>
 	<classpathentry kind="lib" path="jarFiles/xuggle-xuggler-5.4.jar"/>
 	<classpathentry kind="lib" path="jarFiles/org.apache.commons.cli.jar"/>

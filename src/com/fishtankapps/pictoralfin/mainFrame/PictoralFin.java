@@ -206,7 +206,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		
 		tabbedPane.addTab("  Kinetic", kineticIcon, videoEditor);
 		tabbedPane.addTab("  Static", staticIcon, imageEditor);
-		tabbedPane.addTab("  Wave", audioIcon, new JButton("TEST"));
+		tabbedPane.addTab("  Wave", audioIcon, new JButton("Yet to come..."));
 
 		tabbedPane.addChangeListener(e -> {
 			videoEditor.pausePreview();

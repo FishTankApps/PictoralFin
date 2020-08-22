@@ -1,6 +1,6 @@
 package com.fishtankapps.pictoralfin.utilities;
 
-import java.awt.Color;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
@@ -158,10 +158,14 @@ public class Utilities {
 		+  ((millis < 100) ? ((millis < 10) ? "00" : "0") : "") + millis;
 	}
 	
-	public static final Color invertColor(Color c) {
-		return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
+	public static final java.awt.Color invertColor(java.awt.Color c) {
+		return new java.awt.Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
 	}
-
+	public static final java.awt.Color jfxColorToAwtColor(javafx.scene.paint.Color color){
+		return new java.awt.Color((int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
+	}
+	
+	
 	public static final void playSound(String fileName) {
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(Utilities.class.getResourceAsStream(fileName));

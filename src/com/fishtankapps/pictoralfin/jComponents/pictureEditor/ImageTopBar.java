@@ -14,7 +14,7 @@ public class ImageTopBar extends JMenuBar {
 
 	private JMenu fileMenu, exportMenu, editMenu;
 	private JMenuItem importLayers, importFrame, saveProject, saveProjectAs, openProject, 
-	                  exportFrameToFile, exportLayersToFolder, undo, redo;
+	                  exportFrameToFile, exportLayersToFolder, undo, redo, preferences;
 	
 	public ImageTopBar(PictoralFin pictoralFin){
 		
@@ -78,11 +78,16 @@ public class ImageTopBar extends JMenuBar {
 		redo.setAccelerator(KeyStroke.getKeyStroke('Y', Constants.CTRL));
 		redo.addActionListener(e->pictoralFin.getImageEditor().redo());
 		
+		preferences = new JMenuItem("Prefereces");
+		preferences.setAccelerator(KeyStroke.getKeyStroke('P', Constants.CTRL));
+		preferences.addActionListener(e->pictoralFin.getSettings().openSettingsEditor());
+		
 		editMenu.addSeparator();
 		editMenu.add(undo);
 		editMenu.add(redo);
-			
 		
+		editMenu.addSeparator();
+		editMenu.add(preferences);		
 		
 		
 		add(fileMenu);

@@ -51,14 +51,18 @@ public class DrawingTool extends ImageEditorTool {
 		
 		drawSize.addChangeListener(e-> drawSizeLabel.setText("Draw Size (" + drawSize.getValue() + "): "));
 		
-		changeShape = new JButton("Change Draw Shape");
+		changeShape = new JButton("Draw Shape");
 		changeShape.setToolTipText("Change between square and circle");
 		changeShape.addActionListener(e->{drawShape = (drawShape == CIRCLE) ? SQUARE : CIRCLE; drawPreview.repaint();});
 		
-		changeColor = new JButton("Change Draw Color");
+		changeColor = new JButton("Draw Color");
 		changeColor.addActionListener(e-> {
 			new Thread(()-> {
-				drawColor = JColorPicker.showChooserDialog(theme, drawColor);
+				Color color =  JColorPicker.showChooserDialog(theme, drawColor);
+				
+				if(color != null)
+					drawColor = color;
+			
 				repaint();
 			}).start();
 		});
@@ -69,10 +73,10 @@ public class DrawingTool extends ImageEditorTool {
 		add(drawSizeLabel, new ChainGBC(0,0).setFill(false, false).setPadding(5));
 		add(drawSize,      new ChainGBC(1,0).setFill(true,  false).setPadding(5).setWidthAndHeight(2, 1));
 		
-		
+		add(drawPreview, new ChainGBC(0,1).setFill(true, true).setPadding(5).setWidthAndHeight(1, 2));
 		add(changeColor, new ChainGBC(1,1).setFill(true, false).setPadding(5));
 		add(changeShape, new ChainGBC(2,1).setFill(true, false).setPadding(5));
-		add(drawPreview, new ChainGBC(3,0).setFill(true, true).setPadding(5).setWidthAndHeight(1, 2));
+		
 
 	}
 	
@@ -142,7 +146,7 @@ public class DrawingTool extends ImageEditorTool {
 			
 			g.setColor(drawColor);
 			
-			final int borderWidth = 10;
+			final int borderWidth = 5;
 			
 			if(drawShape == CIRCLE) {
 				g.fillOval((DrawPreview.this.getWidth() - DrawPreview.this.getHeight() + borderWidth*2) / 2, borderWidth, DrawPreview.this.getHeight() - borderWidth*2, DrawPreview.this.getHeight() - borderWidth*2);

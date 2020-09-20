@@ -1,6 +1,8 @@
 package com.fishtankapps.pictoralfin.utilities;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -8,10 +10,6 @@ import com.fishtankapps.pictoralfin.jTimeLine.AudioClip;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
 import com.fishtankapps.pictoralfin.objectBinders.RawAudioFile;
-
-import it.sauronsoftware.jave.AudioAttributes;
-import it.sauronsoftware.jave.Encoder;
-import it.sauronsoftware.jave.EncodingAttributes;
 
 public class AudioUtil {
 
@@ -24,35 +22,51 @@ public class AudioUtil {
 	}
 
 	public static File convertAudioFileToWAV(File toConvert) {
-
 		try {
 			StatusLogger.logStatus("Converting File " + toConvert.getName());
-			File target = FileUtils.createTempFile(toConvert.getName(), ".wav");
+			File target = FileUtils.createTempFile(toConvert.getName(), ".wav", "AudioConversion", true);
 			target.deleteOnExit();
 			
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Tempfile created at: " + target.getAbsolutePath());
-			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Created AudioAttributes... ");
 			
-			AudioAttributes audio = new AudioAttributes();
-			audio.setCodec("pcm_s16le");
-			audio.setBitRate(new Integer(16));
-			audio.setChannels(new Integer(2));
-			audio.setSamplingRate(new Integer(pictoralFin.getSettings().getAudioSampleRate()));
+			String command = VideoUtil.ffmpegExeicutable.getAbsolutePath() + " -i \"" + toConvert 
+					+ "\" -vsync 0 -ab: 16k -ac 2 -ar " + pictoralFin.getSettings().getAudioSampleRate() + " -y \"" + target + "\"";
+			
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Exicuting FFmpeg: " + command);
+			
+			Process ffmpeg = Runtime.getRuntime().exec(command);
 
-			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Created EncodingAttributes... ");
-			EncodingAttributes attrs = new EncodingAttributes();
-			attrs.setFormat("wav");
-			attrs.setAudioAttributes(audio);
+			ffmpeg.waitFor();
+			
+			Utilities.debug("AudioUtil.convertAudioFileToWAV() - FFmpeg Done, Exit Code: " + ffmpeg.exitValue());
+			
+			if(ffmpeg.exitValue() != 0) {
+				System.err.println("FFmpeg Finished with a code of: " + ffmpeg.exitValue());
+				System.err.println("\n\n-----{StdErr Out}------");
+				
+				BufferedReader stdOutput = new BufferedReader(new InputStreamReader(ffmpeg.getInputStream()));
+				BufferedReader stdError = new BufferedReader(new InputStreamReader(ffmpeg.getErrorStream()));
 
-			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Created Encoder... ");
-			Encoder encoder = new Encoder();
-			
-			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Coverting... ");
-			encoder.encode(toConvert, target, attrs);
-			
-			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Coverting Completed without errors!");
-			
-			StatusLogger.logStatus("Convertion Complete! ");
+				String outTemp, errorTemp;
+
+				do {
+					errorTemp = stdError.readLine();
+
+					if (errorTemp != null)
+						System.err.println(errorTemp);
+				} while (errorTemp != null);
+				
+				
+				System.err.println("\n\n-----{StdOut Out}------");
+				
+				do {
+					outTemp = stdOutput.readLine();
+
+					if (outTemp != null)
+						System.err.println(outTemp);
+				} while (outTemp != null);
+
+			}
 			
 			return target;
 		} catch (Exception e) {

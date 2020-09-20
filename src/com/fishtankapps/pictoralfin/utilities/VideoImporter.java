@@ -59,7 +59,7 @@ public class VideoImporter {
 			// VIDEO:
 			BufferedImage[] images = VideoUtil.videoToPictures(videoFile.getAbsolutePath());
 			numOfFrames = images.length;
-			int frameDurration = VideoUtil.getVideoFrameDurration(videoFile.getAbsolutePath());
+			int frameDurration = VideoUtil.getVideoFramesPerSecond(videoFile.getAbsolutePath());
 			
 			for(BufferedImage image : images) {
 				try {

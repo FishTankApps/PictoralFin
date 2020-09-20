@@ -163,7 +163,7 @@ public class RawAudioFile {
 
 	public File createTempWavFile(String name) {
 		try {
-			File output = FileUtils.createTempFile(name, ".wav");
+			File output = FileUtils.createTempFile(name, ".wav", "WavFiles", true);
 			output.deleteOnExit();
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(rawAudioData);

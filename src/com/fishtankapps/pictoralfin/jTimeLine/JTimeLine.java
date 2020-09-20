@@ -88,7 +88,7 @@ public class JTimeLine extends JPanel {
 				new PictoralFinProjectSettings_v1(pictoralFin));
 	}
 	
-	public void loadPictoralFinStaticProject(PictoralFinProject project) {
+	public void loadPictoralFinProject(PictoralFinProject project) {
 		StatusLogger.logStatus("Importing Images...");
 		if(project.getFrames() != null)
 			for(Frame frame : project.getFrames()) {

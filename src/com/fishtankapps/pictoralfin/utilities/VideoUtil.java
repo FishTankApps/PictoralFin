@@ -2,10 +2,13 @@ package com.fishtankapps.pictoralfin.utilities;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import com.fishtankapps.pictoralfin.customExceptions.CanceledException;
@@ -15,22 +18,21 @@ import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
 import com.fishtankapps.pictoralfin.objectBinders.DataFile;
 import com.fishtankapps.pictoralfin.objectBinders.RawAudioFile;
-import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IRational;
-import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
 public class VideoUtil {
 	// EXPORTING VIDEO:
 
+	public static File ffmpegExeicutable = null;
+	public static File ffprobeExeicutable = null;
+	
 	private static int stepsCompleted = 0;
 	private static int totalSteps = 0;
 	private static File outputFile = null;
@@ -235,109 +237,103 @@ public class VideoUtil {
 		}
 	}
 	
+	
+	
 	// IMPORTING VIDEO:
-	private static ArrayList<BufferedImage> frames;
-	private static int framesFound;
-
 	public static BufferedImage[] videoToPictures(String videoPath) {
-		frames = new ArrayList<>();
-		framesFound = 0;
-
-		StatusLogger.logStatus("Openning Video File...");
-
-		double frameCount = getVideoFrameCount(videoPath);
 		
-		IMediaReader reader = ToolFactory.makeReader(videoPath);
-		reader.setBufferedImageTypeToGenerate(Constants.IMAGE_TYPE);
-
-		reader.addListener(new MediaListenerAdapter() {
-
-			@Override
-			public void onVideoPicture(IVideoPictureEvent event) {
-				if (event.getImage() != null) {
-					frames.add(event.getImage());
-					StatusLogger.logStatus("Reading Video File... (" + (int) (100 * (++framesFound / frameCount)) + "%)");
+		try {
+			int frameCount = getVideoFrameCount(videoPath);
+			
+			StatusLogger.logStatus("Extracting Frames... (0/" + frameCount +")");
+			File outputFolder = new File(FileUtils.pictoralFinTempFolder.getAbsolutePath() + "\\VideoToPictures");
+			
+			if(outputFolder.exists()) {
+				for(File f : outputFolder.listFiles())
+					f.delete();
+			} else {
+				outputFolder.mkdirs();
+			}
+			
+			String ffmpegCommand = ffmpegExeicutable.getPath() + " -i \"" + videoPath 
+					+ "\" -y \"" + outputFolder + "\\frame-%05d.bmp\"";
+			
+			Process p = Runtime.getRuntime().exec(ffmpegCommand);
+			
+			BufferedReader errorReader = new BufferedReader( new InputStreamReader(p.getErrorStream()));
+			
+			String line = null;
+			while ((line = errorReader.readLine()) != null) {
+				if(line.startsWith("frame")) {
+					StatusLogger.logStatus("Extracting Frames... (" + line.substring(6, line.indexOf("fps")).trim() +"/" + frameCount + ")");
 				}
-
+			}		  
+			
+			p.waitFor();
+			
+			StatusLogger.logStatus("Reading in Frames... (0/" + frameCount +")");
+			BufferedImage[] returnArray = new BufferedImage[outputFolder.listFiles().length];
+			
+			int index = 0;
+			for(File frame : outputFolder.listFiles()) {
+				returnArray[index++] = ImageIO.read(frame);
+				StatusLogger.logStatus("Reading in Frames... (" + index +"/" + frameCount +")");
 			}
-		});
 
-		while (reader.readPacket() == null) {
-			try {
-				Thread.sleep(0, 1);
-			} catch (Exception e) {
-				System.out.println("Thread Interrupted! VideoUtil.videoToPictures(String):");
-			}
+			return returnArray;
+			
+		} catch (Exception e) {
+			
 		}
-
-		reader.close();
 		
-		return frames.toArray(new BufferedImage[frames.size()]);
+		return null;
+	}
+	
+	public static int getVideoFrameCount(String videoPath) {
+		try {
+			String ffprobeCommand = ffprobeExeicutable.getAbsolutePath() + " -v error -select_streams v:0 -show_entries stream=nb_frames "
+					+ "-of default=nokey=1:noprint_wrappers=1 \"" + videoPath + "\"";
+			
+			Process ffprobeProcess = Runtime.getRuntime().exec(ffprobeCommand);
+			
+			BufferedReader inputReader = new BufferedReader(new InputStreamReader(ffprobeProcess.getInputStream()));
+			
+			ffprobeProcess.waitFor();
+			
+			return Integer.parseInt(inputReader.readLine());	
+			
+		} catch (Exception e) {
+			
+		}
+		
+		return -1;
+	}	
+	public static int getVideoFramesPerSecond(String videoPath) {
+		try {
+			String ffprobeCommand = ffprobeExeicutable.getAbsolutePath() + " -v error -select_streams v -of default=noprint_wrappers=1:nokey=1 -show_entries stream=r_frame_rate \"" + videoPath + "\"";
+			
+			Process ffprobeProcess = Runtime.getRuntime().exec(ffprobeCommand);
+			
+			BufferedReader inputReader = new BufferedReader(new InputStreamReader(ffprobeProcess.getInputStream()));
+			
+			ffprobeProcess.waitFor();
+			
+			String line = inputReader.readLine();
+			
+			double denominator = Integer.parseInt(line.substring(0, line.indexOf('/')));
+			double numerator =   Integer.parseInt(line.substring(line.indexOf('/') + 1, line.length()));
+			
+			return (int) ((numerator / denominator) * 1000);	
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return -1;
 	}
 
 	public static File extractAudioFromVideo(File videoFile) {
 		return AudioUtil.extractAudioFromVideo(videoFile);
 	}
-	
-	public static int getVideoFrameDurration(String filePath) {
-		IContainer container = IContainer.make();
-
-		if (container.open(filePath, IContainer.Type.READ, null) < 0)
-			throw new IllegalArgumentException("Error Openning the Video File");
-
-		int numStreams = container.getNumStreams();
-
-		int videoStreamId = -1;
-		IStream videoStream = null;
-		
-		for (int i = 0; i < numStreams; i++) {
-			IStream stream = container.getStream(i);
-			stream.getNumFrames();
-
-			if (stream.getStreamCoder().getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-				videoStreamId = i;
-				videoStream = stream;
-				break;
-			}
-		}
-		
-		if (videoStreamId == -1)
-			throw new RuntimeException("Could not find Video Stream");
-		
-		int frameDurration = (int) ((1.0 / (videoStream.getFrameRate().getDouble())) * 1000);
-		container.close();
-		
-		return frameDurration;
-	}
-	
-	public static int getVideoFrameCount(String filePath) {
-		IContainer container = IContainer.make();
-
-		if (container.open(filePath, IContainer.Type.READ, null) < 0)
-			throw new IllegalArgumentException("Error Openning the Video File");
-
-		int numStreams = container.getNumStreams();
-
-		int videoStreamId = -1;
-		IStream videoStream = null;
-		
-		for (int i = 0; i < numStreams; i++) {
-			IStream stream = container.getStream(i);
-			stream.getNumFrames();
-
-			if (stream.getStreamCoder().getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-				videoStreamId = i;
-				videoStream = stream;
-				break;
-			}
-		}
-		
-		if (videoStreamId == -1)
-			throw new RuntimeException("Could not find Video Stream");
-		
-		int frameDurration = (int) videoStream.getNumFrames();
-		container.close();
-		
-		return frameDurration;
-	}
 }
+

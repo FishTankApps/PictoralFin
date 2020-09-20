@@ -49,8 +49,9 @@ public class FileUtils {
 		folder.delete();
 	}
 
-	private static File pictoralFinTempFolder = null;
-	public static File createTempFile(String name, String suffix) {
+	public static File pictoralFinTempFolder = null;
+
+	public static File createTempFile(String name, String suffix, String folder, boolean addUniqueNumberToName) {
 		try {
 			if(pictoralFinTempFolder == null) {			
 				File locator = File.createTempFile("LocatorFile", "locator");				
@@ -61,8 +62,19 @@ public class FileUtils {
 				locator.delete();
 			}
 			
-			File temp = File.createTempFile(name, suffix, pictoralFinTempFolder);
-			temp.deleteOnExit();
+			File parentFolder = new File(pictoralFinTempFolder.getPath() + "\\" + folder);
+			parentFolder.mkdirs();
+			
+			File temp;
+			if(addUniqueNumberToName) {
+				temp = File.createTempFile(name, suffix, parentFolder);
+				temp.deleteOnExit();
+			} else {
+				temp = new File(parentFolder.getPath() + "\\" + name + suffix);
+				temp.createNewFile();
+				temp.deleteOnExit();
+			}
+			
 			
 			return temp;
 			
@@ -70,6 +82,7 @@ public class FileUtils {
 		
 		return null;
 	}
+	
 	public static void deleteTempFolder() {
 		if(pictoralFinTempFolder != null)
 			deleteFolder(pictoralFinTempFolder);

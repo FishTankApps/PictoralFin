@@ -25,7 +25,7 @@ public abstract class UndoAndRedoable<E> implements Serializable, Cloneable {
 
 		currentVersion++;
 
-		File temp = FileUtils.createTempFile("UndoHistoryFrame(v_" + currentVersion + ")", ".frame");
+		File temp = FileUtils.createTempFile("UndoHistoryFrame(v_" + currentVersion + ")", ".frame", "UndoableStorage", true);
 
 		try {
 			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(temp));

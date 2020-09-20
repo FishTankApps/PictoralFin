@@ -56,7 +56,7 @@ public class VideoTopBar extends JMenuBar {
 		
 		preferences = new JMenuItem("Prefereces");
 		preferences.setAccelerator(KeyStroke.getKeyStroke('P', Constants.CTRL));
-		preferences.addActionListener(e->pictoralFin.getSettings().openSettingsEditor());
+		preferences.addActionListener(e->pictoralFin.getSettings().openPreferencesEditor());
 		
 		fileMenu.add(importFiles);
 			importFiles.add(importFrames);

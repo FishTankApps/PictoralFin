@@ -80,7 +80,7 @@ public class Frame extends UndoAndRedoable<Frame> {
 
 	public void setDuration(long duration) {
 		this.duration = duration;
-		logUndoableChange();
+		//logUndoableChange();
 	}
 
 	public BufferedImage getLayer(int index) {
@@ -118,7 +118,7 @@ public class Frame extends UndoAndRedoable<Frame> {
 						return;
 					
 					currentlyReadingOrWritingToFile = true;
-					imageStash = FileUtils.createTempFile("StashedFrame", ".frame");
+					imageStash = FileUtils.createTempFile("StashedFrame", ".frame", "FrameStash", false);
 		
 					ObjectOutputStream fileOutput = new ObjectOutputStream(new FileOutputStream(imageStash));
 					fileOutput.writeInt(layers.size());

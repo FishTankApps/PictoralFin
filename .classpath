@@ -10,13 +10,10 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="PictoralFin/dlls"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="images"/>
 	<classpathentry kind="src" path="dataFiles"/>
-	<classpathentry kind="src" path="fonts"/>
 	<classpathentry kind="lib" path="jarFiles/jMTPe.jar"/>
 	<classpathentry kind="lib" path="jarFiles/xuggle-xuggler-5.4.jar"/>
 	<classpathentry kind="lib" path="jarFiles/org.apache.commons.cli.jar"/>
 	<classpathentry kind="lib" path="jarFiles/slf4j-api-1.7.26.jar"/>
-	<classpathentry kind="lib" path="jarFiles/jave-1.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

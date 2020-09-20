@@ -76,7 +76,7 @@ public class ImageEditor extends JPanel {
 		return effectsPanel;
 	}
 	
-	LayerSelecter getLayerSelecter() {
+	public LayerSelecter getLayerSelecter() {
 		return layerSelecter;
 	}
 	

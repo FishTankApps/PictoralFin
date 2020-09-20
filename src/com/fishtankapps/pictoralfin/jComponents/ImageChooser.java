@@ -64,12 +64,14 @@ public class ImageChooser {
 				new ExtensionFilter("Project Files", "*.pfkp", "*.pff"),
 				new ExtensionFilter("All Files", "*"));
 
-		List<File> selectedFileList = fileChooser.showOpenMultipleDialog(null);
-		File[] selectedFileArray = selectedFileList.toArray(new File[selectedFileList.size()]);
+		List<File> selectedFileList = fileChooser.showOpenMultipleDialog(null);		
 		
-		if(selectedFileArray != null)
+		if(selectedFileList != null) {
+			File[] selectedFileArray = selectedFileList.toArray(new File[selectedFileList.size()]);
 			pictoralFin.getDataFile().setLastOpenedPictureLocation(selectedFileArray[0].getAbsolutePath());
+			return selectedFileArray;
+		}
 		
-		return selectedFileArray;
+		return null;		
 	}
 }

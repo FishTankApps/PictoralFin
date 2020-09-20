@@ -15,7 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 
-import com.fishtankapps.pictoralfin.jComponents.JColorPicker;
+import com.fishtankapps.pictoralfin.jComponents.JColorChooser;
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditor;
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditorTool;
 import com.fishtankapps.pictoralfin.objectBinders.Frame;
@@ -58,7 +58,7 @@ public class DrawingTool extends ImageEditorTool {
 		changeColor = new JButton("Draw Color");
 		changeColor.addActionListener(e-> {
 			new Thread(()-> {
-				Color color =  JColorPicker.showChooserDialog(theme, drawColor);
+				Color color =  JColorChooser.showChooserDialog(theme, drawColor);
 				
 				if(color != null)
 					drawColor = color;

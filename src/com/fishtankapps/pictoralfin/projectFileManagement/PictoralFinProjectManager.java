@@ -26,6 +26,7 @@ public class PictoralFinProjectManager {
 		Platform.runLater(() -> {
 		
 				staticFilePath = filePath;
+				
 				if(staticFilePath == null) {
 					FileChooser fileChooser = new FileChooser();
 					
@@ -41,6 +42,7 @@ public class PictoralFinProjectManager {
 					
 					staticFilePath = selectedFile.getPath();	
 				}
+				
 				String name = new File(staticFilePath).getName();
 				String[] splitName = name.split("\\.");
 				
@@ -96,9 +98,10 @@ public class PictoralFinProjectManager {
 					if(selectedFile == null)
 						return;
 					
-					staticFilePath = selectedFile.getAbsolutePath();
-					openProjectFromFile(pictoralFin, staticFilePath);	
+					staticFilePath = selectedFile.getAbsolutePath();	
 				}
+				
+				openProjectFromFile(pictoralFin, staticFilePath);
 			});
 		
 	}
@@ -108,7 +111,7 @@ public class PictoralFinProjectManager {
 			File openLocation = new File(filePath);
 			StatusLogger.logStatus("Openning File...");
 			ObjectInputStream objectOutput = new ObjectInputStream(new FileInputStream(openLocation));
-			pictoralFin.getTimeLine().loadPictoralFinStaticProject((PictoralFinProject) objectOutput.readObject());			
+			pictoralFin.getTimeLine().loadPictoralFinProject((PictoralFinProject) objectOutput.readObject());			
 			objectOutput.close();	
 			StatusLogger.logStatus("Project Openned!");
 			

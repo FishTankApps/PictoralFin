@@ -27,7 +27,7 @@ public class DataFile implements Serializable {
 		DataFile dataFile;
 
 		try {
-			ObjectInputStream fileInput = new ObjectInputStream(new FileInputStream(new File("dataFiles/dataFile.pfd")));
+			ObjectInputStream fileInput = new ObjectInputStream(new FileInputStream(new File("./dataFiles/dataFile.pfd")));
 			dataFile = (DataFile) fileInput.readObject();
 			
 			fileInput.close();
@@ -43,7 +43,7 @@ public class DataFile implements Serializable {
 	
 	public void saveDataFile() {
 		try {
-			ObjectOutputStream fileOutput = new ObjectOutputStream(new FileOutputStream(new File("dataFiles/dataFile.pfd")));
+			ObjectOutputStream fileOutput = new ObjectOutputStream(new FileOutputStream(new File("./dataFiles/dataFile.pfd")));
 			fileOutput.writeObject(this);			
 			fileOutput.close();
 		}catch(Exception e) {

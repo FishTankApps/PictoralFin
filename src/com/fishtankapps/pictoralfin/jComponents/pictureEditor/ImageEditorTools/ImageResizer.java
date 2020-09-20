@@ -2,6 +2,10 @@ package com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditorTools;
 
 import java.awt.image.BufferedImage;
 
+//import javax.swing.JButton;
+//import javax.swing.JLabel;
+//import javax.swing.JTextField;
+
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditor;
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditorTool;
 import com.fishtankapps.pictoralfin.objectBinders.Frame;
@@ -11,6 +15,9 @@ public class ImageResizer extends ImageEditorTool {
 
 	private static final long serialVersionUID = -2297726745512899997L;
 
+//	private JLabel size;
+//	private JTextField width, height;
+//	private JButton resize;
 
 	public ImageResizer(ImageEditor editor, Theme theme) {
 		super("Image Resizer", editor, theme);

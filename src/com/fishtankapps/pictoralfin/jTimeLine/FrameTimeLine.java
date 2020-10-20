@@ -58,6 +58,11 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
+		addOnFrameSelectionChangedListener((oldFrame, newFrame) -> {
+				if(newFrame == null)
+					pictoralFin.getImageEditor().getLayerSelecter().triggerOnSelectedLayerChangedListeners(null, null);
+			});
+		
 //		listenersOFSC.add((oldFrame, newFrame) -> {
 //			if(newFrame != null)
 //				newFrame.getFrame().loadImages();
@@ -82,6 +87,31 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		newButton.addMouseMotionListener(this);
 		
 		add(newButton);
+		
+		flagDurrationChanged();
+		
+		revalidate();
+		repaint();
+	}
+	
+	public void addFrame(Frame frame, int index) {	
+		JFrameButton newButton = new JFrameButton(frame, theme);
+		
+		if(getComponent(0) instanceof JButton) {
+			remove(0);
+			selectedJFrameButton = newButton;
+			newButton.setSelected(true);
+			
+			for(OnFrameSelectionChangedListener l : listenersOFSC)
+				l.frameSelectionChanged(null, selectedJFrameButton);
+		}
+		
+		newButton.setPreferredHeight(frameDimension);
+		
+		newButton.addMouseListener(this);
+		newButton.addMouseMotionListener(this);
+		
+		add(newButton, index);
 		
 		flagDurrationChanged();
 		
@@ -144,7 +174,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		return ((JFrameButton) getComponent(index)).getFrame();
 	}
 	public Frame getFrameAtMilli(long milli) {
-		if(getComponent(0) instanceof JButton)
+		if(getComponentCount() == 0 || getComponent(0) instanceof JButton)
 			return null;
 		
 		long durration = 0;

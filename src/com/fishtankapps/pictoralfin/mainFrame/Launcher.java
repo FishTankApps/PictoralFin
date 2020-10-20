@@ -7,7 +7,6 @@ import com.fishtankapps.pictoralfin.objectBinders.Preferences;
 import com.fishtankapps.pictoralfin.utilities.AudioUtil;
 import com.fishtankapps.pictoralfin.utilities.FileUtils;
 import com.fishtankapps.pictoralfin.utilities.VideoUtil;
-import com.xuggle.xuggler.Global;
 
 import javafx.embed.swing.JFXPanel;
 
@@ -27,12 +26,10 @@ public class Launcher {
 			
 			setUpPictoralFin(filePaths);
 			
-			setUpXuggler();	
-			
 			extractFFmpeg();
 			
 			loadFonts();
-			
+			System.out.println("-- Launch Complete --");
 			StatusLogger.logStatus("Launch Complete!");
 
 		} catch (Exception e) {
@@ -42,6 +39,7 @@ public class Launcher {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
 	public static void setUpUIStuff() throws Exception {
 		System.out.println("-- Setting Look And Feel --");
 		UIManager.setLookAndFeel(Preferences.openPreferences().getLookAndFeel());
@@ -49,14 +47,7 @@ public class Launcher {
 		@SuppressWarnings("unused")
 		JFXPanel usedToInitializeJFXTools = new JFXPanel();
 	}
-	public static void setUpXuggler() {
-		System.out.println("-- Setting up Xuggler --");
-		StatusLogger.logStatus("Setting up Xuggler...");
-		for (com.xuggle.ferry.Logger.Level c : com.xuggle.ferry.Logger.Level.values()) {
-			com.xuggle.ferry.Logger.setGlobalIsLogging(c, false);
-		}
-		Global.setFFmpegLoggingLevel(-1);	
-	}
+
 	public static void extractFFmpeg() {
 		//StatusLogger.logStatus("Extracting FFmpeg to temp files...");
 		System.out.println("-- Extracting FFmpeg --");

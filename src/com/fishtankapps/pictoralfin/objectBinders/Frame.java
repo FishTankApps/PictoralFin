@@ -30,7 +30,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class Frame extends UndoAndRedoable<Frame> {
 
 	private static final long serialVersionUID = -6947541644075351604L;
-	private static final String IMAGE_OUTPUT_FILE_FORMAT = "PNG";
+	private static final String IMAGE_OUTPUT_FILE_FORMAT = "BMP";
 	
 	private transient ArrayList<BufferedImage> layers;
 	private transient File imageStash = null;
@@ -77,6 +77,12 @@ public class Frame extends UndoAndRedoable<Frame> {
 	
 		logUndoableChange();
 	}
+	
+	public void addLayerAtIndex(BufferedImage layer, int index) {
+		layers.add(index, BufferedImageUtil.setBufferedImageType(layer, Constants.IMAGE_TYPE));
+		
+		logUndoableChange();
+	}
 
 	public void setDuration(long duration) {
 		this.duration = duration;
@@ -99,6 +105,13 @@ public class Frame extends UndoAndRedoable<Frame> {
 		layers.remove(index);
 		logUndoableChange();
 	}
+	
+	public void removeLayer(int index, boolean logChange) {
+		layers.remove(index);
+		
+		if(logChange)
+			logUndoableChange();
+	}	
 
 	
 	
@@ -258,6 +271,17 @@ public class Frame extends UndoAndRedoable<Frame> {
 
 	
 	
+	public Frame clone() {
+		Frame clone = new Frame(duration);
+		
+		for(BufferedImage layer : layers)
+			clone.addLayer(BufferedImageUtil.copyBufferedImage(layer));
+		
+		return clone;
+	}
+	
+	
+	
 	protected void override(Frame previousVersion) {
 		this.layers.clear();
 		
@@ -267,7 +291,6 @@ public class Frame extends UndoAndRedoable<Frame> {
 		this.duration = previousVersion.duration;
 	}
 
-	
 	
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();

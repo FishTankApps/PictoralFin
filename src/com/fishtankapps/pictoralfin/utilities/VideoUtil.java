@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -18,14 +17,6 @@ import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
 import com.fishtankapps.pictoralfin.objectBinders.DataFile;
 import com.fishtankapps.pictoralfin.objectBinders.RawAudioFile;
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.IAudioSamples;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IPacket;
-import com.xuggle.xuggler.IRational;
-import com.xuggle.xuggler.IStreamCoder;
 
 public class VideoUtil {
 	// EXPORTING VIDEO:
@@ -33,11 +24,7 @@ public class VideoUtil {
 	public static File ffmpegExeicutable = null;
 	public static File ffprobeExeicutable = null;
 	
-	private static int stepsCompleted = 0;
-	private static int totalSteps = 0;
 	private static File outputFile = null;
-
-	private static JProgressDialog progressDialog = null;
 
 	public static void generateAndSaveVideo(PictoralFin pictoralFin) {
 		new Thread(() -> {
@@ -54,71 +41,128 @@ public class VideoUtil {
 	}
 
 	public static void generateAndSaveVideoThreaded(PictoralFin pictoralFin) {
-		StatusLogger.logStatus("Getting Target File...");
+		
 		File videoFile = getFileToExportTo(pictoralFin.getDataFile());
 
 		if (videoFile == null)
 			return;
 
 		outputFile = videoFile;
-
+		
+		// Assignment: + 10  points for resizing images,
+		//             + 2   points for duration calculations 
+		//             + 10  points for generating sound file
+        //             + 100 points for exporting images (1 per percent)
+        //             + 100 points for executing FFmpeg (1 per percent)
+		//          -------------------------------------------------------
+		//             = 222 points total
+		JProgressDialog progressDialog = new JProgressDialog("Exporting - " + JProgressDialog.PERCENT, "Exporting Project to File...", 222);
+		int previousPercent = 0;
+		int newPercent = 0;
+		
 		StatusLogger.logStatus("Resizing Images...");
-
-		Dimension pictureSize = getOptimalPictureSize(pictoralFin);
-		ArrayList<BufferedImage> frames = resizeImages(pictoralFin, pictureSize);
-		
-		StatusLogger.logStatus("Generating Sound File...");
-		RawAudioFile rawAudioFile = AudioUtil.combineAudioClips(pictoralFin.getTimeLine().getVideoDurration(), pictoralFin.getTimeLine().getAudioClips());
-
-		StatusLogger.logStatus("Opening File...");
-		
-		IMediaWriter writer = ToolFactory.makeWriter(videoFile.getAbsolutePath());
+		Dimension pictureSize = getOptimalPictureSize(pictoralFin);		
+		ArrayList<BufferedImage> frames = resizeImages(pictoralFin, pictureSize);		
+		progressDialog.moveForward(10);
 		
 		StatusLogger.logStatus("Getting Frame Durrations...");
 		long[] framesDurrationArray = new long[pictoralFin.getTimeLine().numberOfFrame()];
 		for (int count = 0; count < framesDurrationArray.length; count++)
 			framesDurrationArray[count] = pictoralFin.getTimeLine().getFrames()[count].getDuration();
 
-		try {
-			StatusLogger.logStatus("Applying Video Settings...");
-			long shortestframeDurration = Utilities.findGCDofArray(framesDurrationArray);
-			double framesPerSecond = 1000.0 / shortestframeDurration;
+		long shortestframeDurration = Utilities.findGCDofArray(framesDurrationArray);
+		int framesPerSecond = (int) ((1000.0 / shortestframeDurration) * 1000);
+		progressDialog.moveForward(2);
+		
+		StatusLogger.logStatus("Generating Sound File...");
+		RawAudioFile rawAudioFile = AudioUtil.combineAudioClips(pictoralFin.getTimeLine().getVideoDurration(), pictoralFin.getTimeLine().getAudioClips());
+		File audioFile = null;
+		if(rawAudioFile != null)
+			audioFile = rawAudioFile.createTempWavFile("VideoAudio");
+		progressDialog.moveForward(10);
+		
+		StatusLogger.logStatus("Exporting Frames - 0%");
+		FileUtils.deleteFolder(new File(FileUtils.pictoralFinTempFolder + "\\VideoFrames"));
+		
+		File imageFile;
+		int imageIndex = 1;
+		int neededNumberOfDigits = (int) (Math.floor(Math.log10(frames.size())) + 1);		
+		try {	
 			
-			String videoExtension = videoFile.getName().split("\\.")[1];
-			int videoStreamIndex = writer.addVideoStream(0, 0, ((videoExtension.equals("mp4")) ? ICodec.ID.CODEC_ID_MPEG4 : ICodec.ID.CODEC_ID_FLV1), 
-					IRational.make(framesPerSecond), (int) pictureSize.getWidth(), (int) pictureSize.getHeight());
+			for(int frameCount = 0; frameCount < frames.size(); frameCount++) {
+				
+				for(int loopCount = 0; loopCount < (framesDurrationArray[frameCount] / shortestframeDurration); loopCount++) {
+					imageFile = FileUtils.createTempFile("frame-" + String.format("%0" + neededNumberOfDigits + "d", imageIndex++), ".bmp", "VideoFrames", false);			
+					ImageIO.write(frames.get(frameCount), "bmp", imageFile);
+				}
+				
+				newPercent = (int) ((((double) frameCount) / frames.size()) * 100);
+				progressDialog.moveForward(newPercent - previousPercent);
+				
+				previousPercent = newPercent;
+				
+				StatusLogger.logStatus("Exporting Frames - " + newPercent + "%");
+			}
 			
-			// Set Up JProgressDialog
-			stepsCompleted = 0;
-			totalSteps = frames.size();
-
-			progressDialog = new JProgressDialog("Exporting Project... " + JProgressDialog.PERCENT,
-					"Writing to Video File...", totalSteps);
-
-			StatusLogger.logStatus("Writting Audio... (0/" + totalSteps + ")");
-
-			// Write Data			
-			writeAudio(writer, rawAudioFile);
-			writeImages(writer, frames, framesDurrationArray, shortestframeDurration, videoStreamIndex);
-
-			StatusLogger.logStatus("Saving File... (" + ++stepsCompleted + "/" + totalSteps + ")");
-			writer.close();	
-
-			progressDialog.close();
-			progressDialog = null;
-			outputFile = null;
-			writer = null;
-
-			StatusLogger.logStatus("Export Finished!");
 		} catch (Exception e) {
-			if (e instanceof CanceledException)
-				throw (CanceledException) e;
-
-			JOptionPane.showMessageDialog(null, "There was error exporting the video.\n" + e.getMessage(),
-					"Error Exporting", JOptionPane.ERROR_MESSAGE);
-			System.out.println("Error Exporting Video:");
+			JOptionPane.showMessageDialog(null, "There was an error exporting the frames\nto the temp folder.\nMessage:\n" + e.getMessage() + "\n\n Aborting Export.", "Error Export Images", JOptionPane.ERROR_MESSAGE);
+			System.out.println("There was an error writing frames to a temp file: ");
 			e.printStackTrace();
+			
+			outputFile = null;
+			return;
 		}
+		
+		
+		previousPercent = 0;
+		newPercent = 0;
+		StatusLogger.logStatus("Executing FFmpeg - 0%");
+		try {
+			String ffmpegCommand = ffmpegExeicutable.getPath() + " -r " + framesPerSecond + "/1000 -i \"" + FileUtils.pictoralFinTempFolder.getAbsolutePath() 
+							+ "\\VideoFrames\\Frame-%0\"" + neededNumberOfDigits + "d.bmp ";
+			
+			if(audioFile != null)
+				ffmpegCommand += " -i \"" + audioFile.getAbsolutePath() + "\" ";
+			
+			
+			ffmpegCommand += " -c:v libx264 -y -start_number 0 -vf \"fps=10,format=yuv420p\" \"" + outputFile.getAbsolutePath() + "\"";
+			
+			Process p = Runtime.getRuntime().exec(ffmpegCommand);
+			
+			BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			
+			String line = null;
+			while ((line = errorReader.readLine()) != null) {
+				if(line.startsWith("frame")) {
+					String currentFrame = line.substring(6, line.indexOf("fps")).trim();
+					
+					try {
+						newPercent = (int) ((((double) Integer.parseInt(currentFrame)) / (imageIndex - 1)) * 10);
+						progressDialog.moveForward(newPercent - previousPercent);
+						
+						previousPercent = newPercent;
+						StatusLogger.logStatus("Executing FFmpeg - " + newPercent + "%");
+					} catch (NumberFormatException e) {
+						System.err.println("Error with current frame conversion! String = \"" + currentFrame + "\" " + e.getMessage());
+					}
+				}
+			}		  
+			
+			p.waitFor();
+			
+			if(p.exitValue() != 0) {
+				System.err.println("There was an error exicuting FFmpeg!!!");
+				throw new Exception();
+			}
+				
+		} catch (CanceledException e) {
+			throw e;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "There was an error exicuting FFmpeg.\n\n Aborting Export.", "Error Exicuting FFmpeg", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		progressDialog.close();
+		StatusLogger.logStatus("Done!");
 
 	}
 
@@ -189,58 +233,10 @@ public class VideoUtil {
 
 		return resizedImages;
 	}
-
-	private static void writeImages(IMediaWriter frameRecorder, ArrayList<BufferedImage> images, long[] frameDurrations, long shortestframeDurration, int videoStreamIndex) throws Exception {
-		StatusLogger.logStatus("Recording Images... (" + stepsCompleted + "/" + totalSteps + ")");
-		
-		int count = 0;	
-		
-		int imageIndex = 0;
-		for (BufferedImage image : images) {			
-			frameRecorder.encodeVideo(videoStreamIndex, BufferedImageUtil.setBufferedImageType(image, Constants.IMAGE_TYPE), imageIndex, TimeUnit.MILLISECONDS);
-			StatusLogger.logStatus("Recording Images... (" + ++stepsCompleted + "/" + totalSteps + ")");
-			
-			imageIndex += (frameDurrations[count++] / shortestframeDurration);
-			progressDialog.moveForward();
-		}
-	}
-
-	private static void writeAudio(IMediaWriter writer, RawAudioFile rawAudio) {
-
-		if (rawAudio != null) {
-			File audioFile = rawAudio.createTempWavFile("VideoAudio"); 
-			IContainer containerAudio = IContainer.make();
-			containerAudio.open(audioFile.getPath(), IContainer.Type.READ, null);
-			
-			 IStreamCoder coderAudio = containerAudio.getStream(0).getStreamCoder();
-			 if (coderAudio.open(null, null) < 0)
-			      throw new RuntimeException("Cant open audio coder");
-			 IPacket packetaudio = IPacket.make();
-			 
-			 writer.addAudioStream(1, 0, coderAudio.getChannels(), coderAudio.getSampleRate());
-
-			 IAudioSamples samples;
-			 do {
-			     samples = IAudioSamples.make(512, coderAudio.getChannels(), IAudioSamples.Format.FMT_S32);
-			     containerAudio.readNextPacket(packetaudio);
-			     coderAudio.decodeAudio(samples, packetaudio, 0);
-			     writer.encodeAudio(1, samples);
-			} while (samples.isComplete());			 
-			 
-			 coderAudio.close();
-			 containerAudio.close();
-			 
-			 containerAudio = null;
-			 packetaudio = null;
-			 coderAudio = null;
-			 samples = null;
-		}
-	}
-	
 	
 	
 	// IMPORTING VIDEO:
-	public static BufferedImage[] videoToPictures(String videoPath) {
+	public static File[] videoToImageFiles(String videoPath) {
 		
 		try {
 			int frameCount = getVideoFrameCount(videoPath);
@@ -270,17 +266,8 @@ public class VideoUtil {
 			}		  
 			
 			p.waitFor();
-			
-			StatusLogger.logStatus("Reading in Frames... (0/" + frameCount +")");
-			BufferedImage[] returnArray = new BufferedImage[outputFolder.listFiles().length];
-			
-			int index = 0;
-			for(File frame : outputFolder.listFiles()) {
-				returnArray[index++] = ImageIO.read(frame);
-				StatusLogger.logStatus("Reading in Frames... (" + index +"/" + frameCount +")");
-			}
 
-			return returnArray;
+			return outputFolder.listFiles();
 			
 		} catch (Exception e) {
 			

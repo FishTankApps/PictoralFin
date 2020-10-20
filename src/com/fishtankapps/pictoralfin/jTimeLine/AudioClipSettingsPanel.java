@@ -56,7 +56,11 @@ public class AudioClipSettingsPanel extends SettingsPanel {
 		lengthMilli = new JSpinner(lengthMilliModel);
 		
 		volume = new JSlider(0, 100, (int) (audioClip.getVolume() * 100));
-		volume.addChangeListener(e->{volumeLabel.setText("Volume (" + volume.getValue() + "%):");});
+		volume.addChangeListener(e->{
+			volumeLabel.setText("Volume (" + volume.getValue() + "%):");
+			audioClip.setVolume(volume.getValue() / 100.0);
+		});
+	
 		volumeLabel = new JLabel("Volume (" + volume.getValue() + "%):");
 		volumeLabel.setFont(labelFont);
 		volumeLabel.setHorizontalAlignment(JLabel.RIGHT);

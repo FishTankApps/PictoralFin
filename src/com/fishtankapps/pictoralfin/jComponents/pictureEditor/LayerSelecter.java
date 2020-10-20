@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -80,6 +81,8 @@ public class LayerSelecter extends JPanel {
 	void onLayerButtonClicked(LayerButton layerButton) {
 		if(layerButton.getLayerIndex() == LayerButton.ADD_LAYER_INDEX) {
 			addLayerToFrame();
+			
+			refresh();
 		} else {
 			if(selectedLayerButton != null) {
 				selectedLayerButton.setSelected(false);
@@ -93,6 +96,11 @@ public class LayerSelecter extends JPanel {
 			selectedLayerButton.setSelected(true);
 			selectedLayerButton.repaint();
 		}
+	}
+	
+	public void triggerOnSelectedLayerChangedListeners(LayerButton oldLayerButton, LayerButton newLayerButton) {
+		for(OnSelectedLayerChangedListener listener : listeners)
+			listener.selectedlayerChanged(oldLayerButton, newLayerButton);
 	}
 	
 	public void addLayerToFrame() {
@@ -109,8 +117,10 @@ public class LayerSelecter extends JPanel {
 		byte index = 0;
 		
 		if(selectedFrame != null) {
-			for(BufferedImage i : selectedFrame.getLayers())
+			for(BufferedImage i : selectedFrame.getLayers()) {
 				buttonPanel.add(new LayerButton(i, pictoralFin.getSettings().getTheme(), index++, buttonWidth));
+				buttonPanel.add(Box.createVerticalStrut(10));
+			}
 		
 			buttonPanel.add(addNewLayer);
 			

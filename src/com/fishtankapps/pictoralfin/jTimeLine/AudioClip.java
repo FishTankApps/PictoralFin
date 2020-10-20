@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.swing.JComponent;
 
 import com.fishtankapps.pictoralfin.interfaces.Closeable;
@@ -159,6 +160,15 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 	}
 	public void setName(String name) {
 		audioClipData.setName(name);
+	}
+	
+	public void setVolume(double volume) {
+		audioClipData.setVolume(volume);
+		
+		FloatControl gainControl = (FloatControl) playableAudioClip.getControl(FloatControl.Type.MASTER_GAIN);
+		float range = gainControl.getMaximum() - gainControl.getMinimum();
+		float gain = (float) ((range * volume) + gainControl.getMinimum());
+		gainControl.setValue(gain);
 	}
 	
 	public Clip getPlayableClip() {

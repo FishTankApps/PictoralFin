@@ -28,6 +28,8 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 		addMouseListener(this);
 		setBackground(theme.getPrimaryBaseColor());
 		setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(theme.getPrimaryBaseColor()), name));
+		
+		editor.getLayerSelecter().addOnSelectionLayerChangedListener((oldFrame, newFrame)->onLayerSelectionChanged(oldFrame, newFrame));
 	}
 
 	public void requestToolFocus() {
@@ -55,6 +57,8 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 	
 	protected abstract void onMouseReleased(int clickX, int clickY, BufferedImage layer, Frame frame);
 	protected abstract void onMousePressed(int clickX, int clickY, BufferedImage layer, Frame frame);
+	protected abstract void onLayerSelectionChanged(LayerButton oldFrame, LayerButton newFrame);
+	
 	
 	public void mouseClicked(MouseEvent e) {
 		requestToolFocus();

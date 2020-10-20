@@ -35,7 +35,7 @@ public class AudioUtil {
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Exicuting FFmpeg: " + command);
 			
 			Process ffmpeg = Runtime.getRuntime().exec(command);
-
+			
 			ffmpeg.waitFor();
 			
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - FFmpeg Done, Exit Code: " + ffmpeg.exitValue());
@@ -117,11 +117,13 @@ public class AudioUtil {
 						currentMillis <= audioClips[clipIndex].getEndTime()   &&
 						sampleCountPerClip[clipIndex] < audioClips[clipIndex].getAudioClipData().getRawAudioFile().getNumberOfSamples()) {	
 					
-					leftValueTemp  = audioClips[clipIndex].getAudioClipData().getRawAudioFile()
-							.getChannel(RawAudioFile.LEFT_CHANNEL) [sampleCountPerClip[clipIndex]]  + leftChannel[sampleIndex];
+					leftValueTemp  = (short) (audioClips[clipIndex].getAudioClipData().getRawAudioFile()
+							.getChannel(RawAudioFile.LEFT_CHANNEL) [sampleCountPerClip[clipIndex]] 
+							* audioClips[clipIndex].getAudioClipData().getVolume())  + leftChannel[sampleIndex];
 					
-					rightValueTemp = audioClips[clipIndex].getAudioClipData().getRawAudioFile()
-							.getChannel(RawAudioFile.RIGHT_CHANNEL)[sampleCountPerClip[clipIndex]] + rightChannel[sampleIndex];
+					rightValueTemp = (short) (audioClips[clipIndex].getAudioClipData().getRawAudioFile()
+							.getChannel(RawAudioFile.RIGHT_CHANNEL)[sampleCountPerClip[clipIndex]] 
+							* audioClips[clipIndex].getAudioClipData().getVolume()) + rightChannel[sampleIndex];
 					
 					leftChannel[sampleIndex]   = (leftValueTemp  > Short.MAX_VALUE) ? Short.MAX_VALUE : ((leftValueTemp  < Short.MIN_VALUE) ? Short.MIN_VALUE : (short) leftValueTemp);
 					rightChannel[sampleIndex]  = (rightValueTemp > Short.MAX_VALUE) ? Short.MAX_VALUE : ((rightValueTemp < Short.MIN_VALUE) ? Short.MIN_VALUE : (short) rightValueTemp);

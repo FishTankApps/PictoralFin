@@ -3,12 +3,13 @@ package com.fishtankapps.pictoralfin.jComponents.pictureEditor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.lang.reflect.Constructor;
 
 import javax.swing.Box;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditorTools.DrawingTool;
-import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditorTools.ImageResizer;
 import com.fishtankapps.pictoralfin.listeners.LayerMouseListener;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
@@ -62,9 +63,28 @@ public class EffectsPanel extends JPanel{
 	}
 		
 	public void addInstalledEditors(ImageEditor imageEditor, Theme theme) {
-		int heightIndex = 0;		
-		add(new DrawingTool(imageEditor, theme),  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));
-		add(new ImageResizer(imageEditor, theme), new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));
+		int heightIndex = 0;
+		String name = "";
+			
+		
+		try {
+			File imageEditorFolder = new File("src\\com\\fishtankapps\\pictoralfin\\jComponents\\pictureEditor\\imageEditorTools");
+			
+			for(File imageEditorFile : imageEditorFolder.listFiles()) {
+				name = imageEditorFile.getName().substring(0, imageEditorFile.getName().indexOf('.'));
+				
+				Class<?> clazz = Class.forName("com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools." + name);
+				Constructor<?> constructor = clazz.getConstructor(ImageEditor.class, Theme.class);
+				ImageEditorTool instance = (ImageEditorTool) constructor.newInstance(imageEditor, theme);
+				
+				add(instance,  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));
+			}				
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "There was an error loading an Image Editor:\n" + name + 
+					"\nError Message: \n" + e.getMessage(), "Error Loading Editor", JOptionPane.ERROR_MESSAGE);
+		}
+		
 		
 		add(Box.createHorizontalGlue(), new ChainGBC(0, heightIndex++).setFill(true, true));
 	}

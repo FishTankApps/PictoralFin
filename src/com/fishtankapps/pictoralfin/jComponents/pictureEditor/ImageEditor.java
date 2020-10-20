@@ -63,6 +63,9 @@ public class ImageEditor extends JPanel {
 			});
 		
 		layerSelecter.addOnSelectionLayerChangedListener((old, newFrame) -> {
+				if(newFrame == null)
+					return;
+				
 				imagePreview.setSelectedLayer(newFrame.getLayer());
 				imagePreview.repaint();
 			});
@@ -101,8 +104,6 @@ public class ImageEditor extends JPanel {
 			pictoralFin.repaint();
 			return true;
 		}
-		
-;
 		
 		return false;
 	}

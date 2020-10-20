@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import com.fishtankapps.pictoralfin.jTimeLine.AudioClip;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
@@ -57,13 +59,16 @@ public class VideoImporter {
 			}
 			
 			// VIDEO:
-			BufferedImage[] images = VideoUtil.videoToPictures(videoFile.getAbsolutePath());
+			File[] images = VideoUtil.videoToImageFiles(videoFile.getAbsolutePath());
 			numOfFrames = images.length;
 			int frameDurration = VideoUtil.getVideoFramesPerSecond(videoFile.getAbsolutePath());
+			BufferedImage image;
 			
-			for(BufferedImage image : images) {
+			for(File imageFile : images) {
 				try {
 					StatusLogger.logStatus("Importing Frames... (" + count++ + "/" + numOfFrames + ")");
+					image = ImageIO.read(imageFile);
+					
 					if(image == null)
 						continue;
 					

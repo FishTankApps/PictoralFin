@@ -152,7 +152,7 @@ public class VideoPreview extends JPanel implements Themed {
 		applyTheme(theme);
 	
 		
-		this.setMinimumSize(new Dimension(800,500));
+		this.setMinimumSize(new Dimension(600,400));
 	}	
 	public void setUpIconImages(Theme theme) {
 		BufferedImage playImage, pauseImage, stopImage, skipLeftImage, skipRightImage;

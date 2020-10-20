@@ -9,6 +9,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
+import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
+import com.fishtankapps.pictoralfin.utilities.BufferedImageUtil;
 import com.fishtankapps.pictoralfin.utilities.Constants;
 import com.fishtankapps.pictoralfin.utilities.Utilities;
 
@@ -30,6 +32,8 @@ class ImagePreviewPopUpMenu {
 		if(imageEditor.getSelectedFrame().getNumberOfLayers() == 0) {
 			pictoralFin.getTimeLine().removeFrame(pictoralFin.getTimeLine().getCurrentFrameIndex());		
 		}
+				
+		imageEditor.getLayerSelecter().triggerOnSelectedLayerChangedListeners(null, null);
 		
 		imageEditor.getLayerSelecter().refresh();				
 		pictoralFin.getTimeLine().revalidate();			
@@ -72,6 +76,9 @@ class ImagePreviewPopUpMenu {
 			
 			File selectedFile = fileChooser.showSaveDialog(null);
 			
+			if(selectedFile == null)
+				return;
+			
 			try {
 				ImageIO.write(button.getLayer(), ".png", selectedFile);
 			} catch (Exception error) {
@@ -79,6 +86,19 @@ class ImagePreviewPopUpMenu {
 				error.printStackTrace();
 			}
 		});		
+	};
+	private final ActionListener COPY_LAYER = e -> {
+		
+		PictoralFin pictoralFin = Utilities.getPictoralFin(button);
+		
+		StatusLogger.logStatus("Copying Image...");
+		
+		pictoralFin.getTimeLine().addFrame(BufferedImageUtil.copyBufferedImage(button.getLayer()), pictoralFin.getTimeLine().getCurrentFrameIndex());
+					
+		pictoralFin.getTimeLine().revalidate();			
+		pictoralFin.getTimeLine().repaint();
+		
+		StatusLogger.logStatus("Image Added!");
 	};
 	
 	public ImagePreviewPopUpMenu(ImagePreview imagePreview, LayerButton button, int x, int y) {
@@ -93,11 +113,13 @@ class ImagePreviewPopUpMenu {
 		JMenuItem undoButton = new JMenuItem("Undo");
 		JMenuItem redoButton = new JMenuItem("Redo");
 		JMenuItem exportLayer = new JMenuItem("Export Current Layer");
+		JMenuItem copyLayer = new JMenuItem("Copy Layer to New Frame");
 		
 		removeFrame.addActionListener(REMOVE_LAYER);
 		undoButton.addActionListener(UNDO);
 		redoButton.addActionListener(REDO);
 		exportLayer.addActionListener(EXPORT_CURRENT_LAYER);
+		copyLayer.addActionListener(COPY_LAYER);
 		
 		undoButton.setAccelerator(KeyStroke.getKeyStroke('Z', Constants.CTRL));
 		redoButton.setAccelerator(KeyStroke.getKeyStroke('Y', Constants.CTRL));
@@ -112,6 +134,7 @@ class ImagePreviewPopUpMenu {
 		menu.addSeparator();
 		
 		menu.add(exportLayer);
+		menu.add(copyLayer);
 		
 		menu.show(imagePreview, x, y);
 	}

@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
 import com.fishtankapps.pictoralfin.customExceptions.CanceledException;
+import com.fishtankapps.pictoralfin.globalToolKits.GlobalImageKit;
 
 public class JProgressDialog {
 
@@ -25,13 +26,14 @@ public class JProgressDialog {
 		
 		JOptionPane pane = new JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_OPTION, null,
 				new Object[] {"Cancel"});
-
+		
 		pane.setMessage(message.replace(PERCENT, "0%").replace(VALUE, "0").replace(VALUE_IN_PARENTHESES, "(0/" + completedValue+")"));
 		jProgressBar = new JProgressBar(0, completedValue);
 		jProgressBar.setValue(0);
 		pane.add(jProgressBar, 1);
 		
 		dialog = pane.createDialog(replaceKeys(title));
+		dialog.setIconImage(GlobalImageKit.pictoralFinIcon);
 		dialog.setModalityType(JDialog.ModalityType.MODELESS); // MODELESS = not on top
 		dialog.setVisible(true);
 	}

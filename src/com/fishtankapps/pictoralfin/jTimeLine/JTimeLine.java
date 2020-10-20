@@ -89,11 +89,13 @@ public class JTimeLine extends JPanel {
 	}
 	
 	public void loadPictoralFinProject(PictoralFinProject project) {
+		empty();
+		
 		StatusLogger.logStatus("Importing Images...");
 		if(project.getFrames() != null)
 			for(Frame frame : project.getFrames()) {
 				addFrame(frame);
-				frame.logUndoableChange();
+				new Thread(()->frame.logUndoableChange()).start();
 			}
 		
 		StatusLogger.logStatus("Importing Audio...");
@@ -159,6 +161,9 @@ public class JTimeLine extends JPanel {
 	}
 	public void addFrame(BufferedImage image) {
 		frameTimeLine.addFrame(new Frame(image));
+	}
+	public void addFrame(BufferedImage image, int index) {
+		frameTimeLine.addFrame(new Frame(image), index);
 	}
 	public void removeFrame(int index) {
 		frameTimeLine.removeFrame(index);

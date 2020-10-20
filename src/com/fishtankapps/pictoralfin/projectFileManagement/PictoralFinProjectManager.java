@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 
 import javax.swing.JOptionPane;
 
@@ -64,18 +65,21 @@ public class PictoralFinProjectManager {
 	
 	public static void saveProjectToFile(PictoralFin pictoralFin, String filePath) {
 		try {
-			File saveLocation = new File(filePath);		
-			ObjectOutputStream objectOutput = new ObjectOutputStream(new FileOutputStream(saveLocation));
+			RandomAccessFile saveLocation = new RandomAccessFile(filePath, "rw");		
+			ObjectOutputStream objectOutput = new ObjectOutputStream(new FileOutputStream(saveLocation.getFD()));
 			StatusLogger.logStatus("Creating Project Object...");
 			PictoralFinProject project = pictoralFin.getTimeLine().generatePictoralFinStaticProject();
 			StatusLogger.logStatus("Writing Project to File...");
 			objectOutput.writeObject(project);			
 			objectOutput.close();	
+			saveLocation.close();
+			
 			StatusLogger.logStatus("Project Saved!");
 			System.gc();
-			pictoralFin.getDataFile().setLastOpenProjectLocation(saveLocation.getParent());
 			
-			pictoralFin.setOpenProjectFile(saveLocation);
+			pictoralFin.getDataFile().setLastOpenProjectLocation(filePath);
+			
+			pictoralFin.setOpenProjectFile(new File(filePath));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
@@ -104,19 +108,22 @@ public class PictoralFinProjectManager {
 				openProjectFromFile(pictoralFin, staticFilePath);
 			});
 		
+		
 	}
 	
 	public static void openProjectFromFile(PictoralFin pictoralFin, String filePath) {	
 		try {
-			File openLocation = new File(filePath);
+			RandomAccessFile openLocation = new RandomAccessFile(filePath, "rw");
 			StatusLogger.logStatus("Openning File...");
-			ObjectInputStream objectOutput = new ObjectInputStream(new FileInputStream(openLocation));
+			ObjectInputStream objectOutput = new ObjectInputStream(new FileInputStream(openLocation.getFD()));
 			pictoralFin.getTimeLine().loadPictoralFinProject((PictoralFinProject) objectOutput.readObject());			
 			objectOutput.close();	
+			openLocation.close();
+			
 			StatusLogger.logStatus("Project Openned!");
 			
-			pictoralFin.getDataFile().setLastOpenProjectLocation(openLocation.getParent());
-			pictoralFin.setOpenProjectFile(openLocation);
+			pictoralFin.getDataFile().setLastOpenProjectLocation(filePath);
+			pictoralFin.setOpenProjectFile(new File(filePath));
 			return;
 		} catch (Exception e) {
 			e.printStackTrace();

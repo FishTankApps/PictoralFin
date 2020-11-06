@@ -7,6 +7,8 @@ public final class Constants {
 	
 	public static final boolean DEBUG = true;
 	
+	public static final int MIN_NUMBER_OF_VIDEO_LINES = 2;
+	
 	// ----------{ KEYBOARD SHORT CUTS }------------------------------------------------------------
 	public static final int CTRL = 2;
 	public static final int SHIFT = 1;

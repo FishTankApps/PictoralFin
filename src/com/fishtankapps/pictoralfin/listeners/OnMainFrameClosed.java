@@ -27,8 +27,7 @@ public class OnMainFrameClosed implements WindowListener{
 		}
 		
 		pictoralFin.close();
-		pictoralFin.getSettings().saveSettings();
-		pictoralFin.getDataFile().saveDataFile();
+		pictoralFin.getConfiguration().saveConfiguration();
 		
 		FileUtils.deleteTempFolder();
 		

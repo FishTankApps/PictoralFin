@@ -328,7 +328,7 @@ public class Frame extends UndoAndRedoable<Frame> {
 			
 				FileChooser fileChooser = new FileChooser();
 				
-				fileChooser.setInitialDirectory(new File(pictoralFin.getDataFile().getLastOpenedPictureLocation()).getParentFile());
+				fileChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenedPictureLocation()).getParentFile());
 				fileChooser.setTitle("Export Frame To...");
 				fileChooser.setInitialFileName("Frame-"+pictoralFin.getTimeLine().getMilliAtFrame(this)+"mls");
 				fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Frame File", ".pff"),
@@ -372,7 +372,7 @@ public class Frame extends UndoAndRedoable<Frame> {
 			
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			
-			directoryChooser.setInitialDirectory(new File(pictoralFin.getDataFile().getLastOpenedPictureLocation()).getParentFile());
+			directoryChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenedPictureLocation()).getParentFile());
 			directoryChooser.setTitle("Export Layers To...");
 			
 			File selectedDirectory = directoryChooser.showDialog(null);
@@ -414,11 +414,11 @@ public class Frame extends UndoAndRedoable<Frame> {
 						BufferedImage image;
 						image = ImageIO.read(newLayer);
 		
-						width = image.getWidth() / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-						height = image.getHeight() / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+						width = image.getWidth() / pictoralFin.getConfiguration().getMaxPictureSize().getWidth();
+						height = image.getHeight() / pictoralFin.getConfiguration().getMaxPictureSize().getHeight();
 		
-						if (image.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth()
-								&& image.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+						if (image.getWidth() > pictoralFin.getConfiguration().getMaxPictureSize().getWidth()
+								&& image.getHeight() > pictoralFin.getConfiguration().getMaxPictureSize().getHeight()) {
 							ratio = (width > height) ? width : height;
 							image = BufferedImageUtil.resizeBufferedImage(image, (int) (image.getWidth() / ratio),
 									(int) (image.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
@@ -435,7 +435,7 @@ public class Frame extends UndoAndRedoable<Frame> {
 
 	public static void importFrame(PictoralFin pictoralFin) {
 		Platform.runLater(() -> {
-			File lastOpened = new File(pictoralFin.getDataFile().getLastOpenedPictureLocation());
+			File lastOpened = new File(pictoralFin.getConfiguration().getDataFile().getLastOpenedPictureLocation());
 			FileChooser fileChooser = new FileChooser();		
 			
 			fileChooser.setTitle("Import Images");
@@ -447,7 +447,7 @@ public class Frame extends UndoAndRedoable<Frame> {
 			File selectedFile = fileChooser.showOpenDialog(null);
 			
 			if(selectedFile != null) {
-				pictoralFin.getDataFile().setLastOpenedPictureLocation(selectedFile.getAbsolutePath());
+				pictoralFin.getConfiguration().getDataFile().setLastOpenedPictureLocation(selectedFile.getAbsolutePath());
 				
 				try {
 					ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(selectedFile));

@@ -42,7 +42,7 @@ public class FileImportPanel extends JPanel implements Themed {
 	public FileImportPanel(PictoralFin pictoralFin) {
 		this.pictoralFin = pictoralFin;
 		
-		Font font = new Font(pictoralFin.getSettings().getTheme().getPrimaryFont(), Font.BOLD + Font.ITALIC, 12);
+		Font font = new Font(pictoralFin.getConfiguration().getTheme().getPrimaryFont(), Font.BOLD + Font.ITALIC, 12);
 		
 		importPicture = new JButton(" Import Pictures");
 		importAudio   = new JButton(" Import Audio Files");
@@ -60,12 +60,12 @@ public class FileImportPanel extends JPanel implements Themed {
 		importVideo.setFont(font);
 		
 		fileDropPanel = new JPanel(new BorderLayout());
-		fileDropPanel.setBackground(pictoralFin.getSettings().getTheme().getSecondaryBaseColor());
+		fileDropPanel.setBackground(pictoralFin.getConfiguration().getTheme().getSecondaryBaseColor());
 		fileDropPanel.setBorder(BorderFactory.createDashedBorder(Color.BLACK, 1.5f, 4, 6, false));
 		
 		JLabel dropHereLabel = new JLabel("Or Drop Files Here", JLabel.CENTER);
 		
-		dropHereLabel.setFont(new Font(pictoralFin.getSettings().getTheme().getPrimaryFont(), Font.BOLD + Font.ITALIC, 24));
+		dropHereLabel.setFont(new Font(pictoralFin.getConfiguration().getTheme().getPrimaryFont(), Font.BOLD + Font.ITALIC, 24));
 		fileDropPanel.add(dropHereLabel);
 
 		fileDropPanel.setTransferHandler(new TransferHandler() {
@@ -140,7 +140,7 @@ public class FileImportPanel extends JPanel implements Themed {
 		add(importVideo,   new ChainGBC(2, 0).setFill(false).setWidthAndHeight(1, 1).setPadding(5));
 		add(fileDropPanel, new ChainGBC(0, 1).setFill(true, false).setWidthAndHeight(3, 1).setPadding(5));
 		
-		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 	}
 		
 	public void paintComponent(Graphics g) {
@@ -148,9 +148,9 @@ public class FileImportPanel extends JPanel implements Themed {
 		
 		int height = importVideo.getHeight() + 20 + fileDropPanel.getHeight();
 		
-		g.setColor(pictoralFin.getSettings().getTheme().getSecondaryBaseColor());
+		g.setColor(pictoralFin.getConfiguration().getTheme().getSecondaryBaseColor());
 		
-		if(pictoralFin.getSettings().getTheme().isSharp())
+		if(pictoralFin.getConfiguration().getTheme().isSharp())
 			g.fillRect(0, (getHeight() - height) / 2, getWidth(), height);
 		else
 			g.fillRoundRect(0, (getHeight() - height) / 2, getWidth(), height, 40, 40);

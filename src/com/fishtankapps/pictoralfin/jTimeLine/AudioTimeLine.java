@@ -25,7 +25,7 @@ public class AudioTimeLine extends JPanel implements Themed {
 	public AudioTimeLine(PictoralFin pictoralFin, JTimeLine jTimeLine) {
 		this.jTimeLine = jTimeLine;
 		this.pictoralFin = pictoralFin;
-		this.theme = pictoralFin.getSettings().getTheme();
+		this.theme = pictoralFin.getConfiguration().getTheme();
 		setLayout(new GridLayout(0, 1, 10, 10));
 		
 		setBackground(theme.getPrimaryBaseColor());

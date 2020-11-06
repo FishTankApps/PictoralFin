@@ -21,7 +21,7 @@ public class AudioImporter {
 	public void importAudio() {
 		FileChooser fileChooser = new FileChooser();
 		
-		fileChooser.setInitialDirectory(new File(pictoralFin.getDataFile().getLastOpenAudioLocation()).getParentFile());
+		fileChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenAudioLocation()).getParentFile());
 		fileChooser.setTitle("Import Audio");
 		
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.ogg", "*.flac", "*.m4a"),
@@ -31,7 +31,7 @@ public class AudioImporter {
 		
 		if(files != null) {
 			importAudio(files);			
-			pictoralFin.getDataFile().setLastOpenAudioLocation(files.get(0).getAbsolutePath());			
+			pictoralFin.getConfiguration().getDataFile().setLastOpenAudioLocation(files.get(0).getAbsolutePath());			
 		}		
 	}
 	

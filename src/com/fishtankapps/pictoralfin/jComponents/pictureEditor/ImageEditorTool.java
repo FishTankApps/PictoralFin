@@ -1,7 +1,9 @@
 package com.fishtankapps.pictoralfin.jComponents.pictureEditor;
 
 import java.awt.Graphics;
+import java.awt.Paint;
 import java.awt.Point;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -10,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import com.fishtankapps.pictoralfin.objectBinders.Frame;
+import com.fishtankapps.pictoralfin.objectBinders.ImageToolDrawableShape;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
 
 public abstract class ImageEditorTool extends JPanel implements MouseListener {
@@ -33,7 +36,7 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 	}
 
 	public void requestToolFocus() {
-		editor.getEffectsPanel().requestToolFocus(this);
+		editor.getImageEditorToolkitPanel().requestToolFocus(this);
 	}
 	
 	protected Point getMousePointOnImage() {
@@ -48,8 +51,27 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 		editor.logUndoableChange();
 	}
 	
+	protected void drawShapeOnImagePreview(Shape shape, Paint paint) {
+		editor.getImagePreview().drawShapeOnImage(new ImageToolDrawableShape(shape, paint, this));
+	}
+	
+	protected void drawClearImageOnImagePreview(BufferedImage image) {
+		editor.getImagePreview().drawClearImageOnImage(image);
+	}
+	
+	protected void removeClearImageFromImagePreview() {
+		editor.getImagePreview().removeClearImageFromImagePreview();
+	}
+	
+	protected void clearDrawingsOnImagePreview() {
+		editor.getImagePreview().clearDrawnShapesByTool(this);
+	}
+	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		
+		if(!isFocusedTool)
+			clearDrawingsOnImagePreview();
 		
 		g.setColor((isFocusedTool) ? theme.getSecondaryHighlightColor() : theme.getPrimaryHighlightColor());		
 		g.fillRect(0, 0, getWidth(), getHeight());

@@ -62,7 +62,7 @@ class ImagePreviewPopUpMenu {
 			
 			
 			fileChooser.setInitialFileName(name);
-			fileChooser.setInitialDirectory(new File(pictoralFin.getDataFile().getLastOpenedPictureLocation()).getParentFile());
+			fileChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenedPictureLocation()).getParentFile());
 			fileChooser.setTitle("Export Frame To...");			
 		
 			String[] importableImageFiles = Utilities.getCompatibleImageFiles();

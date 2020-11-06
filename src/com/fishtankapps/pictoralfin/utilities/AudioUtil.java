@@ -30,7 +30,7 @@ public class AudioUtil {
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Tempfile created at: " + target.getAbsolutePath());
 			
 			String command = VideoUtil.ffmpegExeicutable.getAbsolutePath() + " -i \"" + toConvert 
-					+ "\" -vsync 0 -ab: 16k -ac 2 -ar " + pictoralFin.getSettings().getAudioSampleRate() + " -y \"" + target + "\"";
+					+ "\" -vsync 0 -ab: 16k -ac 2 -ar " + pictoralFin.getConfiguration().getAudioSampleRate() + " -y \"" + target + "\"";
 			
 			Utilities.debug("AudioUtil.convertAudioFileToWAV() - Exicuting FFmpeg: " + command);
 			

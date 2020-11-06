@@ -13,7 +13,7 @@ public class ImageChooser {
 	
 	public static File openFile(PictoralFin pictoralFin) {
 		
-		File lastOpened = new File(pictoralFin.getDataFile().getLastOpenedPictureLocation());
+		File lastOpened = new File(pictoralFin.getConfiguration().getDataFile().getLastOpenedPictureLocation());
 		FileChooser fileChooser = new FileChooser();		
 		
 		fileChooser.setTitle("Import Images");
@@ -37,13 +37,13 @@ public class ImageChooser {
 		File selectedFile = fileChooser.showOpenDialog(null);
 		
 		if(selectedFile != null)
-			pictoralFin.getDataFile().setLastOpenedPictureLocation(selectedFile.getAbsolutePath());
+			pictoralFin.getConfiguration().getDataFile().setLastOpenedPictureLocation(selectedFile.getAbsolutePath());
 		
 		return selectedFile;
 	}
 	
 	public static File[] openFiles(PictoralFin pictoralFin) {
-		File lastOpened = new File(pictoralFin.getDataFile().getLastOpenedPictureLocation());
+		File lastOpened = new File(pictoralFin.getConfiguration().getDataFile().getLastOpenedPictureLocation());
 		FileChooser fileChooser = new FileChooser();		
 		
 		fileChooser.setTitle("Import Images");
@@ -68,7 +68,7 @@ public class ImageChooser {
 		
 		if(selectedFileList != null) {
 			File[] selectedFileArray = selectedFileList.toArray(new File[selectedFileList.size()]);
-			pictoralFin.getDataFile().setLastOpenedPictureLocation(selectedFileArray[0].getAbsolutePath());
+			pictoralFin.getConfiguration().getDataFile().setLastOpenedPictureLocation(selectedFileArray[0].getAbsolutePath());
 			return selectedFileArray;
 		}
 		

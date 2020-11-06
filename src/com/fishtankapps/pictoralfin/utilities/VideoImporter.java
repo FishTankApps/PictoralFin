@@ -24,7 +24,7 @@ public class VideoImporter {
 	public void importVideo() {
 		FileChooser fileChooser = new FileChooser();
 
-		fileChooser.setInitialDirectory(new File(pictoralFin.getDataFile().getLastOpenVideoLocation()).getParentFile());
+		fileChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenVideoLocation()).getParentFile());
 		fileChooser.setTitle("Import Video");
 		
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Video Files", "*.mp4", "*.flv", "*.mov", "*.avi", "*.wmv"),
@@ -35,7 +35,7 @@ public class VideoImporter {
 		
 		if(selectedFiles != null) {
 			importVideo(selectedFiles);			
-			pictoralFin.getDataFile().setLastOpenVideoLocation(selectedFiles.get(0).getAbsolutePath());				
+			pictoralFin.getConfiguration().getDataFile().setLastOpenVideoLocation(selectedFiles.get(0).getAbsolutePath());				
 		}		
 	}
 	
@@ -72,15 +72,16 @@ public class VideoImporter {
 					if(image == null)
 						continue;
 					
-					widthRatio = ((double) image.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-					heightRation = ((double) image.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
-				
-					if(image.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || image.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+					widthRatio = ((double) image.getWidth()) / pictoralFin.getConfiguration().getMaxPictureSize().getWidth();
+					heightRation = ((double) image.getHeight()) / pictoralFin.getConfiguration().getMaxPictureSize().getHeight();
+					
+					if(image.getWidth() > pictoralFin.getConfiguration().getMaxPictureSize().getWidth() || image.getHeight() > pictoralFin.getConfiguration().getMaxPictureSize().getHeight()) {
 						ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
 						image = BufferedImageUtil.resizeBufferedImage(image, (int) (image.getWidth() / ratio), (int) (image.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
 					}
 					
 					pictoralFin.getTimeLine().addFrame(new Frame(image, frameDurration));
+					
 				} catch (Exception e) {
 					System.out.println("Empty Catch Block VideoImporter.importVideo(File[]): ");
 					e.printStackTrace();

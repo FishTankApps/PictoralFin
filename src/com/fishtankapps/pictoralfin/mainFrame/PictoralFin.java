@@ -38,9 +38,7 @@ import com.fishtankapps.pictoralfin.jComponents.videoEditor.VideoTopBar;
 import com.fishtankapps.pictoralfin.jTimeLine.JTimeLine;
 import com.fishtankapps.pictoralfin.listeners.OnMainFrameClosed;
 import com.fishtankapps.pictoralfin.listeners.OnWindowResizedListener;
-import com.fishtankapps.pictoralfin.objectBinders.DataFile;
 import com.fishtankapps.pictoralfin.objectBinders.Frame;
-import com.fishtankapps.pictoralfin.objectBinders.Preferences;
 import com.fishtankapps.pictoralfin.projectFileManagement.PictoralFinProjectManager;
 import com.fishtankapps.pictoralfin.utilities.AudioImporter;
 import com.fishtankapps.pictoralfin.utilities.BufferedImageUtil;
@@ -61,8 +59,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
 	private ImageEditor imageEditor;
-	private Preferences preferences;
-	private DataFile dateFile;
+	private PictoralFinConfiguration preferences;
 	public File openProject = null;
 
 	private JPanel mainPanel;
@@ -79,8 +76,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	
 	public PictoralFin() {
 		flags = new ArrayList<>();
-		preferences = Preferences.openPreferences();
-		dateFile = DataFile.openDataFile();
+		preferences = PictoralFinConfiguration.openConfiguration();
 		StatusLogger.logger = new StatusLogger(this);
 		//FrameManager.frameManager = new FrameManager(this);
 		
@@ -241,11 +237,8 @@ public class PictoralFin extends JFrame implements Closeable {
 	public VideoImporter getVideoImporter() {
 		return new VideoImporter(this);
 	}
-	public Preferences getSettings() {
+	public PictoralFinConfiguration getConfiguration() {
 		return preferences;
-	}
-	public DataFile getDataFile() {
-		return dateFile;
 	}
 		
 	void setStatus(String status) {

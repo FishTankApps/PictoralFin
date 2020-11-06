@@ -39,16 +39,16 @@ public class VideoEditorSettingsPanel extends JPanel {
 		
 		BufferedImage fileImportBackground = GlobalImageKit.readImage("FileImportBackground.png");
 		BufferedImage objectEditorBackground = GlobalImageKit.readImage("ObjectEditorBackground.png");
-		BufferedImageUtil.applyColorThemeToImage(fileImportBackground, pictoralFin.getSettings().getTheme());
-		BufferedImageUtil.applyColorThemeToImage(objectEditorBackground, pictoralFin.getSettings().getTheme());
+		BufferedImageUtil.applyColorThemeToImage(fileImportBackground, pictoralFin.getConfiguration().getTheme());
+		BufferedImageUtil.applyColorThemeToImage(objectEditorBackground, pictoralFin.getConfiguration().getTheme());
 		
 		
-		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());		
+		setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());		
 		setMinimumSize(new Dimension(500, 50));
 		
 		tabbedPane = new JTabbedPane();
-		tabbedPane.setFont(new Font(pictoralFin.getSettings().getTheme().getTitleFont(), Font.PLAIN, 20));
-		tabbedPane.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		tabbedPane.setFont(new Font(pictoralFin.getConfiguration().getTheme().getTitleFont(), Font.PLAIN, 20));
+		tabbedPane.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		
 		//TODO: Rest of background Images!
@@ -67,7 +67,7 @@ public class VideoEditorSettingsPanel extends JPanel {
 		fileImportPanel = new FileImportPanel(pictoralFin);
 
 		importPanel.add(fileImportPanel, BorderLayout.NORTH);
-		importPanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		importPanel.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		settingsPanel = new JPanel(new BorderLayout()){
 			private static final long serialVersionUID = 1L;
@@ -79,17 +79,17 @@ public class VideoEditorSettingsPanel extends JPanel {
 			}
 			
 		};		
-		settingsPanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		settingsPanel.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		try {
-			driveExplorer = new JDriveExplorer(pictoralFin.getSettings().getTheme());
+			driveExplorer = new JDriveExplorer(pictoralFin.getConfiguration().getTheme());
 			importPanel.add(driveExplorer, BorderLayout.SOUTH);
 		} catch (FeatureNotSupportedException e) {
 			pictoralFin.flags.add("Auto Import Not Supported$The Auto Import (External Drive) feature is not supported.\nIt must be run on 32-bit JVM.");
 			
 			JLabel driveExplorerNotAvilable = new JLabel("Auto Import is not supported on your JVM.", JLabel.CENTER);
-			driveExplorerNotAvilable.setFont(new Font(pictoralFin.getSettings().getTheme().getPrimaryFont(), Font.BOLD, 25));
-			driveExplorerNotAvilable.setForeground(pictoralFin.getSettings().getTheme().getPrimaryHighlightColor());
+			driveExplorerNotAvilable.setFont(new Font(pictoralFin.getConfiguration().getTheme().getPrimaryFont(), Font.BOLD, 25));
+			driveExplorerNotAvilable.setForeground(pictoralFin.getConfiguration().getTheme().getPrimaryHighlightColor());
 			
 			importPanel.add(driveExplorerNotAvilable, BorderLayout.SOUTH);
 		}
@@ -100,7 +100,7 @@ public class VideoEditorSettingsPanel extends JPanel {
 		
 		JPanel notePanel = new JPanel(new GridLayout(1,1,1,1)); // Used to adding Padding		
 		notePanel.setBorder(new EmptyBorder(30, 30, 30, 30));
-		notePanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		notePanel.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		notePanel.add(notes);
 		
 		tabbedPane.addTab("Import Files", importPanel);
@@ -110,8 +110,8 @@ public class VideoEditorSettingsPanel extends JPanel {
 		add(tabbedPane);	
 		
 		nothingToEdit = new JLabel("No Editable Object is Selected", JLabel.CENTER);
-		nothingToEdit.setFont(new Font(pictoralFin.getSettings().getTheme().getPrimaryFont(), Font.BOLD, 30));
-		nothingToEdit.setForeground(pictoralFin.getSettings().getTheme().getPrimaryHighlightColor());
+		nothingToEdit.setFont(new Font(pictoralFin.getConfiguration().getTheme().getPrimaryFont(), Font.BOLD, 30));
+		nothingToEdit.setForeground(pictoralFin.getConfiguration().getTheme().getPrimaryHighlightColor());
 		
 		settingsPanel.add(nothingToEdit);
 	}

@@ -1,8 +1,10 @@
 package com.fishtankapps.pictoralfin.jComponents.pictureEditor;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
@@ -13,7 +15,7 @@ public class ImageEditor extends JPanel {
 	private static final long serialVersionUID = 5126222855352762720L;
 	private ImagePreview imagePreview;
 	private LayerSelecter layerSelecter;
-	private EffectsPanel effectsPanel;
+	private ImageEditorToolKitPanel toolkitPanel;
 	private Frame selectedFrame = null;
 	
 	private PictoralFin pictoralFin;
@@ -23,11 +25,17 @@ public class ImageEditor extends JPanel {
 		super(new BorderLayout());
 		this.pictoralFin = pictoralFin;
 		
-		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		imagePreview = new ImagePreview(pictoralFin);
 		layerSelecter = new LayerSelecter(pictoralFin);
-		effectsPanel = new EffectsPanel(pictoralFin, this);
+		toolkitPanel = new ImageEditorToolKitPanel(pictoralFin, this);
+		
+		JScrollPane toolKitScrollPane = new JScrollPane(toolkitPanel);
+		toolKitScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		toolKitScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		toolKitScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+		toolKitScrollPane.setMinimumSize(new Dimension(250, 100));
 		
 		JSplitPane leftAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		JSplitPane rightAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -35,14 +43,14 @@ public class ImageEditor extends JPanel {
 		leftAndCenterSplit.setLeftComponent(layerSelecter);
 		leftAndCenterSplit.setRightComponent(imagePreview);
 		leftAndCenterSplit.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, e->{layerSelecter.setButtonWidth(((int) e.getNewValue()) - 40);});
-		leftAndCenterSplit.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		leftAndCenterSplit.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		leftAndCenterSplit.setResizeWeight(0.10);		
 		
 		layerSelecter.setButtonWidth(((int) leftAndCenterSplit.getDividerLocation()) - 40);
 		
 		rightAndCenterSplit.setLeftComponent(leftAndCenterSplit);
-		rightAndCenterSplit.setRightComponent(effectsPanel);
-		rightAndCenterSplit.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		rightAndCenterSplit.setRightComponent(toolKitScrollPane);
+		rightAndCenterSplit.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		rightAndCenterSplit.setResizeWeight(0.80);		
 		
@@ -75,8 +83,8 @@ public class ImageEditor extends JPanel {
 		return selectedFrame;
 	}
 	
-	EffectsPanel getEffectsPanel() {
-		return effectsPanel;
+	ImageEditorToolKitPanel getImageEditorToolkitPanel() {
+		return toolkitPanel;
 	}
 	
 	public LayerSelecter getLayerSelecter() {

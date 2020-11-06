@@ -6,9 +6,12 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -24,6 +27,7 @@ import javax.swing.JSlider;
 import com.fishtankapps.pictoralfin.globalToolKits.GlobalImageKit;
 import com.fishtankapps.pictoralfin.listeners.LayerMouseListener;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
+import com.fishtankapps.pictoralfin.objectBinders.ImageToolDrawableShape;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
 
 public class ImagePreview extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener {
@@ -42,15 +46,18 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	
 	private boolean dragging = false;
 	
+	private ArrayList<ImageToolDrawableShape> shapesDrawnByTools;
+	
 	private ArrayList<LayerMouseListener> layerMouseListeners;
-	private BufferedImage pictoralFinIcon, layer;
+	private BufferedImage pictoralFinIcon, layer, clearLayer;
 	private Theme theme;
 	private JPanel bottomPanel;
 	
 	public ImagePreview(PictoralFin pictoralFin) {
 		super(new BorderLayout());
-		theme = pictoralFin.getSettings().getTheme();
+		theme = pictoralFin.getConfiguration().getTheme();
 		layerMouseListeners = new ArrayList<>();
+		shapesDrawnByTools = new ArrayList<>();
 		
 		pictoralFinIcon = GlobalImageKit.pictoralFinIcon;
 		
@@ -122,8 +129,43 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		return new Point(mouseX, mouseY);
 	}
 	
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	public void drawShapeOnImage(ImageToolDrawableShape shape) {
+		shapesDrawnByTools.add(shape);
+		repaint();
+	}
+	
+	public void clearDrawnShapesByTool(ImageEditorTool tool) {
+		for(int count = 0; count < shapesDrawnByTools.size(); count++)
+			if(shapesDrawnByTools.get(count).getTool() == tool) {
+				shapesDrawnByTools.remove(count);
+				count--;
+			}
+		
+		repaint();
+	}
+	
+	public void drawClearImageOnImage(BufferedImage image) {
+		this.clearLayer = image;
+		
+		repaint();
+	}
+	
+	public void removeClearImageFromImagePreview() {
+		this.clearLayer = null;
+		
+		repaint();
+	}
+	
+	public void clearAllDrawnShapes() {
+		shapesDrawnByTools.clear();
+		
+		repaint();
+	}
+
+	public void paintComponent(Graphics graphics) {
+		super.paintComponent(graphics);
+		
+		Graphics2D g = (Graphics2D) graphics;
 		
 		if(layer == null) {
 			
@@ -139,14 +181,39 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 			
 			g.drawImage(pictoralFinIcon, (displayWidth - adjustedImageWidth) / 2 + PREF_BOARDER, (displayHeight - adjustedImageHeight) / 2 + PREF_BOARDER ,
 					adjustedImageWidth, adjustedImageHeight, null);
+			
+			clearAllDrawnShapes();
 		} else {
-
+			
 			
 			int adjustedImageWidth = (int) (layer.getWidth() * magnification); 
 			int adjustedImageHeight = (int) (layer.getHeight() * magnification);
 			
 			g.drawImage(layer, ((getWidth() - adjustedImageWidth) / 2) + imageX, ((getHeight() - adjustedImageHeight) / 2) + imageY,
 					adjustedImageWidth, adjustedImageHeight, null);
+			
+			if(clearLayer != null)
+				g.drawImage(clearLayer, ((getWidth() - adjustedImageWidth) / 2) + imageX, ((getHeight() - adjustedImageHeight) / 2) + imageY,
+						adjustedImageWidth, adjustedImageHeight, null);
+			
+			for(ImageToolDrawableShape drawableShape : shapesDrawnByTools) {
+				g.setPaint(drawableShape.getPaint());
+				
+				Shape shape = drawableShape.getShape();
+				
+				if(shape instanceof Rectangle) {
+					Rectangle rectangle = (Rectangle) shape;
+					
+					g.drawRect(
+							(int) (rectangle.getX() * magnification + ((getWidth() - adjustedImageWidth) / 2)   + imageX), 
+							(int) (rectangle.getY() * magnification + ((getHeight() - adjustedImageHeight) / 2) + imageY), 
+							(int) (rectangle.width  * magnification), 
+							(int) (rectangle.height * magnification));
+				} else 
+					g.draw(shape);
+				
+				
+			}			
 		}
 	}
 

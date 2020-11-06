@@ -1,10 +1,5 @@
 package com.fishtankapps.pictoralfin.objectBinders;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class DataFile implements Serializable {
@@ -16,39 +11,18 @@ public class DataFile implements Serializable {
 	private String lastOpenVideoLocation;
 	private String lastOpenProjectLocation;
 	
-	private DataFile() {
+	public DataFile() {
 		lastOpenPictureLocation = "C:/Users/" + System.getProperty("user.name") + "/Pictures/null.jpg";
 		lastOpenAudioLocation = "C:/Users/" + System.getProperty("user.name") + "/Music/null.mp3";
 		lastOpenVideoLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.mp4";		
 		lastOpenProjectLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.pfp";		
 	}
 	
-	public static DataFile openDataFile() {
-		DataFile dataFile;
-
-		try {
-			ObjectInputStream fileInput = new ObjectInputStream(new FileInputStream(new File("./dataFiles/dataFile.pfd")));
-			dataFile = (DataFile) fileInput.readObject();
-			
-			fileInput.close();
-		} catch (Exception e) {
-			System.out.println("CATCH BLOCK: DataFile.openDataFile()");
-			dataFile = new DataFile();
-		}
-		
-		return dataFile;
-	}
-	
-
-	
-	public void saveDataFile() {
-		try {
-			ObjectOutputStream fileOutput = new ObjectOutputStream(new FileOutputStream(new File("./dataFiles/dataFile.pfd")));
-			fileOutput.writeObject(this);			
-			fileOutput.close();
-		}catch(Exception e) {
-			System.out.println("EMPTY CATCH BLOCK: DataFile.DataFile(String)");
-		}
+	public void resetDataFile() {
+		lastOpenPictureLocation = "C:/Users/" + System.getProperty("user.name") + "/Pictures/null.jpg";
+		lastOpenAudioLocation = "C:/Users/" + System.getProperty("user.name") + "/Music/null.mp3";
+		lastOpenVideoLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.mp4";		
+		lastOpenProjectLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.pfp";	
 	}
 	
 	public String getLastOpenedPictureLocation() {

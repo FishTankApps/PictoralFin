@@ -2,6 +2,7 @@ package com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -49,14 +50,17 @@ public class DrawingTool extends ImageEditorTool {
 		
 		drawSize = new JSlider(1, 200, 10);
 		JLabel drawSizeLabel = new JLabel("Draw Size (100): ", JLabel.RIGHT);
+		drawSizeLabel.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 12));
 		
 		drawSize.addChangeListener(e-> drawSizeLabel.setText("Draw Size (" + drawSize.getValue() + "): "));
 		
 		changeShape = new JButton("Draw Shape");
+		changeShape.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 12));
 		changeShape.setToolTipText("Change between square and circle");
 		changeShape.addActionListener(e->{drawShape = (drawShape == CIRCLE) ? SQUARE : CIRCLE; drawPreview.repaint();});
 		
 		changeColor = new JButton("Draw Color");
+		changeColor.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 12));
 		changeColor.addActionListener(e-> {
 			new Thread(()-> {
 				Color color =  JColorChooser.showChooserDialog(theme, drawColor);
@@ -72,11 +76,11 @@ public class DrawingTool extends ImageEditorTool {
 		drawPreview.setBorder(BorderFactory.createTitledBorder("Preview"));
 		
 		add(drawSizeLabel, new ChainGBC(0,0).setFill(false, false).setPadding(5));
-		add(drawSize,      new ChainGBC(1,0).setFill(true,  false).setPadding(5).setWidthAndHeight(2, 1));
+		add(drawSize,      new ChainGBC(1,0).setFill(true,  false).setPadding(5).setWidthAndHeight(1, 1));
 		
 		add(drawPreview, new ChainGBC(0,1).setFill(true, true).setPadding(5).setWidthAndHeight(1, 2));
-		add(changeColor, new ChainGBC(1,1).setFill(true, false).setPadding(5));
-		add(changeShape, new ChainGBC(2,1).setFill(true, false).setPadding(5));
+		add(changeColor, new ChainGBC(1,1).setFill(false, false).setPadding(5));
+		add(changeShape, new ChainGBC(1,2).setFill(false, false).setPadding(5));
 		
 
 	}

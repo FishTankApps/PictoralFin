@@ -31,10 +31,10 @@ public class PictureImporter {
 			BufferedImage frame;
 			frame = ImageIO.read(picture);
 			
-			width = frame.getWidth() / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-			height = frame.getHeight() / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+			width = frame.getWidth() / pictoralFin.getConfiguration().getMaxPictureSize().getWidth();
+			height = frame.getHeight() / pictoralFin.getConfiguration().getMaxPictureSize().getHeight();
 			
-			if(frame.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() && frame.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+			if(frame.getWidth() > pictoralFin.getConfiguration().getMaxPictureSize().getWidth() && frame.getHeight() > pictoralFin.getConfiguration().getMaxPictureSize().getHeight()) {
 				ratio = (width > height) ? width : height;								
 				frame = BufferedImageUtil.resizeBufferedImage(frame, (int) (frame.getWidth() / ratio), (int) (frame.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
 			}
@@ -90,10 +90,10 @@ public class PictureImporter {
 					} else {
 						image = ImageIO.read(file);
 						
-						widthRatio = ((double) image.getWidth()) / pictoralFin.getSettings().getMaxPictureSize().getWidth();
-						heightRation = ((double) image.getHeight()) / pictoralFin.getSettings().getMaxPictureSize().getHeight();
+						widthRatio = ((double) image.getWidth()) / pictoralFin.getConfiguration().getMaxPictureSize().getWidth();
+						heightRation = ((double) image.getHeight()) / pictoralFin.getConfiguration().getMaxPictureSize().getHeight();
 						
-						if(image.getWidth() > pictoralFin.getSettings().getMaxPictureSize().getWidth() || image.getHeight() > pictoralFin.getSettings().getMaxPictureSize().getHeight()) {
+						if(image.getWidth() > pictoralFin.getConfiguration().getMaxPictureSize().getWidth() || image.getHeight() > pictoralFin.getConfiguration().getMaxPictureSize().getHeight()) {
 							ratio = (widthRatio > heightRation) ? widthRatio : heightRation;								
 							image = BufferedImageUtil.resizeBufferedImage(image, (int) (image.getWidth() / ratio), (int) (image.getHeight() / ratio), BufferedImage.SCALE_SMOOTH);
 						}

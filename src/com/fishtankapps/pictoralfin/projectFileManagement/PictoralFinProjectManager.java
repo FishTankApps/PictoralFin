@@ -31,7 +31,7 @@ public class PictoralFinProjectManager {
 				if(staticFilePath == null) {
 					FileChooser fileChooser = new FileChooser();
 					
-					fileChooser.setInitialDirectory(new File(pictoralFin.getDataFile().getLastOpenProjectLocation()).getParentFile());
+					fileChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenProjectLocation()).getParentFile());
 					fileChooser.setTitle("Save Project As");
 					fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Project Files", "*.pfp"),
 							new ExtensionFilter("All Files", "*"));
@@ -77,7 +77,7 @@ public class PictoralFinProjectManager {
 			StatusLogger.logStatus("Project Saved!");
 			System.gc();
 			
-			pictoralFin.getDataFile().setLastOpenProjectLocation(filePath);
+			pictoralFin.getConfiguration().getDataFile().setLastOpenProjectLocation(filePath);
 			
 			pictoralFin.setOpenProjectFile(new File(filePath));
 		} catch (Exception e) {
@@ -91,7 +91,7 @@ public class PictoralFinProjectManager {
 				staticFilePath = filePath;
 				if(filePath == null) {
 					FileChooser fileChooser = new FileChooser();
-					fileChooser.setInitialDirectory(new File(pictoralFin.getDataFile().getLastOpenProjectLocation()).getParentFile());
+					fileChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenProjectLocation()).getParentFile());
 					fileChooser.setTitle("Open Project");
 					
 					fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Project Files", "*.pfp"),
@@ -122,7 +122,7 @@ public class PictoralFinProjectManager {
 			
 			StatusLogger.logStatus("Project Openned!");
 			
-			pictoralFin.getDataFile().setLastOpenProjectLocation(filePath);
+			pictoralFin.getConfiguration().getDataFile().setLastOpenProjectLocation(filePath);
 			pictoralFin.setOpenProjectFile(new File(filePath));
 			return;
 		} catch (Exception e) {

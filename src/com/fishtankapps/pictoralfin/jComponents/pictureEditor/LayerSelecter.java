@@ -38,12 +38,12 @@ public class LayerSelecter extends JPanel {
 		listeners = new ArrayList<>();
 		
 		BufferedImage addLayer = GlobalImageKit.readImage("AddLayerIcon.png");
-		BufferedImageUtil.applyColorThemeToImage(addLayer, pictoralFin.getSettings().getTheme());
-		addNewLayer = new LayerButton(addLayer, pictoralFin.getSettings().getTheme(), LayerButton.ADD_LAYER_INDEX, 100);
+		BufferedImageUtil.applyColorThemeToImage(addLayer, pictoralFin.getConfiguration().getTheme());
+		addNewLayer = new LayerButton(addLayer, pictoralFin.getConfiguration().getTheme(), LayerButton.ADD_LAYER_INDEX, 100);
 		
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		buttonPanel.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		JScrollPane jScrollPane = new JScrollPane(buttonPanel);
 		jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -52,7 +52,7 @@ public class LayerSelecter extends JPanel {
 		add(jScrollPane);
 		setMinimumSize(new Dimension(150, 100));
 		
-		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		refresh();
 	}
@@ -118,7 +118,7 @@ public class LayerSelecter extends JPanel {
 		
 		if(selectedFrame != null) {
 			for(BufferedImage i : selectedFrame.getLayers()) {
-				buttonPanel.add(new LayerButton(i, pictoralFin.getSettings().getTheme(), index++, buttonWidth));
+				buttonPanel.add(new LayerButton(i, pictoralFin.getConfiguration().getTheme(), index++, buttonWidth));
 				buttonPanel.add(Box.createVerticalStrut(10));
 			}
 		

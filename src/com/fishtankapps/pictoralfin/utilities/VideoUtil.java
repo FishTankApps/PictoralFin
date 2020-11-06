@@ -42,7 +42,7 @@ public class VideoUtil {
 
 	public static void generateAndSaveVideoThreaded(PictoralFin pictoralFin) {
 		
-		File videoFile = getFileToExportTo(pictoralFin.getDataFile());
+		File videoFile = getFileToExportTo(pictoralFin.getConfiguration().getDataFile());
 
 		if (videoFile == null)
 			return;
@@ -125,7 +125,7 @@ public class VideoUtil {
 				ffmpegCommand += " -i \"" + audioFile.getAbsolutePath() + "\" ";
 			
 			
-			ffmpegCommand += " -c:v libx264 -y -start_number 0 -vf \"fps=10,format=yuv420p\" \"" + outputFile.getAbsolutePath() + "\"";
+			ffmpegCommand += " -c:v libx264 -y -start_number 0 -vf \"format=yuv420p\" \"" + outputFile.getAbsolutePath() + "\"";
 			
 			Process p = Runtime.getRuntime().exec(ffmpegCommand);
 			
@@ -134,10 +134,10 @@ public class VideoUtil {
 			String line = null;
 			while ((line = errorReader.readLine()) != null) {
 				if(line.startsWith("frame")) {
-					String currentFrame = line.substring(6, line.indexOf("fps")).trim();
+					String currentFrame = line.substring(line.indexOf('=') + 1, line.indexOf("fps")).trim();
 					
 					try {
-						newPercent = (int) ((((double) Integer.parseInt(currentFrame)) / (imageIndex - 1)) * 10);
+						newPercent = (int) ((((double) Integer.parseInt(currentFrame)) / (imageIndex - 1)) * 100);
 						progressDialog.moveForward(newPercent - previousPercent);
 						
 						previousPercent = newPercent;
@@ -290,7 +290,7 @@ public class VideoUtil {
 			return Integer.parseInt(inputReader.readLine());	
 			
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 		
 		return -1;
@@ -321,6 +321,25 @@ public class VideoUtil {
 
 	public static File extractAudioFromVideo(File videoFile) {
 		return AudioUtil.extractAudioFromVideo(videoFile);
+	}
+
+	public static boolean isVideoFile(File file) throws Exception {
+		String ffprobeCommand = ffprobeExeicutable.getAbsolutePath() + " -show_streams -select_streams v -loglevel error \"" + file.getAbsolutePath() + "\"";
+		
+		Process ffprobeProcess = Runtime.getRuntime().exec(ffprobeCommand);
+		
+		BufferedReader inputReader = new BufferedReader(new InputStreamReader(ffprobeProcess.getInputStream()));
+		
+		ffprobeProcess.waitFor();
+		
+		int outputLineCount = 0;
+		
+		while(inputReader.readLine() != null)
+			outputLineCount++;
+		
+		System.out.println("OutputLineCount: " + outputLineCount);
+		
+		return outputLineCount > Constants.MIN_NUMBER_OF_VIDEO_LINES;
 	}
 }
 

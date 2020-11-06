@@ -31,6 +31,7 @@ public class VideoEditor extends JPanel implements Themed {
 		horizontalSplitPane.setOneTouchExpandable(false);
 		
 		add(horizontalSplitPane);
+		setDividersToDefaultLocations();
 	}
 
 	public VideoPreview getVideoPreview() {
@@ -41,7 +42,7 @@ public class VideoEditor extends JPanel implements Themed {
 	}
 	
 	public void setDividersToDefaultLocations() {
-		//videoPreviewAndSettingsPane.setDividerLocation(1100);		
+		horizontalSplitPane.setDividerLocation(814);		
 	}
 	public void refresh() {
 		//this.validate();

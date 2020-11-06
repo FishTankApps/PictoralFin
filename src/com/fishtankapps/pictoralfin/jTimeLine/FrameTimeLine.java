@@ -36,7 +36,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 	private PictoralFin pictoralFin;
 	
 	public FrameTimeLine(PictoralFin pictoralFin) {	
-		this.theme = pictoralFin.getSettings().getTheme();
+		this.theme = pictoralFin.getConfiguration().getTheme();
 		this.pictoralFin = pictoralFin;
 		listenersOFSC = new ArrayList<>();
 		listenersOVDC = new ArrayList<>();
@@ -190,7 +190,7 @@ public class FrameTimeLine extends JPanel implements Themed, MouseListener, Mous
 		return null;
 	}
 	public int getIndexOfFrameAtMilli(long milli) {
-		if(getComponent(0) instanceof JButton)
+		if(getComponentCount() == 0 || getComponent(0) instanceof JButton)
 			return -1;
 		
 		long durration = 0;

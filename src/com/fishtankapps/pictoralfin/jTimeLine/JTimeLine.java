@@ -46,14 +46,14 @@ public class JTimeLine extends JPanel {
 		audioTimeLine = new AudioTimeLine(pictoralFin, this);
 		
 		timeLinePanel = new JPanel(new GridBagLayout());
-		timeLinePanel.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		timeLinePanel.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		scrollPane = new JScrollPane(timeLinePanel);		
 		scrollPane.getHorizontalScrollBar().setUnitIncrement(50);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		scrollPane.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		timeLinePanel.add(frameTimeLine, new ChainGBC(0, 0).setFill(true).setPadding(0, 0, 10, 10));
 		timeLinePanel.add(audioTimeLine, new ChainGBC(0, 1).setFill(true).setPadding(0, 0, 0, 10));
@@ -65,7 +65,7 @@ public class JTimeLine extends JPanel {
 		
 		JLabel label = new JLabel();
 		BufferedImage zoomIcon = GlobalImageKit.readImage("ZoomIcon.png");
-		BufferedImageUtil.applyColorThemeToImage(zoomIcon, pictoralFin.getSettings().getTheme());
+		BufferedImageUtil.applyColorThemeToImage(zoomIcon, pictoralFin.getConfiguration().getTheme());
 		label.setIcon(new ImageIcon(zoomIcon));
 		
 		add(scrollPane, new ChainGBC(0, 0).setFill(true).setPadding(0).setWidthAndHeight(1,3));
@@ -73,7 +73,7 @@ public class JTimeLine extends JPanel {
 		add(label, new ChainGBC(1, 1).setFill(false, true).setPadding(0).setWidthAndHeight(1,1));
 		add(zoomOut, new ChainGBC(1, 2).setFill(false).setPadding(0).setWidthAndHeight(1,1));
 		
-		setBackground(pictoralFin.getSettings().getTheme().getPrimaryBaseColor());
+		setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 	}
 
 	public boolean isEmpty() {

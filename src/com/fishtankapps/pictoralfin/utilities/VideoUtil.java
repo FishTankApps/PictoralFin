@@ -12,32 +12,36 @@ import javax.swing.JOptionPane;
 
 import com.fishtankapps.pictoralfin.customExceptions.CanceledException;
 import com.fishtankapps.pictoralfin.jComponents.JProgressDialog;
-import com.fishtankapps.pictoralfin.jComponents.JVideoFileChooser;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
 import com.fishtankapps.pictoralfin.objectBinders.DataFile;
 import com.fishtankapps.pictoralfin.objectBinders.RawAudioFile;
 
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+
 public class VideoUtil {
 	// EXPORTING VIDEO:
 
-	public static File ffmpegExeicutable = null;
-	public static File ffprobeExeicutable = null;
+	public static File ffmpegExeicutable = new File("resources/ffmpeg.exe");
+	public static File ffprobeExeicutable = new File("resources/ffprobe.exe");
 	
 	private static File outputFile = null;
 
 	public static void generateAndSaveVideo(PictoralFin pictoralFin) {
-		new Thread(() -> {
+		
+		Platform.runLater(() -> {
 			try {
 				generateAndSaveVideoThreaded(pictoralFin);
 			} catch (CanceledException e) {
-				StatusLogger.logStatus("Export Canceled");
+				StatusLogger.logPrimaryStatus("Export Canceled");
 
 				if (outputFile != null)
 					outputFile.delete();
 			}
 
-		}).start();
+		});
 	}
 
 	public static void generateAndSaveVideoThreaded(PictoralFin pictoralFin) {
@@ -60,12 +64,12 @@ public class VideoUtil {
 		int previousPercent = 0;
 		int newPercent = 0;
 		
-		StatusLogger.logStatus("Resizing Images...");
+		StatusLogger.logPrimaryStatus("Resizing Images...");
 		Dimension pictureSize = getOptimalPictureSize(pictoralFin);		
 		ArrayList<BufferedImage> frames = resizeImages(pictoralFin, pictureSize);		
 		progressDialog.moveForward(10);
 		
-		StatusLogger.logStatus("Getting Frame Durrations...");
+		StatusLogger.logPrimaryStatus("Getting Frame Durrations...");
 		long[] framesDurrationArray = new long[pictoralFin.getTimeLine().numberOfFrame()];
 		for (int count = 0; count < framesDurrationArray.length; count++)
 			framesDurrationArray[count] = pictoralFin.getTimeLine().getFrames()[count].getDuration();
@@ -74,14 +78,14 @@ public class VideoUtil {
 		int framesPerSecond = (int) ((1000.0 / shortestframeDurration) * 1000);
 		progressDialog.moveForward(2);
 		
-		StatusLogger.logStatus("Generating Sound File...");
+		StatusLogger.logPrimaryStatus("Generating Sound File...");
 		RawAudioFile rawAudioFile = AudioUtil.combineAudioClips(pictoralFin.getTimeLine().getVideoDurration(), pictoralFin.getTimeLine().getAudioClips());
 		File audioFile = null;
 		if(rawAudioFile != null)
 			audioFile = rawAudioFile.createTempWavFile("VideoAudio");
 		progressDialog.moveForward(10);
 		
-		StatusLogger.logStatus("Exporting Frames - 0%");
+		StatusLogger.logPrimaryStatus("Exporting Frames - 0%");
 		FileUtils.deleteFolder(new File(FileUtils.pictoralFinTempFolder + "\\VideoFrames"));
 		
 		File imageFile;
@@ -101,7 +105,7 @@ public class VideoUtil {
 				
 				previousPercent = newPercent;
 				
-				StatusLogger.logStatus("Exporting Frames - " + newPercent + "%");
+				StatusLogger.logPrimaryStatus("Exporting Frames - " + newPercent + "%");
 			}
 			
 		} catch (Exception e) {
@@ -116,7 +120,7 @@ public class VideoUtil {
 		
 		previousPercent = 0;
 		newPercent = 0;
-		StatusLogger.logStatus("Executing FFmpeg - 0%");
+		StatusLogger.logPrimaryStatus("Executing FFmpeg - 0%");
 		try {
 			String ffmpegCommand = ffmpegExeicutable.getPath() + " -r " + framesPerSecond + "/1000 -i \"" + FileUtils.pictoralFinTempFolder.getAbsolutePath() 
 							+ "\\VideoFrames\\Frame-%0\"" + neededNumberOfDigits + "d.bmp ";
@@ -141,7 +145,7 @@ public class VideoUtil {
 						progressDialog.moveForward(newPercent - previousPercent);
 						
 						previousPercent = newPercent;
-						StatusLogger.logStatus("Executing FFmpeg - " + newPercent + "%");
+						StatusLogger.logPrimaryStatus("Executing FFmpeg - " + newPercent + "%");
 					} catch (NumberFormatException e) {
 						System.err.println("Error with current frame conversion! String = \"" + currentFrame + "\" " + e.getMessage());
 					}
@@ -162,45 +166,22 @@ public class VideoUtil {
 		}
 		
 		progressDialog.close();
-		StatusLogger.logStatus("Done!");
+		StatusLogger.logPrimaryStatus("Done!");
 
 	}
 
 	private static File getFileToExportTo(DataFile dataFile) {
-		JVideoFileChooser jfc = new JVideoFileChooser();
+		FileChooser fileChooser = new FileChooser();
 
-		jfc.setDialogTitle("Choose File to Export to:");
-		jfc.setApproveButtonText("Export");
-		jfc.setCurrentDirectory(new File(dataFile.getLastOpenVideoLocation()));
+		fileChooser.setInitialDirectory(new File(dataFile.getLastOpenVideoLocation()).getParentFile());
+		fileChooser.setTitle("Export Video File");
+		
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Video Files", "*.mp4", "*.flv", "*.mov", "*.avi", "*.wmv"),
+				new ExtensionFilter("All Files", "*"));
+		
+		File videoFile = fileChooser.showSaveDialog(null);
 
-		if (jfc.showOpenDialog(null) == JVideoFileChooser.CANCEL_OPTION) {
-			return null;
-		}
-
-		File videoFile = jfc.getSelectedFile();
-		String outputPath = videoFile.getAbsolutePath();
-
-		// TODO - Fix this:
-		if (!outputPath.split("\\.")[1].equals(jfc.getSelectedVideoFormat())) {
-			String message = " The file " + videoFile.getName() + " does not have the right extension ("
-					+ jfc.getSelectedVideoFormat() + ")\n Would you like to renamed the file to:\n"
-					+ videoFile.getName().split("\\.")[0] + "." + jfc.getSelectedVideoFormat();
-			if (JOptionPane.showConfirmDialog(null, message, "File Extension Error", JOptionPane.YES_NO_OPTION,
-					JOptionPane.ERROR_MESSAGE) == JOptionPane.YES_OPTION) {
-				outputPath = outputPath.split("\\.")[0];
-				outputPath += "." + jfc.getSelectedVideoFormat();
-			}
-		}
-
-		videoFile = new File(outputPath);
-
-		if (videoFile.exists())
-			if (JOptionPane.showConfirmDialog(null,
-					"The file " + videoFile.getName() + " already exists.\nDo you want to replace it?",
-					"Do You Want to?", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION)
-				return null;
-
-		dataFile.setLastOpenVideoLocation(outputPath);
+		dataFile.setLastOpenVideoLocation(videoFile.getAbsolutePath());
 		return videoFile;
 	}
 
@@ -241,7 +222,7 @@ public class VideoUtil {
 		try {
 			int frameCount = getVideoFrameCount(videoPath);
 			
-			StatusLogger.logStatus("Extracting Frames... (0/" + frameCount +")");
+			StatusLogger.logSecondaryStatus("Extracting Frames... (0/" + frameCount +")");
 			File outputFolder = new File(FileUtils.pictoralFinTempFolder.getAbsolutePath() + "\\VideoToPictures");
 			
 			if(outputFolder.exists()) {
@@ -261,7 +242,7 @@ public class VideoUtil {
 			String line = null;
 			while ((line = errorReader.readLine()) != null) {
 				if(line.startsWith("frame")) {
-					StatusLogger.logStatus("Extracting Frames... (" + line.substring(6, line.indexOf("fps")).trim() +"/" + frameCount + ")");
+					StatusLogger.logSecondaryStatus("Extracting Frames - (" + line.substring(6, line.indexOf("fps")).trim() +"/" + frameCount + ")");
 				}
 			}		  
 			
@@ -321,25 +302,6 @@ public class VideoUtil {
 
 	public static File extractAudioFromVideo(File videoFile) {
 		return AudioUtil.extractAudioFromVideo(videoFile);
-	}
-
-	public static boolean isVideoFile(File file) throws Exception {
-		String ffprobeCommand = ffprobeExeicutable.getAbsolutePath() + " -show_streams -select_streams v -loglevel error \"" + file.getAbsolutePath() + "\"";
-		
-		Process ffprobeProcess = Runtime.getRuntime().exec(ffprobeCommand);
-		
-		BufferedReader inputReader = new BufferedReader(new InputStreamReader(ffprobeProcess.getInputStream()));
-		
-		ffprobeProcess.waitFor();
-		
-		int outputLineCount = 0;
-		
-		while(inputReader.readLine() != null)
-			outputLineCount++;
-		
-		System.out.println("OutputLineCount: " + outputLineCount);
-		
-		return outputLineCount > Constants.MIN_NUMBER_OF_VIDEO_LINES;
 	}
 }
 

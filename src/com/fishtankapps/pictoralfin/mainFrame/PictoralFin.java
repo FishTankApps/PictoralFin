@@ -241,14 +241,30 @@ public class PictoralFin extends JFrame implements Closeable {
 		return preferences;
 	}
 		
+	private String primaryStatus = "", secondaryStatus = "";
 	void setStatus(String status) {
+		primaryStatus = status;
+		secondaryStatus = "";
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				statusLabel.setText("Status: " + status);
+				statusLabel.setText("Status: " + primaryStatus);
 				statusLabel.repaint();
 			}
 		});	
 	}
+	void setSecondaryStatus(String status) {
+		secondaryStatus = status;
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				statusLabel.setText("Status: " + primaryStatus + " [" + secondaryStatus + "]");
+				statusLabel.repaint();
+			}
+		});	
+		
+	}
+
 	public void setOpenProjectFile(File projectFile) {
 		openProject = projectFile;
 		

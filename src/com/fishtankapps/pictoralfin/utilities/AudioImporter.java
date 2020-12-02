@@ -3,10 +3,7 @@ package com.fishtankapps.pictoralfin.utilities;
 import java.io.File;
 import java.util.List;
 
-import com.fishtankapps.pictoralfin.jComponents.JProgressDialog;
-import com.fishtankapps.pictoralfin.jTimeLine.AudioClip;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
-import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
 
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -37,13 +34,7 @@ public class AudioImporter {
 	
 	public void importAudio(List<File> files) {
 		new Thread(()->{
-			JProgressDialog progressDialog = new JProgressDialog("Importing Audio " + JProgressDialog.VALUE_IN_PARENTHESES, "Importing...", files.size());
-			for(File file : files) {
-				pictoralFin.getTimeLine().addAudioClip(new AudioClip(file, pictoralFin.getTimeLine()));
-				progressDialog.moveForward();
-			}	
-			
-			StatusLogger.logStatus(files.size() + " Audio File(s) Imported!");
+			FileImporter.importFiles(files);
 		}).start();
 	}
 }

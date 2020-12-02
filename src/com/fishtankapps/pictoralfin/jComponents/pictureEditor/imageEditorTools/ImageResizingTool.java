@@ -22,7 +22,7 @@ import com.fishtankapps.pictoralfin.objectBinders.Theme;
 import com.fishtankapps.pictoralfin.utilities.BufferedImageUtil;
 import com.fishtankapps.pictoralfin.utilities.ChainGBC;
 
-public class ImageResizer extends ImageEditorTool {
+public class ImageResizingTool extends ImageEditorTool {
 
 	private static final long serialVersionUID = -2297726745512899997L;
 
@@ -30,9 +30,11 @@ public class ImageResizer extends ImageEditorTool {
 	private JTextField width, height;
 	private JComboBox<String> scaleTypes;
 	private JButton resize;
+	
+	private boolean hasValidImage = false;
 
-	public ImageResizer(ImageEditor editor, Theme theme) {
-		super("Image Resizer", editor, theme);
+	public ImageResizingTool(ImageEditor editor, Theme theme) {
+		super("Image Resizer", editor, theme, true);
 
 		this.setLayout(new GridBagLayout());
 
@@ -85,6 +87,8 @@ public class ImageResizer extends ImageEditorTool {
 		add(height,      new ChainGBC(1, 2).setFill(true,  false).setPadding(5) .setWidthAndHeight(1, 1));
 		add(scaleTypes,  new ChainGBC(0, 3).setFill(true,  false).setPadding(5) .setWidthAndHeight(2, 1));
 		add(resize,      new ChainGBC(0, 4).setFill(true,  false).setPadding(10).setWidthAndHeight(2, 1));
+		
+		updateCollapsedState(true);
 	}
 
 	protected void onMouseReleased(int clickX, int clickY, BufferedImage layer, Frame frame) {
@@ -95,29 +99,30 @@ public class ImageResizer extends ImageEditorTool {
 
 	protected void onLayerSelectionChanged(LayerButton oldFrame, LayerButton newFrame) {
 		if (newFrame != null) {
+			hasValidImage = true;
 			sizeLabel.setText("Size: " + newFrame.getLayer().getWidth() + " by " + newFrame.getLayer().getHeight());
 
 			width.setText("" + newFrame.getLayer().getWidth());
 			height.setText("" + newFrame.getLayer().getHeight());
 
-			width.setVisible(true);
-			height.setVisible(true);
-			resize.setVisible(true);
-			scaleTypes.setVisible(true);
-			widthLabel.setVisible(true);
-			heightLabel.setVisible(true);
+			updateCollapsedState(collapsed);
 		} else {
+			hasValidImage = false;
 			sizeLabel.setText("Size: No Image Selected");
 
-			width.setVisible(false);
-			height.setVisible(false);
-			resize.setVisible(false);
-			scaleTypes.setVisible(false);
-			widthLabel.setVisible(false);
-			heightLabel.setVisible(false);
+			updateCollapsedState(collapsed);
 		}
 	}
 
+	protected void updateCollapsedState(boolean collapsed) {
+		width.setVisible(hasValidImage && !collapsed);
+		height.setVisible(hasValidImage && !collapsed);
+		resize.setVisible(hasValidImage && !collapsed);
+		scaleTypes.setVisible(hasValidImage && !collapsed);
+		widthLabel.setVisible(hasValidImage && !collapsed);
+		heightLabel.setVisible(hasValidImage && !collapsed);
+	}
+	
 	private void resizeImage(ImageEditor editor) {
 		try {
 			Frame frame = editor.getSelectedFrame();
@@ -128,7 +133,7 @@ public class ImageResizer extends ImageEditorTool {
 
 			BufferedImage image = frame.getLayer(index);
 			
-			StatusLogger.logStatus("Resizing...");
+			StatusLogger.logPrimaryStatus("Resizing...");
 			
 			int scaleType;
 			
@@ -145,12 +150,12 @@ public class ImageResizer extends ImageEditorTool {
 			
 			image = BufferedImageUtil.resizeBufferedImage(image, width, height, scaleType);
 			
-			StatusLogger.logStatus("Replacing Layer...");
+			StatusLogger.logPrimaryStatus("Replacing Layer...");
 			
 			frame.removeLayer(index, false);
 			frame.addLayerAtIndex(image, index);
 			
-			StatusLogger.logStatus("Layer Resized!");
+			StatusLogger.logPrimaryStatus("Layer Resized!");
 			
 			editor.getLayerSelecter().refresh();
 		} catch (NumberFormatException e) {

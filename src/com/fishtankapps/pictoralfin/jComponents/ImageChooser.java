@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
-import com.fishtankapps.pictoralfin.utilities.Utilities;
+import com.fishtankapps.pictoralfin.utilities.FileUtils;
 
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -19,7 +19,7 @@ public class ImageChooser {
 		fileChooser.setTitle("Import Images");
 		fileChooser.setInitialDirectory((lastOpened.isDirectory()) ? lastOpened : lastOpened.getParentFile());
 		
-		String[] importableImageFiles = Utilities.getCompatibleImageFiles();
+		String[] importableImageFiles = FileUtils.getCompatibleImageFiles();
 		String[] importableFiles = new String[importableImageFiles.length + 2];
 		
 		importableFiles[0] = "*.pfkp";
@@ -49,7 +49,7 @@ public class ImageChooser {
 		fileChooser.setTitle("Import Images");
 		fileChooser.setInitialDirectory((lastOpened.isDirectory()) ? lastOpened : lastOpened.getParentFile());
 		
-		String[] importableImageFiles = Utilities.getCompatibleImageFiles();
+		String[] importableImageFiles = FileUtils.getCompatibleImageFiles();
 		String[] importableFiles = new String[importableImageFiles.length + 2];
 		
 		importableFiles[0] = "*.pfkp";

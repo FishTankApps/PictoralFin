@@ -27,6 +27,8 @@ public class AudioClipData implements Serializable {
     	} catch (Exception e) {
     		System.out.println("Empty Catch Block: AudioClipData.AudioClipData(File);");
     		e.printStackTrace();
+    		
+    		throw new RuntimeException(e.getMessage());
     	}
         
     }

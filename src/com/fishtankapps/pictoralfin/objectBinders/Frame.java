@@ -30,7 +30,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class Frame extends UndoAndRedoable<Frame> {
 
 	private static final long serialVersionUID = -6947541644075351604L;
-	private static final String IMAGE_OUTPUT_FILE_FORMAT = "BMP";
+	private static final String IMAGE_OUTPUT_FILE_FORMAT = "PNG";
 	
 	private transient ArrayList<BufferedImage> layers;
 	private transient File imageStash = null;
@@ -75,13 +75,13 @@ public class Frame extends UndoAndRedoable<Frame> {
 	public void addLayer(BufferedImage layer) {
 		layers.add(BufferedImageUtil.setBufferedImageType(layer, Constants.IMAGE_TYPE));
 	
-		logUndoableChange();
+		new Thread(()->logUndoableChange()).start();
 	}
 	
 	public void addLayerAtIndex(BufferedImage layer, int index) {
 		layers.add(index, BufferedImageUtil.setBufferedImageType(layer, Constants.IMAGE_TYPE));
 		
-		logUndoableChange();
+		new Thread(()->logUndoableChange()).start();
 	}
 
 	public void setDuration(long duration) {
@@ -103,14 +103,14 @@ public class Frame extends UndoAndRedoable<Frame> {
 
 	public void removeLayer(int index) {
 		layers.remove(index);
-		logUndoableChange();
+		new Thread(()->logUndoableChange()).start();
 	}
 	
 	public void removeLayer(int index, boolean logChange) {
 		layers.remove(index);
 		
 		if(logChange)
-			logUndoableChange();
+			new Thread(()->logUndoableChange()).start();
 	}	
 
 	

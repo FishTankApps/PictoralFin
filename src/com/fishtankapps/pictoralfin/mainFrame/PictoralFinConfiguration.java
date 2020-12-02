@@ -15,6 +15,7 @@ import javax.swing.UIManager;
 import com.fishtankapps.pictoralfin.jComponents.JPictoralFinConfigurationEditor;
 import com.fishtankapps.pictoralfin.objectBinders.DataFile;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
+import com.fishtankapps.pictoralfin.utilities.Constants;
 
 public class PictoralFinConfiguration implements Serializable{
 	private static final long serialVersionUID = -1163643096786559533L;
@@ -33,7 +34,7 @@ public class PictoralFinConfiguration implements Serializable{
 		theme = Theme.OCEAN_THEME;
 		maxPictureSize = new Dimension(1280, 720);
 		messagesToNotShow = new ArrayList<>();
-		lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+		lookAndFeel = Constants.LOOK_AND_FEEL_NOT_CHOOSEN;
 		audioSampleRate = 48000;
 		fontPreviewString = "Font Sample";
 		dataFile = new DataFile();

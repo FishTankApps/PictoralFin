@@ -78,6 +78,13 @@ public class LayerSelecter extends JPanel {
 		return selectedLayerButton;
 	}
 	
+	public int getSelectedLayerIndex() {
+		if(selectedLayerButton == null)
+			return -1;
+		
+		return selectedLayerButton.getLayerIndex();
+	}
+	
 	void onLayerButtonClicked(LayerButton layerButton) {
 		if(layerButton.getLayerIndex() == LayerButton.ADD_LAYER_INDEX) {
 			addLayerToFrame();
@@ -135,4 +142,34 @@ public class LayerSelecter extends JPanel {
 		repaint();
 	}
 	
+	public void moveSelectedLayer(boolean moveUp) {
+		if(selectedFrame == null || selectedFrame.getNumberOfLayers() < 2)
+			return;
+		
+		if(moveUp) {
+			int currentIndex = getSelectedLayerIndex();
+			
+			if(currentIndex == 0)
+				return;
+			
+			BufferedImage currentLayer = selectedFrame.getLayer(currentIndex);
+			
+			selectedFrame.removeLayer(currentIndex, false);
+			selectedFrame.addLayerAtIndex(currentLayer, currentIndex - 1);
+			
+		} else {
+			int currentIndex = getSelectedLayerIndex();
+			
+			if(currentIndex == selectedFrame.getNumberOfLayers() - 1)
+				return;
+			
+			BufferedImage currentLayer = selectedFrame.getLayer(currentIndex);
+			
+			selectedFrame.removeLayer(currentIndex, false);
+			selectedFrame.addLayerAtIndex(currentLayer, currentIndex + 1);
+		}
+		
+		refresh();
+		pictoralFin.repaint();
+	}
 }

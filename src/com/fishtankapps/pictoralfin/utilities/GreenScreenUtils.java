@@ -13,7 +13,7 @@ public class GreenScreenUtils {
 		int redTemp, blueTemp, greenTemp, rgbTemp, x, y;
 		int targetRed, targetBlue, targetGreen;
 		
-		int jetBlackRGB = Color.BLACK.getRGB();
+		int clearRGBA = new Color(0,0,0,0).getRGB();
 		
 		targetRed =   targetColor.getRed();
 		targetGreen = targetColor.getGreen();
@@ -33,7 +33,7 @@ public class GreenScreenUtils {
 							if(targetGreen - greenTemp < greenLower)
 								if(blueTemp - targetBlue < blueUpper)
 									if(targetBlue - blueTemp < blueLower)
-										i.setRGB(x, y, jetBlackRGB);
+										i.setRGB(x, y, clearRGBA);
 			}
 		
 		
@@ -85,7 +85,7 @@ public class GreenScreenUtils {
 		float targetHue, targetBrightness, targetSaturation;
 		int redTemp, blueTemp, greenTemp, rgbTemp, x, y;		
 		
-		int jetBlackRGB = Color.BLACK.getRGB();
+		int clearRGBA = new Color(0,0,0,0).getRGB();
 		
 		Color.RGBtoHSB(targetColor.getRed(), targetColor.getGreen(), targetColor.getBlue(), hsbTemp);
 		
@@ -108,7 +108,7 @@ public class GreenScreenUtils {
 						&& targetSaturation - hsbTemp[1] < satLower
 						&& hsbTemp[2] - targetBrightness < briUpper
 						&& targetBrightness - hsbTemp[2] < briLower)
-					i.setRGB(x, y, jetBlackRGB);			
+					i.setRGB(x, y, clearRGBA);			
 			}
 		
 		return i;		

@@ -94,15 +94,14 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		int startIndex = (startButton      * buttonSize);
 		int endIndex =   ((endButton - ((leftOver == 0) ? 2 : 1))  * buttonSize);
 		
-		if(endButton >= 0) {
+		if(endButton >= 0)
 			endIndex += (int) ((buttonSize - 5) * ((endFrame.getDuration()-leftOver)/(double) endFrame.getDuration()));
-		}
 		
-		if(startButton == -1) {
+		
+		if(startButton == -1) 
 			startIndex = 0;
-		} else if(startButton == -2) {
+		else if(startButton == -2)
 			startIndex = (jTimeLine.numberOfFrame() * buttonSize) + (5 * jTimeLine.numberOfFrame());
-		}
 		
 		endIndex = (endIndex <= 0) ? getWidth() : endIndex;
 		
@@ -119,10 +118,8 @@ public class AudioClip extends JComponent implements MouseListener, Themed, Sett
 		g.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 15));
 		int nameWidth = g.getFontMetrics().stringWidth(getName());
 		
-		for(int count = startIndex + nameWidth * 2; count < (endIndex - startIndex); count+=(nameWidth*2)) {
-			g.drawString(getName(), count, 17);
-		}
-		
+		for(int count = startIndex + nameWidth * 2; count < (endIndex - startIndex); count+=(nameWidth*2)) 
+			g.drawString(getName(), count, 17);		
 	}
 	
 	public File getAudioFile() {

@@ -43,7 +43,7 @@ public class DrawingTool extends ImageEditorTool {
 	private byte drawShape = CIRCLE;
 	
 	public DrawingTool(ImageEditor editor, Theme theme) {
-		super("Draw-er", editor, theme);	
+		super("Draw-er", editor, theme, false);	
 		this.theme = theme;
 		
 		setLayout(new GridBagLayout());
@@ -151,7 +151,7 @@ public class DrawingTool extends ImageEditorTool {
 			
 			g.setColor(drawColor);
 			
-			final int borderWidth = 5;
+			final int borderWidth = 10;
 			
 			if(drawShape == CIRCLE) {
 				g.fillOval((DrawPreview.this.getWidth() - DrawPreview.this.getHeight() + borderWidth*2) / 2, borderWidth, DrawPreview.this.getHeight() - borderWidth*2, DrawPreview.this.getHeight() - borderWidth*2);

@@ -2,20 +2,24 @@ package com.fishtankapps.pictoralfin.jComponents.pictureEditor;
 
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import javax.swing.Box;
 import javax.swing.JPanel;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools.DrawingTool;
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools.GreenScreenTool;
-import com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools.ImageResizer;
+import com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools.ImageResizingTool;
+import com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools.LayerManipulatorTool;
 import com.fishtankapps.pictoralfin.listeners.LayerMouseListener;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
 import com.fishtankapps.pictoralfin.utilities.ChainGBC;
 
-public class ImageEditorToolKitPanel extends JPanel {
+public class ImageEditorToolKitPanel extends JPanel implements Scrollable  {
 
 	private static final long serialVersionUID = -2646271125412362864L;
 
@@ -48,8 +52,10 @@ public class ImageEditorToolKitPanel extends JPanel {
 	}
 	
 	public void requestToolFocus(ImageEditorTool toolInFocus) {
-		if(this.toolInFocus != null)
+		if(this.toolInFocus != null) {
 			this.toolInFocus.isFocusedTool = false;
+			toolInFocus.removeClearImageFromImagePreview();
+		}
 		
 		this.toolInFocus = toolInFocus;
 		this.toolInFocus.isFocusedTool = true;
@@ -83,10 +89,32 @@ public class ImageEditorToolKitPanel extends JPanel {
 //			JOptionPane.showMessageDialog(null, "There was an error loading an Image Editor:\n" + name + 
 //					"\nError Message: \n" + e.getMessage(), "Error Loading Editor", JOptionPane.ERROR_MESSAGE);
 //		}
-		
+		add(new LayerManipulatorTool(imageEditor, theme),  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));
 		add(new DrawingTool(imageEditor, theme),  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));		
 		add(new GreenScreenTool(imageEditor, theme),  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));		
-		add(new ImageResizer(imageEditor, theme),  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));		
+		add(new ImageResizingTool(imageEditor, theme),  new ChainGBC(0, heightIndex++).setFill(true, false).setPadding(10));		
 		add(Box.createHorizontalGlue(), new ChainGBC(0, heightIndex++).setFill(true, true));
 	}
+
+
+
+	public Dimension getPreferredScrollableViewportSize() {
+        return getPreferredSize();
+    }
+
+    public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+       return 10;
+    }
+
+    public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+        return ((orientation == SwingConstants.VERTICAL) ? visibleRect.height : visibleRect.width) - 10;
+    }
+
+    public boolean getScrollableTracksViewportWidth() {
+        return true;
+    }
+
+    public boolean getScrollableTracksViewportHeight() {
+        return false;
+    }
 }

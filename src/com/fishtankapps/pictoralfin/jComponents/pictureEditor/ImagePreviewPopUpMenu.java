@@ -12,6 +12,7 @@ import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
 import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
 import com.fishtankapps.pictoralfin.utilities.BufferedImageUtil;
 import com.fishtankapps.pictoralfin.utilities.Constants;
+import com.fishtankapps.pictoralfin.utilities.FileUtils;
 import com.fishtankapps.pictoralfin.utilities.Utilities;
 
 import javafx.application.Platform;
@@ -65,10 +66,11 @@ class ImagePreviewPopUpMenu {
 			fileChooser.setInitialDirectory(new File(pictoralFin.getConfiguration().getDataFile().getLastOpenedPictureLocation()).getParentFile());
 			fileChooser.setTitle("Export Frame To...");			
 		
-			String[] importableImageFiles = Utilities.getCompatibleImageFiles();
+			String[] importableImageFiles = FileUtils.getCompatibleImageFiles();
 			
 			
 			fileChooser.getExtensionFilters().addAll(
+					new ExtensionFilter("PNG Files", "*.png"),
 					new ExtensionFilter("Image Files", importableImageFiles),
 					new ExtensionFilter("All Files", "*"));
 			
@@ -80,7 +82,7 @@ class ImagePreviewPopUpMenu {
 				return;
 			
 			try {
-				ImageIO.write(button.getLayer(), ".png", selectedFile);
+				ImageIO.write(button.getLayer(), "png", selectedFile);
 			} catch (Exception error) {
 				System.out.println("Empty catch block: ImagePreviewPopUpMenu.EXPORT_CURRENT_LAYER (lamba):");
 				error.printStackTrace();
@@ -91,14 +93,14 @@ class ImagePreviewPopUpMenu {
 		
 		PictoralFin pictoralFin = Utilities.getPictoralFin(button);
 		
-		StatusLogger.logStatus("Copying Image...");
+		StatusLogger.logPrimaryStatus("Copying Image...");
 		
 		pictoralFin.getTimeLine().addFrame(BufferedImageUtil.copyBufferedImage(button.getLayer()), pictoralFin.getTimeLine().getCurrentFrameIndex());
 					
 		pictoralFin.getTimeLine().revalidate();			
 		pictoralFin.getTimeLine().repaint();
 		
-		StatusLogger.logStatus("Image Added!");
+		StatusLogger.logPrimaryStatus("Image Added!");
 	};
 	
 	public ImagePreviewPopUpMenu(ImagePreview imagePreview, LayerButton button, int x, int y) {

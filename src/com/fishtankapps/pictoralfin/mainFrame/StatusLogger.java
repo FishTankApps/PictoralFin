@@ -9,7 +9,11 @@ public class StatusLogger {
 		this.pictoralFin = pictoralFin;
 	}
 	
-	public static void logStatus(String log) {
+	public static void logPrimaryStatus(String log) {
 		logger.pictoralFin.setStatus(log);
+	}	
+	
+	public static void logSecondaryStatus(String log) {
+		logger.pictoralFin.setSecondaryStatus(log);
 	}	
 }

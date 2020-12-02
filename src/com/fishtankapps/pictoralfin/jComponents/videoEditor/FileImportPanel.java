@@ -9,9 +9,9 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,14 +22,11 @@ import javax.swing.TransferHandler;
 import com.fishtankapps.pictoralfin.globalToolKits.GlobalImageKit;
 import com.fishtankapps.pictoralfin.globalToolKits.GlobalListenerToolKit;
 import com.fishtankapps.pictoralfin.interfaces.Themed;
-import com.fishtankapps.pictoralfin.jComponents.JProgressDialog;
-import com.fishtankapps.pictoralfin.jTimeLine.AudioClip;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
-import com.fishtankapps.pictoralfin.mainFrame.StatusLogger;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
 import com.fishtankapps.pictoralfin.utilities.BufferedImageUtil;
 import com.fishtankapps.pictoralfin.utilities.ChainGBC;
-import com.fishtankapps.pictoralfin.utilities.Utilities;
+import com.fishtankapps.pictoralfin.utilities.FileImporter;
 
 public class FileImportPanel extends JPanel implements Themed {
 
@@ -77,47 +74,20 @@ public class FileImportPanel extends JPanel implements Themed {
 	        }
 			
 	        public boolean importData(TransferHandler.TransferSupport support) {
-	            
-	            Transferable t = support.getTransferable();
+	        	
 	            try {
-	            	List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
-	            	new Thread(() -> {
-			            try {
+	            	 Transferable transferable = support.getTransferable();
+	            	 List<?> list = (List<?>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+	            	 new Thread(() -> {
+			             try {
 			            	
-			                JProgressDialog dialog = new JProgressDialog("Importing Files " + JProgressDialog.PERCENT, "Importing...", l.size() + 1);
-			                			                
-			                int importCount = 0;
-			                StatusLogger.logStatus("Importing Files (" +importCount + "/" + l.size() + ")");
-			                File file;
-			                boolean imported;
-			                for(Object object : l) {
-			                	if(object instanceof File) {
-			                		file = (File) object;
-			                		imported = false;
-			                				
-			                		for(String imageFileExtension : Utilities.getCompatibleImageFiles()) {
-			                			if(file.getName().endsWith(imageFileExtension.substring(1))) {			                				
-			                				pictoralFin.getTimeLine().addFrame(ImageIO.read(file));		
-			                				imported = true;
-			                				break;
-			                			}
-			                		}
-			                		
-			                		if(!imported)
-				                		for(String audioFileExtension : Utilities.getCompatibleAudioFormats()) {
-				                			if(file.getName().endsWith(audioFileExtension.substring(1))) {			                				
-				                				pictoralFin.getTimeLine().addAudioClip(new AudioClip(file, pictoralFin.getTimeLine()));
-				                				imported = true;
-				                				break;
-				                			}
-				                		}
-			                		
-			                		dialog.moveForward();
-			                		StatusLogger.logStatus("Importing Files (" + ++importCount + "/" + l.size() + ")");
-			                	}
-			                }
-			                
-			                dialog.close();
+			            	 ArrayList<File> files = new ArrayList<>();
+			            	
+			            	 for(Object object : list)
+			            		 if(object instanceof File)
+			            			 files.add((File) object);
+			            	 
+			            	 FileImporter.importFiles(files);
 			                
 			            } catch (Exception e) {
 			            	e.printStackTrace();

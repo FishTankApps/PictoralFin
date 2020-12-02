@@ -2,11 +2,8 @@ package com.fishtankapps.pictoralfin.utilities;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -122,51 +119,7 @@ public class Utilities {
 		return gcd(b % a, a);
 	}
 
-	public static String[] getCompatibleImageFiles() {
-		String[] compatibleImages = ImageIO.getReaderFileSuffixes();
-
-		for (int index = 0; index < compatibleImages.length; index++)
-			compatibleImages[index] = "*." + compatibleImages[index];
-
-		return compatibleImages;
-
-	}
-
-	private static String[] compatibleAudioFormats = null;
-	public static String[] getCompatibleAudioFormats() {
-		if(compatibleAudioFormats == null) {
-			try {
-				ArrayList<String> returnArrayList = new ArrayList<>();
-				String ffmpegCommand = VideoUtil.ffmpegExeicutable.getPath() + " -hide_banner -formats";
-
-				Process p = Runtime.getRuntime().exec(ffmpegCommand);
-
-				BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-				String line = null;
-				while ((line = errorReader.readLine()) != null) {
-					if(line.length() > 5) {
-						String extension = line.substring(4);
-						extension = extension.substring(0, extension.indexOf(' '));
-						
-						if(extension.length() > 1) {
-							returnArrayList.add(extension);
-						}
-					}
-					
-				}
-				
-				compatibleAudioFormats = returnArrayList.toArray(new String[returnArrayList.size()]);
-				
-			} catch (Exception e) {
-				compatibleAudioFormats = null;
-			}
-		}		
-		
-
-		return compatibleAudioFormats;
-	}
-
+	
 	/**
 	 * Use in while loops so it rechecks the case.
 	 */

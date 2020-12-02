@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
@@ -118,13 +119,12 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	}
 	
 	public Point getMousePointOnImage() {
-		if(getMousePosition() == null)
-			return null;
+		Point p = getMousePosition(); 
+		if(p == null || layer == null)
+			return null;	
 		
-		
-		
-		int mouseX = (int) ((getMousePosition().getX() - (Math.ceil((getWidth()  / 2) - (layer.getWidth()  * magnification)/2 + imageX))) / magnification);
-		int mouseY = (int) ((getMousePosition().getY() - (Math.ceil((getHeight() / 2) - (layer.getHeight() * magnification)/2 + imageY))) / magnification);		
+		int mouseX = (int) ((p.getX() - (Math.ceil((getWidth()  / 2) - (layer.getWidth()  * magnification)/2 + imageX))) / magnification);
+		int mouseY = (int) ((p.getY() - (Math.ceil((getHeight() / 2) - (layer.getHeight() * magnification)/2 + imageY))) / magnification);		
 		
 		return new Point(mouseX, mouseY);
 	}
@@ -166,6 +166,9 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		super.paintComponent(graphics);
 		
 		Graphics2D g = (Graphics2D) graphics;
+		
+		g.setPaint(new GradientPaint(100,100,theme.getPrimaryBaseColor(), getWidth()-100, getHeight()-100, theme.getPrimaryHighlightColor()));
+		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		if(layer == null) {
 			

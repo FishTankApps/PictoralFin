@@ -31,7 +31,9 @@ public class RawAudioFile {
 	}
 
 	public RawAudioFile(File file) throws IOException, UnsupportedAudioFileException {
-		file = AudioUtil.convertAudioFileToWAV(file);
+		
+		if(!file.getAbsolutePath().contains("PictoralFinTemp"))
+			file = AudioUtil.convertAudioFileToWAV(file);
 
 		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
 		DataInputStream dis = new DataInputStream(audioInputStream);

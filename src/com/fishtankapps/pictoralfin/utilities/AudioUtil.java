@@ -23,7 +23,7 @@ public class AudioUtil {
 
 	public static File convertAudioFileToWAV(File toConvert) {
 		try {
-			StatusLogger.logStatus("Converting File " + toConvert.getName());
+			StatusLogger.logSecondaryStatus("Converting File " + toConvert.getName());
 			File target = FileUtils.createTempFile(toConvert.getName(), ".wav", "AudioConversion", true);
 			target.deleteOnExit();
 			

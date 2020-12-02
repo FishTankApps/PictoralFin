@@ -91,19 +91,19 @@ public class JTimeLine extends JPanel {
 	public void loadPictoralFinProject(PictoralFinProject project) {
 		empty();
 		
-		StatusLogger.logStatus("Importing Images...");
+		StatusLogger.logPrimaryStatus("Importing Images...");
 		if(project.getFrames() != null)
 			for(Frame frame : project.getFrames()) {
 				addFrame(frame);
 				new Thread(()->frame.logUndoableChange()).start();
 			}
 		
-		StatusLogger.logStatus("Importing Audio...");
+		StatusLogger.logPrimaryStatus("Importing Audio...");
 		if(project.getAudioData() != null)
 			for(AudioClipData data : project.getAudioData())
 				addAudioClip(new AudioClip(data, this));
 		
-		StatusLogger.logStatus("Applying Settings...");
+		StatusLogger.logPrimaryStatus("Applying Settings...");
 		project.getSettings().applySettings(pictoralFin);
 		
 		revalidate();

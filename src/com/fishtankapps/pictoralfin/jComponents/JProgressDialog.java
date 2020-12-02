@@ -34,8 +34,10 @@ public class JProgressDialog {
 		
 		dialog = pane.createDialog(replaceKeys(title));
 		dialog.setIconImage(GlobalImageKit.pictoralFinIcon);
-		dialog.setModalityType(JDialog.ModalityType.MODELESS); // MODELESS = not on top
-		dialog.setVisible(true);
+		dialog.setModalityType(JDialog.ModalityType.APPLICATION_MODAL);
+		
+		new Thread(()->
+		dialog.setVisible(true)).start();
 	}
 
 	public void setIcon(Image i) {

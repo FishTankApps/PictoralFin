@@ -1,21 +1,18 @@
 package com.fishtankapps.pictoralfin.mainFrame;
 
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-
-import com.fishtankapps.pictoralfin.utilities.AudioUtil;
-import com.fishtankapps.pictoralfin.utilities.FileUtils;
-import com.fishtankapps.pictoralfin.utilities.VideoUtil;
-
-import javafx.embed.swing.JFXPanel;
-
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+
+import com.fishtankapps.pictoralfin.utilities.AudioUtil;
+import com.fishtankapps.pictoralfin.utilities.Constants;
+import com.fishtankapps.pictoralfin.utilities.FileImporter;
+
+import javafx.embed.swing.JFXPanel;
 
 public class Launcher {
 
@@ -24,13 +21,11 @@ public class Launcher {
 		try {			
 			setUpUIStuff();
 			
-			PictoralFin pictoralFin = setUpPictoralFin(filePaths);
-			
-			extractFFmpeg(pictoralFin);
+			setUpPictoralFin(filePaths);
 			
 			loadFonts();
 			System.out.println("-- Launch Complete --");
-			StatusLogger.logStatus("Launch Complete!");
+			StatusLogger.logPrimaryStatus("Launch Complete!");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -41,22 +36,51 @@ public class Launcher {
 	}
 	
 	public static void setUpUIStuff() throws Exception {
+		
+		
 		System.out.println("-- Setting Look And Feel --");
-		UIManager.setLookAndFeel(PictoralFinConfiguration.openConfiguration().getLookAndFeel());
+		String lookAndFeel = PictoralFinConfiguration.openConfiguration().getLookAndFeel();
+		
+
+		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+			System.out.println("info: " + info);
+		
+		if(lookAndFeel.equals(Constants.LOOK_AND_FEEL_NOT_CHOOSEN)) {
+			String osName = System.getProperty("os.name");
+			System.out.println("OS: " + osName);
+			
+			
+			if(osName.contains("Windows"))
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			else if(osName.contains("Linux")) 
+				UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			else if(osName.contains("OS X")) {
+				System.setProperty("apple.laf.useScreenMenuBar", "true");
+				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "WikiTeX");
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+				
+			
+		
+		} else {
+			UIManager.setLookAndFeel(lookAndFeel);
+		}
 
 		@SuppressWarnings("unused")
 		JFXPanel usedToInitializeJFXTools = new JFXPanel();
 	}
+	
 	public static PictoralFin setUpPictoralFin(String[] filePaths) {
 		System.out.println("-- Setting Up PictoralFin --");
 		PictoralFin pictoralFin = new PictoralFin();
 		
 		AudioUtil.passPictoralFin(pictoralFin);
-
+		FileImporter.passPictoralFin(pictoralFin);
+		
 		System.out.println("-- Launching PictoralFin --");
 		pictoralFin.launch();
 		
-		StatusLogger.logStatus("Importing Selected File(s)...");
+		StatusLogger.logPrimaryStatus("Importing Selected File(s)...");
 		System.out.println("-- Importing Files --");
 		if (filePaths.length > 0) {
 			File file = new File(filePaths[0]);
@@ -72,49 +96,10 @@ public class Launcher {
 		
 		return pictoralFin;
 	}
-	public static void extractFFmpeg(PictoralFin pictoralFin) {
-		//StatusLogger.logStatus("Extracting FFmpeg to temp files...");
-		System.out.println("-- Extracting FFmpeg --");
-		try {
-			File ffmpegFile = FileUtils.createTempFile("ffmpeg", ".exe", "FFmpeg", false);
-			
-			InputStream ffmpegStream = new FileInputStream(new File("resources\\ffmpeg.exe"));
-			byte[] buffer = new byte[ffmpegStream.available()];
-			ffmpegStream.read(buffer);
-
-			OutputStream ffmpegOutStream = new FileOutputStream(ffmpegFile);
-			ffmpegOutStream.write(buffer);
-			
-			ffmpegOutStream.close();
-			ffmpegStream.close();
-			
-			
-			
-			File ffprobeFile = FileUtils.createTempFile("ffprobe", ".exe", "FFmpeg", false);
-			
-			InputStream ffprobeStream = new FileInputStream(new File("resources\\ffprobe.exe"));
-			buffer = new byte[ffprobeStream.available()];
-			ffprobeStream.read(buffer);
-
-			OutputStream ffprobeOutStream = new FileOutputStream(ffprobeFile);
-			ffprobeOutStream.write(buffer);
-
-			
-			ffprobeOutStream.close();
-			ffprobeStream.close();
-			
-			VideoUtil.ffmpegExeicutable  = ffmpegFile;			
-			VideoUtil.ffprobeExeicutable = ffprobeFile;
-			
-		} catch (Exception e) {
-			
-			JOptionPane.showMessageDialog(pictoralFin, "There was an error extracting FFmpeg/FFprobe.");
-			e.printStackTrace();
-		}
-	}
+	
 	public static void loadFonts() {
 		System.out.println("-- Loading Fonts --");
-		StatusLogger.logStatus("Loading Fonts...");
+		StatusLogger.logPrimaryStatus("Loading Fonts...");
 		
 		try {
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();

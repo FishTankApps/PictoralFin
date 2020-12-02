@@ -42,11 +42,12 @@ public class GreenScreenTool extends ImageEditorTool {
 	
 	private JColorPreview colorPreview;
 	private JLabel rgbValueLabel, hsbValueLabel;
+	private JPanel filterMethodsPanel;
 	
 	private BufferedImage currentLayer = null;
 	
 	public GreenScreenTool(ImageEditor editor, Theme theme) {
-		super("Green Screen Tool", editor, theme);
+		super("Green Screen Tool", editor, theme, true);
 		setLayout(new GridBagLayout());
 				
 		dragHighlightColor = theme.getSecondaryHighlightColor();		
@@ -58,7 +59,7 @@ public class GreenScreenTool extends ImageEditorTool {
 		rgbValueLabel = new JLabel("No Color Selected", JLabel.CENTER);
 		hsbValueLabel = new JLabel("No Color Selected", JLabel.CENTER);
 		
-		JPanel filterMethodsPanel = new JPanel(new GridBagLayout()) {
+		filterMethodsPanel = new JPanel(new GridBagLayout()) {
 			private static final long serialVersionUID = 1L;
 			
 			public void paintComponent(Graphics g) {
@@ -103,6 +104,8 @@ public class GreenScreenTool extends ImageEditorTool {
 		add(hsbValueLabel, new ChainGBC(0, 2).setFill(false, false).setPadding(0));
 		add(colorPreview, new ChainGBC(1, 0).setFill(true, false).setPadding(10).setWidthAndHeight(1, 3));
 		add(filterMethodsPanel, new ChainGBC(0, 3).setFill(true, false).setPadding(10).setWidthAndHeight(2, 1));
+	
+		updateCollapsedState(true);
 	}
 	
 	private void initCardPanels(JPanel filterMethodCards, Theme theme) {
@@ -169,6 +172,7 @@ public class GreenScreenTool extends ImageEditorTool {
 		JLabel blueLowerLabel = new JLabel("Blue Lower (10):", JLabel.RIGHT);		
 		
 		JSlider redUpperTolerance =  new JSlider(0,256,10);
+		
 		JSlider redLowerTolerance =  new JSlider(0,256,10);
 		JSlider greenUpperTolerance = new JSlider(0,256,10);
 		JSlider greenLowerTolerance = new JSlider(0,256,10);
@@ -225,12 +229,12 @@ public class GreenScreenTool extends ImageEditorTool {
 		rgbValueMethodCard.add(blueUpperLabel,  new ChainGBC(0,4).setFill(false).setPadding(5));
 		rgbValueMethodCard.add(blueLowerLabel,  new ChainGBC(0,5).setFill(false).setPadding(5));
 		
-		rgbValueMethodCard.add(redUpperTolerance,   new ChainGBC(1,0).setFill(false, false).setPadding(5));
-		rgbValueMethodCard.add(redLowerTolerance,   new ChainGBC(1,1).setFill(false, false).setPadding(5));
-		rgbValueMethodCard.add(greenUpperTolerance, new ChainGBC(1,2).setFill(false, false).setPadding(5));
-		rgbValueMethodCard.add(greenLowerTolerance, new ChainGBC(1,3).setFill(false, false).setPadding(5));
-		rgbValueMethodCard.add(blueUpperTolerance,  new ChainGBC(1,4).setFill(false, false).setPadding(5));
-		rgbValueMethodCard.add(blueLowerTolerance,  new ChainGBC(1,5).setFill(false, false).setPadding(5));
+		rgbValueMethodCard.add(redUpperTolerance,   new ChainGBC(1,0).setFill(true, false).setPadding(5));
+		rgbValueMethodCard.add(redLowerTolerance,   new ChainGBC(1,1).setFill(true, false).setPadding(5));
+		rgbValueMethodCard.add(greenUpperTolerance, new ChainGBC(1,2).setFill(true, false).setPadding(5));
+		rgbValueMethodCard.add(greenLowerTolerance, new ChainGBC(1,3).setFill(true, false).setPadding(5));
+		rgbValueMethodCard.add(blueUpperTolerance,  new ChainGBC(1,4).setFill(true, false).setPadding(5));
+		rgbValueMethodCard.add(blueLowerTolerance,  new ChainGBC(1,5).setFill(true, false).setPadding(5));
 		
 		rgbValueMethodCard.add(runFilter,  new ChainGBC(0,6).setFill(true, false).setPadding(10).setWidthAndHeight(2, 1));
 	}
@@ -292,19 +296,19 @@ public class GreenScreenTool extends ImageEditorTool {
 				callForRepaint();
 			}});
 		
-		hsbValueMethodCard.add(hueUpperLabel,   new ChainGBC(0,0).setFill(false).setPadding(5));
-		hsbValueMethodCard.add(hueLowerLabel,   new ChainGBC(0,1).setFill(false).setPadding(5));
-		hsbValueMethodCard.add(saturationUpperLabel, new ChainGBC(0,2).setFill(false).setPadding(5));
-		hsbValueMethodCard.add(saturationLowerLabel, new ChainGBC(0,3).setFill(false).setPadding(5));
+		hsbValueMethodCard.add(hueUpperLabel,         new ChainGBC(0,0).setFill(false).setPadding(5));
+		hsbValueMethodCard.add(hueLowerLabel,         new ChainGBC(0,1).setFill(false).setPadding(5));
+		hsbValueMethodCard.add(saturationUpperLabel,  new ChainGBC(0,2).setFill(false).setPadding(5));
+		hsbValueMethodCard.add(saturationLowerLabel,  new ChainGBC(0,3).setFill(false).setPadding(5));
 		hsbValueMethodCard.add(brightnessUpperLabel,  new ChainGBC(0,4).setFill(false).setPadding(5));
 		hsbValueMethodCard.add(brightnessLowerLabel,  new ChainGBC(0,5).setFill(false).setPadding(5));
 		
-		hsbValueMethodCard.add(hueUpperTolerance,   new ChainGBC(1,0).setFill(false, false).setPadding(5));
-		hsbValueMethodCard.add(hueLowerTolerance,   new ChainGBC(1,1).setFill(false, false).setPadding(5));
-		hsbValueMethodCard.add(saturationUpperTolerance, new ChainGBC(1,2).setFill(false, false).setPadding(5));
-		hsbValueMethodCard.add(saturationLowerTolerance, new ChainGBC(1,3).setFill(false, false).setPadding(5));
-		hsbValueMethodCard.add(brightnessUpperTolerance,  new ChainGBC(1,4).setFill(false, false).setPadding(5));
-		hsbValueMethodCard.add(brightnessLowerTolerance,  new ChainGBC(1,5).setFill(false, false).setPadding(5));
+		hsbValueMethodCard.add(hueUpperTolerance,         new ChainGBC(1,0).setFill(true, false).setPadding(5));
+		hsbValueMethodCard.add(hueLowerTolerance,         new ChainGBC(1,1).setFill(true, false).setPadding(5));
+		hsbValueMethodCard.add(saturationUpperTolerance,  new ChainGBC(1,2).setFill(true, false).setPadding(5));
+		hsbValueMethodCard.add(saturationLowerTolerance,  new ChainGBC(1,3).setFill(true, false).setPadding(5));
+		hsbValueMethodCard.add(brightnessUpperTolerance,  new ChainGBC(1,4).setFill(true, false).setPadding(5));
+		hsbValueMethodCard.add(brightnessLowerTolerance,  new ChainGBC(1,5).setFill(true, false).setPadding(5));
 		
 		hsbValueMethodCard.add(runFilter,  new ChainGBC(0,6).setFill(true, false).setPadding(10).setWidthAndHeight(2, 1));
 	}
@@ -351,6 +355,7 @@ public class GreenScreenTool extends ImageEditorTool {
 						
 				hsbValueLabel.setText("H=" + String.format("%.1f", hsbValues[0]*100) + ", S=" + String.format("%.1f", hsbValues[1]*100) 
 						+ ", B=" + String.format("%.1f", hsbValues[2]*100));
+			
 			}			
 		}
 	}
@@ -360,9 +365,16 @@ public class GreenScreenTool extends ImageEditorTool {
 	}
 
 	protected void onLayerSelectionChanged(LayerButton oldFrame, LayerButton newFrame) {
-		currentLayer = newFrame.getLayer();
+		if(newFrame == null)
+			currentLayer = null;
+		else		
+			currentLayer = newFrame.getLayer();
 	}
 
+	protected void updateCollapsedState(boolean collapsed) {
+		filterMethodsPanel.setVisible(!collapsed);
+	}
+	
 	private class DragRunnable implements Runnable {
 		
 		public void run() {		

@@ -5,13 +5,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import javax.imageio.ImageIO;
+
+import com.fishtankapps.pictoralfin.objectBinders.MediaFileType;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 
 public class FileUtils {
 
@@ -41,10 +48,9 @@ public class FileUtils {
 	}
 
 	public static void deleteFolder(File folder) {
-		if (folder.isDirectory()) {
+		if (folder.isDirectory())
 			for (File children : folder.listFiles())
-				deleteFolder(children);		
-		}
+				deleteFolder(children);
 		
 		folder.delete();
 	}
@@ -89,6 +95,129 @@ public class FileUtils {
 		
 		pictoralFinTempFolder = null;
 	}
+	
+	
+	public static MediaFileType getMediaFileType(File file) {
+		String[] brokenFileName = file.getName().split("\\.");
+		
+		if(brokenFileName.length <= 1)
+			return MediaFileType.NONE;
+		
+		String fileExtension = brokenFileName[brokenFileName.length - 1];	
+		
+		for(String imageFileExtension : getCompatibleImageFiles()) 
+			if(imageFileExtension.contains(fileExtension))
+				return MediaFileType.IMAGE;
+		
+		if(fileExtension.equalsIgnoreCase("pff"))
+			return MediaFileType.FRAME;
+		
+		try {
+			if(isVideoFile(file))
+				return MediaFileType.VIDEO;
+			
+		} catch (Exception e) {
+			e.printStackTrace();			
+			Utilities.showDoNotShowAgainDialog("There was an error exicuting FFprobe\nto probe for video streams.\nError Message:\n" + e.getMessage(), "Error Probing for Video Streams", true);
+			
+			return MediaFileType.NONE;
+		}
+		
+		
+		
+		try {			
+			if(isAudioFile(file))
+				return MediaFileType.AUDIO;
+			
+		} catch (Exception e) {
+			e.printStackTrace();			
+			Utilities.showDoNotShowAgainDialog("There was an error exicuting FFprobe\nto probe for audio streams.\nError Message:\n" + e.getMessage(), "Error Probing for Audio Streams", true);
+		}
+		
+		
+		
+		return MediaFileType.NONE;
+	}
+	
+	public static String[] getCompatibleImageFiles() {
+		String[] compatibleImages = ImageIO.getReaderFileSuffixes();
+
+		for (int index = 0; index < compatibleImages.length; index++)
+			compatibleImages[index] = "*." + compatibleImages[index];
+
+		return compatibleImages;
+
+	}
+	
+	public static boolean isVideoFile(File file) throws Exception {
+		String ffprobeCommand = VideoUtil.ffprobeExeicutable.getAbsolutePath() + " -show_streams -select_streams v -loglevel error \"" + file.getAbsolutePath() + "\"";
+		
+		Process ffprobeProcess = Runtime.getRuntime().exec(ffprobeCommand);
+		
+		BufferedReader inputReader = new BufferedReader(new InputStreamReader(ffprobeProcess.getInputStream()));
+		
+		ffprobeProcess.waitFor();
+		
+		int outputLineCount = 0;
+		
+		while(inputReader.readLine() != null)
+			outputLineCount++;
+		
+		return outputLineCount > Constants.MIN_NUMBER_OF_VIDEO_LINES;
+	}
+	
+	public static boolean isAudioFile(File file) throws Exception {
+		String ffprobeCommand = VideoUtil.ffprobeExeicutable.getAbsolutePath() + " -show_streams -select_streams a -loglevel error \"" + file.getAbsolutePath() + "\"";
+		
+		Process ffprobeProcess = Runtime.getRuntime().exec(ffprobeCommand);
+		
+		BufferedReader inputReader = new BufferedReader(new InputStreamReader(ffprobeProcess.getInputStream()));
+		
+		ffprobeProcess.waitFor();
+		
+		int outputLineCount = 0;
+		
+		while(inputReader.readLine() != null)
+			outputLineCount++;
+		
+		return outputLineCount > Constants.MIN_NUMBER_OF_VIDEO_LINES;
+	}
+
+	private static String[] compatibleAudioFormats = null;
+	public static String[] getCompatibleAudioFormats() {
+		if(compatibleAudioFormats == null) {
+			try {
+				ArrayList<String> returnArrayList = new ArrayList<>();
+				String ffmpegCommand = VideoUtil.ffmpegExeicutable.getPath() + " -hide_banner -formats";
+
+				Process p = Runtime.getRuntime().exec(ffmpegCommand);
+
+				BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+				String line = null;
+				while ((line = errorReader.readLine()) != null) {
+					if(line.length() > 5) {
+						String extension = line.substring(4);
+						extension = extension.substring(0, extension.indexOf(' '));
+						
+						if(extension.length() > 1) {
+							returnArrayList.add(extension);
+						}
+					}
+					
+				}
+				
+				compatibleAudioFormats = returnArrayList.toArray(new String[returnArrayList.size()]);
+				
+			} catch (Exception e) {
+				compatibleAudioFormats = null;
+			}
+		}		
+		
+
+		return compatibleAudioFormats;
+	}
+
 	
 	
 	public static void zipFolder(File folderLocation, String zipFilePath) {

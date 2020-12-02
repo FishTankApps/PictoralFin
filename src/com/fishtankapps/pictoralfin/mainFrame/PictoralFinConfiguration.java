@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 import com.fishtankapps.pictoralfin.jComponents.JPictoralFinConfigurationEditor;
 import com.fishtankapps.pictoralfin.objectBinders.DataFile;

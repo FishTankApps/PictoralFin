@@ -30,6 +30,13 @@ public class PictoralFinConfiguration implements Serializable{
 	private DataFile dataFile;
 	
 	private PictoralFinConfiguration() {
+		
+		String osName = System.getProperty("os.name");
+		System.out.println("OS: " + osName);
+		
+		
+		
+		
 		theme = Theme.OCEAN_THEME;
 		maxPictureSize = new Dimension(1280, 720);
 		messagesToNotShow = new ArrayList<>();

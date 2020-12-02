@@ -6,10 +6,8 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import com.fishtankapps.pictoralfin.utilities.AudioUtil;
-import com.fishtankapps.pictoralfin.utilities.Constants;
 import com.fishtankapps.pictoralfin.utilities.FileImporter;
 
 import javafx.embed.swing.JFXPanel;
@@ -39,32 +37,36 @@ public class Launcher {
 		
 		
 		System.out.println("-- Setting Look And Feel --");
-		String lookAndFeel = PictoralFinConfiguration.openConfiguration().getLookAndFeel();
 		
-
-		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
-			System.out.println("info: " + info);
+		UIManager.setLookAndFeel(PictoralFinConfiguration.openConfiguration().getLookAndFeel());
 		
-		if(lookAndFeel.equals(Constants.LOOK_AND_FEEL_NOT_CHOOSEN)) {
-			String osName = System.getProperty("os.name");
-			System.out.println("OS: " + osName);
-			
-			
-			if(osName.contains("Windows"))
-				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-			else if(osName.contains("Linux")) 
-				UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-			else if(osName.contains("OS X")) {
-				System.setProperty("apple.laf.useScreenMenuBar", "true");
-				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "WikiTeX");
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			}
-				
-			
 		
-		} else {
-			UIManager.setLookAndFeel(lookAndFeel);
-		}
+//		String lookAndFeel = PictoralFinConfiguration.openConfiguration().getLookAndFeel();
+//		
+//
+//		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+//			System.out.println("info: " + info);
+//		
+//		if(lookAndFeel.equals(Constants.LOOK_AND_FEEL_NOT_CHOOSEN)) {
+//			String osName = System.getProperty("os.name");
+//			System.out.println("OS: " + osName);
+//			
+//			
+//			if(osName.contains("Windows"))
+//				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+//			else if(osName.contains("Linux")) 
+//				UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+//			else if(osName.contains("OS X")) {
+//				System.setProperty("apple.laf.useScreenMenuBar", "true");
+//				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "WikiTeX");
+//				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//			}
+//				
+//			
+//		
+//		} else {
+//			UIManager.setLookAndFeel(lookAndFeel);
+//		}
 
 		@SuppressWarnings("unused")
 		JFXPanel usedToInitializeJFXTools = new JFXPanel();

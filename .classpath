@@ -6,6 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="jarFiles/jMTPe.jar"/>
+	<classpathentry kind="lib" path="jarFiles/jfxswt.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_221"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

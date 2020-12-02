@@ -31,9 +31,9 @@ public class OnMainFrameClosed implements WindowListener{
 		
 		FileUtils.deleteTempFolder();
 		
-		try {
-			pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().getJDriveExplorer().closeDevices();
-		} catch (NullPointerException e) {}
+//		try {
+//			pictoralFin.getVideoEditor().getVideoEditorSettingsPanel().getJDriveExplorer().closeDevices();
+//		} catch (NullPointerException e) {}
 	
 		System.exit(0);
 	}

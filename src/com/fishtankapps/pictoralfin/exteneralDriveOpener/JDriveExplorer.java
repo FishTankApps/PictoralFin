@@ -30,7 +30,7 @@ import jmtp.PortableDeviceObject;
 import jmtp.PortableDeviceStorageObject;
 import jmtp.PortableDeviceToHostImpl32;
 
-
+@Deprecated
 public class JDriveExplorer extends JPanel {
 
 	private static final long serialVersionUID = 151806570734071938L;

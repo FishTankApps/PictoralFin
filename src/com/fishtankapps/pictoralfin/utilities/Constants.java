@@ -11,6 +11,13 @@ public final class Constants {
 	
 	public static final String LOOK_AND_FEEL_NOT_CHOOSEN = "L&F Not Choosen";
 	
+	
+	public static final int OS_X = 0;
+	public static final int WINDOWS = 1;
+	public static final int LINUX = 2;
+	
+	public static final int OPERATING_SYSTEM = (System.getProperty("os.name").contains("Windows")) ? WINDOWS : ((System.getProperty("os.name").contains("Linux")) ? LINUX : OS_X);
+	
 	// ----------{ KEYBOARD SHORT CUTS }------------------------------------------------------------
 	public static final int CTRL = 2;
 	public static final int SHIFT = 1;
@@ -28,6 +35,7 @@ public final class Constants {
 	public static final int META_CTRL_ALT = 14;
 	public static final int META_CTRL_ALT_SHIFT = 15;
 	public static final int JUST_THE_KEY = 16;
+	
 	
 	public static final int IMAGE_TYPE = BufferedImage.TYPE_4BYTE_ABGR; // Used to set the type of all images in memory.
 }

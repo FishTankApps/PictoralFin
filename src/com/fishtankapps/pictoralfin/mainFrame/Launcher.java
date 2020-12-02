@@ -35,36 +35,29 @@ public class Launcher {
 		}
 	}
 	
-	public static void setUpUIStuff() throws Exception {
-		
+	public static void setUpUIStuff() throws Exception {		
 		
 		System.out.println("-- Setting Look And Feel --");
-		
-		UIManager.setLookAndFeel(PictoralFinConfiguration.openConfiguration().getLookAndFeel());
 		
 		
 		String lookAndFeel = PictoralFinConfiguration.openConfiguration().getLookAndFeel();
 		
-
+		String osName = System.getProperty("os.name");
+		System.out.println("OS: " + osName);
 		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
 			System.out.println("info: " + info);
 		
-		if(lookAndFeel.equals(Constants.LOOK_AND_FEEL_NOT_CHOOSEN)) {
-			String osName = System.getProperty("os.name");
-			System.out.println("OS: " + osName);
+		if(lookAndFeel.equals(Constants.LOOK_AND_FEEL_NOT_CHOOSEN)) {		
 			
-			
-			if(osName.contains("Windows"))
+			if(Constants.OPERATING_SYSTEM == Constants.WINDOWS)
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-			else if(osName.contains("Linux")) 
+			else if(Constants.OPERATING_SYSTEM == Constants.LINUX) 
 				UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-			else if(osName.contains("OS X")) {
+			else if(Constants.OPERATING_SYSTEM == Constants.OS_X) {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "WikiTeX");
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			}
-				
-			
+			}			
 		
 		} else {
 			UIManager.setLookAndFeel(lookAndFeel);

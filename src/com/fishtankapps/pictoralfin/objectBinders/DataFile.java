@@ -2,6 +2,8 @@ package com.fishtankapps.pictoralfin.objectBinders;
 
 import java.io.Serializable;
 
+import com.fishtankapps.pictoralfin.utilities.Constants;
+
 public class DataFile implements Serializable {
 
 	private static final long serialVersionUID = -8264931171924899681L;
@@ -12,17 +14,22 @@ public class DataFile implements Serializable {
 	private String lastOpenProjectLocation;
 	
 	public DataFile() {
-		lastOpenPictureLocation = "C:/Users/" + System.getProperty("user.name") + "/Pictures/null.jpg";
-		lastOpenAudioLocation = "C:/Users/" + System.getProperty("user.name") + "/Music/null.mp3";
-		lastOpenVideoLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.mp4";		
-		lastOpenProjectLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.pfp";		
+		resetDataFile();
 	}
 	
 	public void resetDataFile() {
-		lastOpenPictureLocation = "C:/Users/" + System.getProperty("user.name") + "/Pictures/null.jpg";
-		lastOpenAudioLocation = "C:/Users/" + System.getProperty("user.name") + "/Music/null.mp3";
-		lastOpenVideoLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.mp4";		
-		lastOpenProjectLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.pfp";	
+		
+		if(Constants.OPERATING_SYSTEM == Constants.WINDOWS) {
+			lastOpenPictureLocation = "C:/Users/" + System.getProperty("user.name") + "/Pictures/null.jpg";
+			lastOpenAudioLocation = "C:/Users/" + System.getProperty("user.name") + "/Music/null.mp3";
+			lastOpenVideoLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.mp4";		
+			lastOpenProjectLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.pfp";	
+		} else if (Constants.OPERATING_SYSTEM == Constants.LINUX) {
+			lastOpenPictureLocation = "/home/" + System.getProperty("user.name") + "/Pictures/null.jpg";
+			lastOpenAudioLocation = "/home/" + System.getProperty("user.name") + "/Music/null.mp3";
+			lastOpenVideoLocation = "/home/" + System.getProperty("user.name") + "/Videos/null.mp4";		
+			lastOpenProjectLocation = "/home/" + System.getProperty("user.name") + "/Videos/null.pfp";	
+		}
 	}
 	
 	public String getLastOpenedPictureLocation() {

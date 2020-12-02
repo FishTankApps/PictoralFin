@@ -7,6 +7,7 @@ import com.fishtankapps.pictoralfin.customExceptions.FeatureNotSupportedExceptio
 import jmtp.PortableDevice;
 import jmtp.PortableDeviceManager;
 
+@Deprecated
 public class ExternalDriveManager {	
 	private ArrayList<PortableDevice> devices;
 	

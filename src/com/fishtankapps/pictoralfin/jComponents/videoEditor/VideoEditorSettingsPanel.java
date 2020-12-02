@@ -13,8 +13,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
-import com.fishtankapps.pictoralfin.customExceptions.FeatureNotSupportedException;
-import com.fishtankapps.pictoralfin.exteneralDriveOpener.JDriveExplorer;
 import com.fishtankapps.pictoralfin.globalToolKits.GlobalImageKit;
 import com.fishtankapps.pictoralfin.interfaces.SettingsPanel;
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
@@ -26,7 +24,7 @@ public class VideoEditorSettingsPanel extends JPanel {
 
 	private JLabel nothingToEdit;
 	
-	private JDriveExplorer driveExplorer;
+	//private JDriveExplorer driveExplorer;
 	private FileImportPanel fileImportPanel;
 	private JTabbedPane tabbedPane;
 	private JTextArea notes;
@@ -81,18 +79,18 @@ public class VideoEditorSettingsPanel extends JPanel {
 		};		
 		settingsPanel.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
-		try {
-			driveExplorer = new JDriveExplorer(pictoralFin.getConfiguration().getTheme());
-			importPanel.add(driveExplorer, BorderLayout.SOUTH);
-		} catch (FeatureNotSupportedException e) {
-			pictoralFin.flags.add("Auto Import Not Supported$The Auto Import (External Drive) feature is not supported.\nIt must be run on 32-bit JVM.");
-			
-			JLabel driveExplorerNotAvilable = new JLabel("Auto Import is not supported on your JVM.", JLabel.CENTER);
-			driveExplorerNotAvilable.setFont(new Font(pictoralFin.getConfiguration().getTheme().getPrimaryFont(), Font.BOLD, 25));
-			driveExplorerNotAvilable.setForeground(pictoralFin.getConfiguration().getTheme().getPrimaryHighlightColor());
-			
-			importPanel.add(driveExplorerNotAvilable, BorderLayout.SOUTH);
-		}
+//		try {
+//			driveExplorer = new JDriveExplorer(pictoralFin.getConfiguration().getTheme());
+//			importPanel.add(driveExplorer, BorderLayout.SOUTH);
+//		} catch (FeatureNotSupportedException e) {
+//			pictoralFin.flags.add("Auto Import Not Supported$The Auto Import (External Drive) feature is not supported.\nIt must be run on 32-bit JVM.");
+//			
+//			JLabel driveExplorerNotAvilable = new JLabel("Auto Import is not supported on your JVM.", JLabel.CENTER);
+//			driveExplorerNotAvilable.setFont(new Font(pictoralFin.getConfiguration().getTheme().getPrimaryFont(), Font.BOLD, 25));
+//			driveExplorerNotAvilable.setForeground(pictoralFin.getConfiguration().getTheme().getPrimaryHighlightColor());
+//			
+//			importPanel.add(driveExplorerNotAvilable, BorderLayout.SOUTH);
+//		}
 		
 		notes = new JTextArea();
 		notes.setToolTipText("Type any notes you want to keep with your project here! (To-dos, general notes, scenes, etc.)");
@@ -116,9 +114,9 @@ public class VideoEditorSettingsPanel extends JPanel {
 		settingsPanel.add(nothingToEdit);
 	}
 	
-	public JDriveExplorer getJDriveExplorer() {
-		return driveExplorer;
-	}
+//	public JDriveExplorer getJDriveExplorer() {
+//		return driveExplorer;
+//	}
 	
 	public void attachSettingsPanel(SettingsPanel panel) {
 		

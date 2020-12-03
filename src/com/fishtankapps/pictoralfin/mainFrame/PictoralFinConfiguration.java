@@ -102,7 +102,7 @@ public class PictoralFinConfiguration implements Serializable{
 	public static PictoralFinConfiguration openConfiguration() {
 		PictoralFinConfiguration settings;
 		try {
-			ObjectInputStream fileInput = new ObjectInputStream(new FileInputStream(new File("resources\\pictoralFinConfig.cfg")));			settings = (PictoralFinConfiguration) fileInput.readObject();
+			ObjectInputStream fileInput = new ObjectInputStream(new FileInputStream(new File("resources/pictoralFinConfig.cfg")));			settings = (PictoralFinConfiguration) fileInput.readObject();
 			
 			fileInput.close();
 		} catch (Exception e) {
@@ -115,7 +115,7 @@ public class PictoralFinConfiguration implements Serializable{
 	}
 	public void saveConfiguration() {
 		try {
-			File outputFile = new File("resources\\pictoralFinConfig.cfg");
+			File outputFile = new File("resources/pictoralFinConfig.cfg");
 			
 			if(!outputFile.exists())
 				outputFile.createNewFile();

@@ -73,7 +73,7 @@ public class ImageEditorToolKitPanel extends JPanel implements Scrollable  {
 //		String name = "";
 //		
 //		try {
-//			File imageEditorFolder = new File("src\\com\\fishtankapps\\pictoralfin\\jComponents\\pictureEditor\\imageEditorTools");
+//			File imageEditorFolder = new File("src/com/fishtankapps/pictoralfin/jComponents/pictureEditor/imageEditorTools");
 //			
 //			for(File imageEditorFile : imageEditorFolder.listFiles()) {
 //				name = imageEditorFile.getName().substring(0, imageEditorFile.getName().indexOf('.'));

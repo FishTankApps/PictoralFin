@@ -54,7 +54,7 @@ public class PictoralFinProjectManager {
 								"Incorrect Extension", JOptionPane.INFORMATION_MESSAGE, JOptionPane.YES_NO_OPTION);
 						
 						if(choice == JOptionPane.OK_OPTION)
-							staticFilePath = new File(staticFilePath).getParent() + "\\" + splitName[0] + ".pfp";
+							staticFilePath = new File(staticFilePath).getParent() + "/" + splitName[0] + ".pfp";
 					}
 				}
 				

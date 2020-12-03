@@ -86,7 +86,7 @@ public class VideoUtil {
 		progressDialog.moveForward(10);
 		
 		StatusLogger.logPrimaryStatus("Exporting Frames - 0%");
-		FileUtils.deleteFolder(new File(FileUtils.pictoralFinTempFolder + "\\VideoFrames"));
+		FileUtils.deleteFolder(new File(FileUtils.pictoralFinTempFolder + "/VideoFrames"));
 		
 		File imageFile;
 		int imageIndex = 1;
@@ -123,7 +123,7 @@ public class VideoUtil {
 		StatusLogger.logPrimaryStatus("Executing FFmpeg - 0%");
 		try {
 			String ffmpegCommand = ffmpegExeicutable.getPath() + " -r " + framesPerSecond + "/1000 -i \"" + FileUtils.pictoralFinTempFolder.getAbsolutePath() 
-							+ "\\VideoFrames\\Frame-%0\"" + neededNumberOfDigits + "d.bmp ";
+							+ "/VideoFrames/Frame-%0\"" + neededNumberOfDigits + "d.bmp ";
 			
 			if(audioFile != null)
 				ffmpegCommand += " -i \"" + audioFile.getAbsolutePath() + "\" ";
@@ -223,7 +223,7 @@ public class VideoUtil {
 			int frameCount = getVideoFrameCount(videoPath);
 			
 			StatusLogger.logSecondaryStatus("Extracting Frames... (0/" + frameCount +")");
-			File outputFolder = new File(FileUtils.pictoralFinTempFolder.getAbsolutePath() + "\\VideoToPictures");
+			File outputFolder = new File(FileUtils.pictoralFinTempFolder.getAbsolutePath() + "/VideoToPictures");
 			
 			if(outputFolder.exists()) {
 				for(File f : outputFolder.listFiles())
@@ -233,7 +233,7 @@ public class VideoUtil {
 			}
 			
 			String ffmpegCommand = ffmpegExeicutable.getPath() + " -i \"" + videoPath 
-					+ "\" -y \"" + outputFolder + "\\frame-%05d.bmp\"";
+					+ "\" -y \"" + outputFolder + "/frame-%05d.bmp\"";
 			
 			Process p = Runtime.getRuntime().exec(ffmpegCommand);
 			

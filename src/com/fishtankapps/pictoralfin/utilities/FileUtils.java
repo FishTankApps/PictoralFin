@@ -61,14 +61,14 @@ public class FileUtils {
 		try {
 			if(pictoralFinTempFolder == null) {			
 				File locator = File.createTempFile("LocatorFile", "locator");				
-				pictoralFinTempFolder = new File(locator.getParent() + "\\PictoralFinTemp");
+				pictoralFinTempFolder = new File(locator.getParent() + "/PictoralFinTemp");
 				pictoralFinTempFolder.mkdirs();
 				
 				pictoralFinTempFolder.deleteOnExit();
 				locator.delete();
 			}
 			
-			File parentFolder = new File(pictoralFinTempFolder.getPath() + "\\" + folder);
+			File parentFolder = new File(pictoralFinTempFolder.getPath() + "/" + folder);
 			parentFolder.mkdirs();
 			
 			File temp;
@@ -76,7 +76,7 @@ public class FileUtils {
 				temp = File.createTempFile(name, suffix, parentFolder);
 				temp.deleteOnExit();
 			} else {
-				temp = new File(parentFolder.getPath() + "\\" + name + suffix);
+				temp = new File(parentFolder.getPath() + "/" + name + suffix);
 				temp.createNewFile();
 				temp.deleteOnExit();
 			}

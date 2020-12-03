@@ -19,12 +19,12 @@ public class DataFile implements Serializable {
 	
 	public void resetDataFile() {
 		
-		if(Constants.OPERATING_SYSTEM == Constants.WINDOWS) {
+		if(Constants.OPERATING_SYSTEM == Constants.OperatingSystem.WINDOWS) {
 			lastOpenPictureLocation = "C:/Users/" + System.getProperty("user.name") + "/Pictures/null.jpg";
 			lastOpenAudioLocation = "C:/Users/" + System.getProperty("user.name") + "/Music/null.mp3";
 			lastOpenVideoLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.mp4";		
 			lastOpenProjectLocation = "C:/Users/" + System.getProperty("user.name") + "/Videos/null.pfp";	
-		} else if (Constants.OPERATING_SYSTEM == Constants.LINUX) {
+		} else if (Constants.OPERATING_SYSTEM == Constants.OperatingSystem.LINUX) {
 			lastOpenPictureLocation = "/home/" + System.getProperty("user.name") + "/Pictures/null.jpg";
 			lastOpenAudioLocation = "/home/" + System.getProperty("user.name") + "/Music/null.mp3";
 			lastOpenVideoLocation = "/home/" + System.getProperty("user.name") + "/Videos/null.mp4";		

@@ -5,18 +5,17 @@ import java.awt.image.BufferedImage;
 public final class Constants {
 	private Constants() {}
 	
+	public enum OperatingSystem {
+		OS_X, WINDOWS, LINUX
+	}
+	
 	public static final boolean DEBUG = true; // Used Globally
 	
 	public static final int MIN_NUMBER_OF_VIDEO_LINES = 2; // Used in Detecting if a file is video or audio
 	
 	public static final String LOOK_AND_FEEL_NOT_CHOOSEN = "L&F Not Choosen";
 	
-	
-	public static final int OS_X = 0;
-	public static final int WINDOWS = 1;
-	public static final int LINUX = 2;
-	
-	public static final int OPERATING_SYSTEM = (System.getProperty("os.name").contains("Windows")) ? WINDOWS : ((System.getProperty("os.name").contains("Linux")) ? LINUX : OS_X);
+	public static final OperatingSystem OPERATING_SYSTEM = (System.getProperty("os.name").contains("Windows")) ? OperatingSystem.WINDOWS : ((System.getProperty("os.name").contains("Linux")) ? OperatingSystem.LINUX : OperatingSystem.OS_X);
 	
 	// ----------{ KEYBOARD SHORT CUTS }------------------------------------------------------------
 	public static final int CTRL = 2;

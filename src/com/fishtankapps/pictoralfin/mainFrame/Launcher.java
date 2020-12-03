@@ -43,17 +43,17 @@ public class Launcher {
 		String lookAndFeel = PictoralFinConfiguration.openConfiguration().getLookAndFeel();
 		
 		String osName = System.getProperty("os.name");
-		System.out.println("OS: " + osName);
+		System.out.println("OS Name: " + osName + ", Constants.OPERATING_SYSTEM: " + Constants.OPERATING_SYSTEM );
 		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
-			System.out.println("info: " + info);
+			System.out.println("Look And Feel: " + info);
 		
 		if(lookAndFeel.equals(Constants.LOOK_AND_FEEL_NOT_CHOOSEN)) {		
 			
-			if(Constants.OPERATING_SYSTEM == Constants.WINDOWS)
+			if(Constants.OPERATING_SYSTEM == Constants.OperatingSystem.WINDOWS)
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-			else if(Constants.OPERATING_SYSTEM == Constants.LINUX) 
+			else if(Constants.OPERATING_SYSTEM == Constants.OperatingSystem.LINUX) 
 				UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-			else if(Constants.OPERATING_SYSTEM == Constants.OS_X) {
+			else if(Constants.OPERATING_SYSTEM == Constants.OperatingSystem.OS_X) {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "WikiTeX");
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

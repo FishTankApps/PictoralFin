@@ -35,7 +35,7 @@ public class Launcher {
 		}
 	}
 	
-	public static void setUpUIStuff() throws Exception {		
+	public static void setUpUIStuff() throws Exception {	
 		
 		System.out.println("-- Setting Look And Feel --");
 		

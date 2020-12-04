@@ -31,6 +31,7 @@ import javax.swing.SwingUtilities;
 import com.fishtankapps.pictoralfin.globalToolKits.GlobalImageKit;
 import com.fishtankapps.pictoralfin.globalToolKits.GlobalListenerToolKit;
 import com.fishtankapps.pictoralfin.interfaces.Closeable;
+import com.fishtankapps.pictoralfin.jComponents.JProgressDialog;
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageEditor;
 import com.fishtankapps.pictoralfin.jComponents.pictureEditor.ImageTopBar;
 import com.fishtankapps.pictoralfin.jComponents.videoEditor.VideoEditor;
@@ -43,6 +44,7 @@ import com.fishtankapps.pictoralfin.projectFileManagement.PictoralFinProjectMana
 import com.fishtankapps.pictoralfin.utilities.AudioImporter;
 import com.fishtankapps.pictoralfin.utilities.BufferedImageUtil;
 import com.fishtankapps.pictoralfin.utilities.ChainGBC;
+import com.fishtankapps.pictoralfin.utilities.JokeFactory;
 import com.fishtankapps.pictoralfin.utilities.PictureImporter;
 import com.fishtankapps.pictoralfin.utilities.Utilities;
 import com.fishtankapps.pictoralfin.utilities.VideoImporter;
@@ -59,7 +61,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
 	private ImageEditor imageEditor;
-	private PictoralFinConfiguration preferences;
+	private PictoralFinConfiguration configuration;
 	public File openProject = null;
 
 	private JPanel mainPanel;
@@ -76,11 +78,14 @@ public class PictoralFin extends JFrame implements Closeable {
 	
 	public PictoralFin() {
 		flags = new ArrayList<>();
-		preferences = PictoralFinConfiguration.openConfiguration();
+		configuration = PictoralFinConfiguration.openConfiguration();
 		StatusLogger.logger = new StatusLogger(this);
+		JProgressDialog.configuration = configuration;
 		//FrameManager.frameManager = new FrameManager(this);
 		
 		GlobalListenerToolKit.initialize(this);
+		JokeFactory.initialize(this);
+		
 		try {
 			GlobalImageKit.initialize();
 		} catch (IOException e) {
@@ -114,11 +119,11 @@ public class PictoralFin extends JFrame implements Closeable {
 		for(String flag : flags) {
 			String[] parts = flag.split("\\$");
 			
-			if(!preferences.getMessagesToNotShow().contains(parts[0])) {
+			if(!configuration.getMessagesToNotShow().contains(parts[0])) {
 				boolean dontShowAgain = Utilities.showDoNotShowAgainDialog(parts[1], parts[0], false);
 				
 				if(dontShowAgain)
-					preferences.addMessageToNotShow(parts[0]);
+					configuration.addMessageToNotShow(parts[0]);
 			}
 		}
 		flags.clear();
@@ -149,7 +154,7 @@ public class PictoralFin extends JFrame implements Closeable {
 	private JPanel createMainPanel() {
 		JPanel mainPanel;
 		mainPanel = new JPanel(new GridBagLayout());
-		mainPanel.setBackground(preferences.getTheme().getSecondaryBaseColor());
+		mainPanel.setBackground(configuration.getTheme().getSecondaryBaseColor());
 		timeLine = new JTimeLine(this);			
 
 		verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -160,11 +165,11 @@ public class PictoralFin extends JFrame implements Closeable {
 		verticalSplitPane.setBottomComponent(timeLine);
 
 		verticalSplitPane.setOneTouchExpandable(false);
-		verticalSplitPane.setBackground(preferences.getTheme().getSecondaryBaseColor());
+		verticalSplitPane.setBackground(configuration.getTheme().getSecondaryBaseColor());
 		verticalSplitPane.setForeground(Color.RED);
 		
 		memoryLabel = new JLabel("Loading...");
-		memoryLabel.setFont(new Font(preferences.getTheme().getPrimaryFont(), Font.BOLD, 11));
+		memoryLabel.setFont(new Font(configuration.getTheme().getPrimaryFont(), Font.BOLD, 11));
 		
 		memoryUsageBar = new JProgressBar();
 		memoryUsageBar.setMinimumSize(new Dimension(500, 10));
@@ -188,10 +193,10 @@ public class PictoralFin extends JFrame implements Closeable {
 	private JTabbedPane createTabbedPane() {
 
 		tabbedPane = new JTabbedPane();
-		tabbedPane.setFont(new Font(preferences.getTheme().getTitleFont(), Font.PLAIN, 20));
-		tabbedPane.setBackground(preferences.getTheme().getPrimaryBaseColor());
+		tabbedPane.setFont(new Font(configuration.getTheme().getTitleFont(), Font.PLAIN, 20));
+		tabbedPane.setBackground(configuration.getTheme().getPrimaryBaseColor());
 
-		videoEditor = new VideoEditor(preferences.getTheme(), this);
+		videoEditor = new VideoEditor(configuration.getTheme(), this);
 		imageEditor = new ImageEditor(this);
 		
 		ImageIcon kineticIcon = null, staticIcon = null, audioIcon = null;
@@ -238,7 +243,7 @@ public class PictoralFin extends JFrame implements Closeable {
 		return new VideoImporter(this);
 	}
 	public PictoralFinConfiguration getConfiguration() {
-		return preferences;
+		return configuration;
 	}
 		
 	private String primaryStatus = "", secondaryStatus = "";

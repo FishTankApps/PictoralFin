@@ -8,6 +8,8 @@ import javax.swing.JProgressBar;
 
 import com.fishtankapps.pictoralfin.customExceptions.CanceledException;
 import com.fishtankapps.pictoralfin.globalToolKits.GlobalImageKit;
+import com.fishtankapps.pictoralfin.mainFrame.PictoralFinConfiguration;
+import com.fishtankapps.pictoralfin.utilities.JokeFactory;
 
 public class JProgressDialog {
 
@@ -20,6 +22,8 @@ public class JProgressDialog {
 	private JProgressBar jProgressBar;
 	private String title;
 	
+	public static PictoralFinConfiguration configuration; 
+	
 	public JProgressDialog(String title, String message, int completedValue) {
 		this.completedValue = completedValue;
 		this.title = title;
@@ -27,7 +31,8 @@ public class JProgressDialog {
 		JOptionPane pane = new JOptionPane("", JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_OPTION, null,
 				new Object[] {"Cancel"});
 		
-		pane.setMessage(message.replace(PERCENT, "0%").replace(VALUE, "0").replace(VALUE_IN_PARENTHESES, "(0/" + completedValue+")"));
+		pane.setMessage(message.replace(PERCENT, "0%").replace(VALUE, "0").replace(VALUE_IN_PARENTHESES, 
+				"(0/" + completedValue+")") + ((configuration.getShowJokeOnProgressDialog()) ? "\n" + JokeFactory.getJoke() : ""));
 		jProgressBar = new JProgressBar(0, completedValue);
 		jProgressBar.setValue(0);
 		pane.add(jProgressBar, 1);

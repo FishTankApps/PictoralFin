@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -15,6 +16,7 @@ import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -256,6 +258,7 @@ public class JPictoralFinConfigurationEditor extends JFrame{
 		generalPanel = new JPanel(new GridBagLayout());
 		generalPanel.setBorder(BorderFactory.createTitledBorder("General"));
 		
+		
 
 		JPanel fontPreviewPanel = new JPanel(new GridBagLayout());
 		fontPreviewPanel.setBorder(BorderFactory.createTitledBorder("Font Preview Text"));
@@ -278,8 +281,38 @@ public class JPictoralFinConfigurationEditor extends JFrame{
 		fontPreviewPanel.add(fontPreviewEditor,      new ChainGBC(1,0).setPadding(10, 10, 10, 10).setFill(true,  false));
 		
 		
+		
+		JPanel showJokePanel = new JPanel(new GridBagLayout());
+		showJokePanel.setBorder(BorderFactory.createTitledBorder("Show Jokes"));
+		
+		JLabel jokeLabel = new JLabel("Show jokes on...", JLabel.LEFT);
+		JLabel submitAJokeLineOne = new JLabel("Got a favorite (clean) joke you love to tell?", JLabel.CENTER);
+		JLabel submitAJokeLineTwo = new JLabel("Share it with us at fishtankapps@gmail.com!", JLabel.CENTER);
+		JCheckBox onStartUp = new JCheckBox("Start Up", configuration.getShowJokeOnStartUp());
+		JCheckBox onDialogs = new JCheckBox("Progress Dialogs", configuration.getShowJokeOnProgressDialog());
+		
+		
+		submitAJokeLineTwo.setToolTipText("Jokes will be evaluated, and if choosen, will be added into the next release of PictoralFin!");
+		submitAJokeLineOne.setToolTipText("Jokes will be evaluated, and if choosen, will be added into the next release of PictoralFin!");
+		
+		ActionListener jokeCheckboxListener = e -> {
+			configuration.setShowJoke(onStartUp.isSelected(), onDialogs.isSelected());
+		};
+		
+		onStartUp.addActionListener(jokeCheckboxListener);
+		onDialogs.addActionListener(jokeCheckboxListener);
+		
+		showJokePanel.add(jokeLabel,   new ChainGBC(0,0).setFill(true, false).setWidthAndHeight(2, 1));
+		showJokePanel.add(onStartUp,   new ChainGBC(0,1).setFill(true, false));
+		showJokePanel.add(onDialogs,   new ChainGBC(1,1).setFill(true, false));		
+		showJokePanel.add(submitAJokeLineOne, new ChainGBC(0,2).setFill(true, false).setWidthAndHeight(2, 1).setPadding(10, 10, 25, 0));
+		showJokePanel.add(submitAJokeLineTwo, new ChainGBC(0,3).setFill(true, false).setWidthAndHeight(2, 1));
+		
+		
+		
 		generalPanel.add(fontPreviewPanel, new ChainGBC(0,0).setPadding(10, 10, 50, 10).setFill(true, false));
-		generalPanel.add(Box.createGlue(), new ChainGBC(0,1).setPadding(10, 10, 10, 10).setFill(true, true));
+		generalPanel.add(showJokePanel,    new ChainGBC(0,1).setPadding(10, 10, 10, 10).setFill(true, false));
+		generalPanel.add(Box.createGlue(), new ChainGBC(0,2).setPadding(10, 10, 10, 10).setFill(true, true));
 	}
 	
 	private void updatePreferencesPanel(Object source) {

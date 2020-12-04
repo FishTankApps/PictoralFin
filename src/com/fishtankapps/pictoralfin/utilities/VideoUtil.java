@@ -24,8 +24,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class VideoUtil {
 	// EXPORTING VIDEO:
 
-	public static File ffmpegExeicutable = new File("resources/ffmpeg.exe");
-	public static File ffprobeExeicutable = new File("resources/ffprobe.exe");
+	public static File ffmpegExeicutable = null;
+	public static File ffprobeExeicutable = null;
 	
 	private static File outputFile = null;
 

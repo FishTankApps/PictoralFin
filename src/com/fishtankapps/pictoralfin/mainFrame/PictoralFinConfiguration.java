@@ -26,6 +26,7 @@ public class PictoralFinConfiguration implements Serializable{
 	private ArrayList<String> messagesToNotShow;
 	private String lookAndFeel, fontPreviewString;
 	private int audioSampleRate;
+	private int showJokes; // 0 = Never, 1 = StartUp, 2 = ProgressDialog, 3 = Both
 	
 	private DataFile dataFile;
 	
@@ -37,6 +38,7 @@ public class PictoralFinConfiguration implements Serializable{
 		audioSampleRate = 48000;
 		fontPreviewString = "Font Sample";
 		dataFile = new DataFile();
+		showJokes = 1;
 	}
 
 	public final Theme getTheme() {
@@ -92,6 +94,17 @@ public class PictoralFinConfiguration implements Serializable{
 		this.fontPreviewString = fontPreviewString;
 	}
 
+	public boolean getShowJokeOnStartUp() {
+		return showJokes == 1 || showJokes == 3;
+	}
+	public boolean getShowJokeOnProgressDialog() {
+		return showJokes == 2 || showJokes == 3;
+	}
+	public void setShowJoke(boolean startUp, boolean progress) {
+		showJokes = (startUp) ? 1 : 0;
+		showJokes += (progress) ? 2 : 0;
+	}
+	
 	public DataFile getDataFile() {
 		return dataFile;
 	}
@@ -134,6 +147,7 @@ public class PictoralFinConfiguration implements Serializable{
 		PictoralFinConfiguration copy = new PictoralFinConfiguration();
 		
 		copy.theme = theme;
+		copy.showJokes = showJokes;
 		copy.lookAndFeel = lookAndFeel;
 		copy.maxPictureSize = maxPictureSize;
 		copy.audioSampleRate = audioSampleRate;				
@@ -144,6 +158,7 @@ public class PictoralFinConfiguration implements Serializable{
 	}	
 	public void applyConfiguration(PictoralFinConfiguration configuration) {		
 		theme = configuration.theme;
+		showJokes = configuration.showJokes;
 		lookAndFeel = configuration.lookAndFeel;	
 		maxPictureSize = configuration.maxPictureSize;
 		audioSampleRate = configuration.audioSampleRate;

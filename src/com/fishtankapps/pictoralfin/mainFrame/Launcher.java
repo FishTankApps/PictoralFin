@@ -4,13 +4,16 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
+import com.fishtankapps.pictoralfin.globalToolKits.GlobalImageKit;
 import com.fishtankapps.pictoralfin.utilities.AudioUtil;
 import com.fishtankapps.pictoralfin.utilities.Constants;
 import com.fishtankapps.pictoralfin.utilities.FileImporter;
+import com.fishtankapps.pictoralfin.utilities.JokeFactory;
+import com.fishtankapps.pictoralfin.utilities.VideoUtil;
 
 import javafx.embed.swing.JFXPanel;
 
@@ -23,10 +26,12 @@ public class Launcher {
 			
 			setUpPictoralFin(filePaths);
 			
-			loadFonts();
+			setUpFFmpegPaths();
+			
+			loadFonts();			
+			
 			System.out.println("-- Launch Complete --");
 			StatusLogger.logPrimaryStatus("Launch Complete!");
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null,
@@ -44,8 +49,10 @@ public class Launcher {
 		
 		String osName = System.getProperty("os.name");
 		System.out.println("OS Name: " + osName + ", Constants.OPERATING_SYSTEM: " + Constants.OPERATING_SYSTEM );
-		for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
-			System.out.println("Look And Feel: " + info);
+		
+		
+		//for(LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+		//	System.out.println("Look And Feel: " + info);
 		
 		if(lookAndFeel.equals(Constants.LOOK_AND_FEEL_NOT_CHOOSEN)) {		
 			
@@ -67,7 +74,7 @@ public class Launcher {
 		JFXPanel usedToInitializeJFXTools = new JFXPanel();
 	}
 	
-	public static PictoralFin setUpPictoralFin(String[] filePaths) {
+	public static void setUpPictoralFin(String[] filePaths) {
 		System.out.println("-- Setting Up PictoralFin --");
 		PictoralFin pictoralFin = new PictoralFin();
 		
@@ -91,7 +98,27 @@ public class Launcher {
 			}
 		}
 		
-		return pictoralFin;
+		
+		
+		if(pictoralFin.getConfiguration().getShowJokeOnStartUp()) {
+			new Thread(()->{
+				final ImageIcon icon = new ImageIcon(GlobalImageKit.readImage("laughing.png"));
+				JOptionPane.showMessageDialog(null, JokeFactory.getJoke(), "Joke", JOptionPane.INFORMATION_MESSAGE, icon);
+			}).start();
+		}
+	}
+	
+	public static void setUpFFmpegPaths() {
+		if(Constants.OPERATING_SYSTEM == Constants.OperatingSystem.WINDOWS) {
+			VideoUtil.ffmpegExeicutable = new File("resources/FFmpeg/ffmpeg-Windows.exe");
+			VideoUtil.ffprobeExeicutable = new File("resources/FFmpeg/ffprobe-Windows.exe");
+		} else if (Constants.OPERATING_SYSTEM == Constants.OperatingSystem.LINUX) {
+			VideoUtil.ffmpegExeicutable = new File("resources/FFmpeg/ffmpeg-Deb-Linux");
+			VideoUtil.ffprobeExeicutable = new File("resources/FFmpeg/ffprobe-Deb-Linux");
+		}  else if (Constants.OPERATING_SYSTEM == Constants.OperatingSystem.OS_X) {
+			VideoUtil.ffmpegExeicutable = new File("resources/FFmpeg/ffmpeg-OS-X");
+			VideoUtil.ffprobeExeicutable = new File("resources/FFmpeg/ffprobe-OS-X");
+		}
 	}
 	
 	public static void loadFonts() {

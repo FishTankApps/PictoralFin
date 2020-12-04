@@ -13,6 +13,8 @@ public class DataFile implements Serializable {
 	private String lastOpenVideoLocation;
 	private String lastOpenProjectLocation;
 	
+	private int jokeIndex;
+	
 	public DataFile() {
 		resetDataFile();
 	}
@@ -29,7 +31,14 @@ public class DataFile implements Serializable {
 			lastOpenAudioLocation = "/home/" + System.getProperty("user.name") + "/Music/null.mp3";
 			lastOpenVideoLocation = "/home/" + System.getProperty("user.name") + "/Videos/null.mp4";		
 			lastOpenProjectLocation = "/home/" + System.getProperty("user.name") + "/Videos/null.pfp";	
+		} else if (Constants.OPERATING_SYSTEM == Constants.OperatingSystem.OS_X) {
+			lastOpenPictureLocation = "/home/" + System.getProperty("user.name") + "/Pictures/null.jpg";
+			lastOpenAudioLocation = "/home/" + System.getProperty("user.name") + "/Music/null.mp3";
+			lastOpenVideoLocation = "/home/" + System.getProperty("user.name") + "/Videos/null.mp4";		
+			lastOpenProjectLocation = "/home/" + System.getProperty("user.name") + "/Videos/null.pfp";	
 		}
+		
+		jokeIndex = -1;
 	}
 	
 	public String getLastOpenedPictureLocation() {
@@ -58,5 +67,12 @@ public class DataFile implements Serializable {
 	}
 	public void setLastOpenProjectLocation(String lastOpenProjectLocation) {
 		this.lastOpenProjectLocation = lastOpenProjectLocation;
+	}
+
+	public int getJokeIndex() {
+		return jokeIndex;
+	}
+	public void setJokeIndex(int jokeIndex) {
+		this.jokeIndex = jokeIndex;
 	}
 }

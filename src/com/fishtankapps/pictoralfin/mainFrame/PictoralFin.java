@@ -57,8 +57,6 @@ public class PictoralFin extends JFrame implements Closeable {
 		STATIC, KINETIC, WAVE;
 	}
 	
-	// =======[ TABS ]---------
-	// private PictureEditor pictureEditor;
 	private VideoEditor videoEditor;
 	private ImageEditor imageEditor;
 	private PictoralFinConfiguration configuration;
@@ -325,8 +323,8 @@ public class PictoralFin extends JFrame implements Closeable {
 		
 		memoryLabel.setText("Memory Usage (" + usedMemory + "/" + usableMemory + ") :");
 		
-		memoryUsageBar.setMaximum((int)  Runtime.getRuntime().totalMemory());
-		memoryUsageBar.setValue(  (int) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));		
+		memoryUsageBar.setMaximum((int)  (Runtime.getRuntime().totalMemory() / 1000));
+		memoryUsageBar.setValue(  (int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000));		
 		
 		memoryUsageBar.repaint();
 	}

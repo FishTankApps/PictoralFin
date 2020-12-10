@@ -1,5 +1,6 @@
-package com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools;
 
+
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -12,6 +13,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -23,6 +25,8 @@ import com.fishtankapps.pictoralfin.jComponents.pictureEditor.LayerButton;
 import com.fishtankapps.pictoralfin.objectBinders.Frame;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
 import com.fishtankapps.pictoralfin.utilities.ChainGBC;
+import com.fishtankapps.pictoralfin.utilities.Constants;
+import com.fishtankapps.pictoralfin.utilities.Utilities;
 
 public class DrawingTool extends ImageEditorTool {
 
@@ -35,6 +39,7 @@ public class DrawingTool extends ImageEditorTool {
 	private Thread drawThread = null;
 	private JButton changeShape, changeColor;
 	private DrawPreview drawPreview;
+	private JCheckBox drawOverOrReplace;
 	
 	private Color drawColor = Color.BLACK;
 	
@@ -43,24 +48,24 @@ public class DrawingTool extends ImageEditorTool {
 	private byte drawShape = CIRCLE;
 	
 	public DrawingTool(ImageEditor editor, Theme theme) {
-		super("Draw-er", editor, theme, false);	
+		super("Drawing Tool", editor, theme, false);	
 		this.theme = theme;
 		
 		setLayout(new GridBagLayout());
 		
 		drawSize = new JSlider(1, 200, 10);
-		JLabel drawSizeLabel = new JLabel("Draw Size (100): ", JLabel.RIGHT);
+		JLabel drawSizeLabel = new JLabel("Draw Size (10): ", JLabel.RIGHT);
 		drawSizeLabel.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 12));
 		
 		drawSize.addChangeListener(e-> drawSizeLabel.setText("Draw Size (" + drawSize.getValue() + "): "));
 		
 		changeShape = new JButton("Draw Shape");
-		changeShape.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 12));
+		changeShape.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 10));
 		changeShape.setToolTipText("Change between square and circle");
 		changeShape.addActionListener(e->{drawShape = (drawShape == CIRCLE) ? SQUARE : CIRCLE; drawPreview.repaint();});
 		
 		changeColor = new JButton("Draw Color");
-		changeColor.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 12));
+		changeColor.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 10));
 		changeColor.addActionListener(e-> {
 			new Thread(()-> {
 				Color color =  JColorChooser.showChooserDialog(theme, drawColor);
@@ -72,22 +77,48 @@ public class DrawingTool extends ImageEditorTool {
 			}).start();
 		});
 		
+		drawOverOrReplace = new JCheckBox("Replace Pixels?", false);
+		drawOverOrReplace.setFont(new Font(theme.getPrimaryFont(), Font.BOLD, 8));
+		
 		drawPreview = new DrawPreview();
 		drawPreview.setBorder(BorderFactory.createTitledBorder("Preview"));
 		
 		add(drawSizeLabel, new ChainGBC(0,0).setFill(false, false).setPadding(5));
-		add(drawSize,      new ChainGBC(1,0).setFill(true,  false).setPadding(5).setWidthAndHeight(1, 1));
+		add(drawSize,      new ChainGBC(1,0).setFill(true,  false).setPadding(5).setWidthAndHeight(2, 1));
 		
 		add(drawPreview, new ChainGBC(0,1).setFill(true, true).setPadding(5).setWidthAndHeight(1, 2));
-		add(changeColor, new ChainGBC(1,1).setFill(false, false).setPadding(5));
+		add(changeColor, new ChainGBC(1,1).setFill(false, false).setPadding(5).setWidthAndHeight(2, 1));
 		add(changeShape, new ChainGBC(1,2).setFill(false, false).setPadding(5));
+		add(drawOverOrReplace, new ChainGBC(2,2).setFill(false, false).setPadding(5));
 		
 
 	}
 	
+	
+	
+	
+	private int[] xCords; // Allow you to draw for approx. 2 minutes.
+	private int[] yCords;
+	private int cordArrayIndex;
+	
 	protected void onMouseReleased(int clickX, int clickY, BufferedImage layer, Frame frame) {
-		if(drawThread != null) {
+		if(drawThread != null && cordArrayIndex != -1) {
 			drawThread.interrupt();
+						
+			Graphics2D g = layer.createGraphics();
+			g.setStroke(new BasicStroke(drawSize.getValue(), (drawShape == CIRCLE) ? BasicStroke.CAP_ROUND : BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
+			g.setColor(drawColor);
+			
+			if(drawOverOrReplace.isSelected())
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_IN, (drawColor.getAlpha() / 255.0f)));
+			
+			g.drawPolyline(xCords, yCords, cordArrayIndex);	
+			
+			
+			
+			logUndoableChange();
+			
+			cordArrayIndex = -1;
 		}
 	}
 
@@ -106,35 +137,56 @@ public class DrawingTool extends ImageEditorTool {
 		
 		public void run() {
 			try {
-				Graphics2D g = (Graphics2D) layer.getGraphics();
-
-				g.setStroke(new BasicStroke(drawSize.getValue(), (drawShape == CIRCLE) ? BasicStroke.CAP_ROUND : BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
-				g.setColor(drawColor);
+				Graphics2D g;
 				
 				Point oldPoint = getMousePointOnImage();
 				Point newPoint;
 				
+				xCords = new int[5000]; // Allow you to draw for approx. 1 minutes. Only 40 Kilobytes (0.03 floppy disks)
+				yCords = new int[5000];				
+				
+				xCords[0] = oldPoint.x;
+				yCords[0] = oldPoint.y;
+				cordArrayIndex = 1;
+				
+				BufferedImage clearLayer;
+				Color invertedColor = Utilities.invertColor(drawColor);
+				
 				while(true) {
-					Thread.sleep(5);	
+					Thread.sleep(5);
+					
+					clearLayer = new BufferedImage(layer.getWidth(), layer.getHeight(), Constants.ALPHA_IMAGE_TYPE);
+					g = clearLayer.createGraphics();
+					g.setStroke(new BasicStroke(drawSize.getValue(), (drawShape == CIRCLE) ? BasicStroke.CAP_ROUND : BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
+					g.setColor(drawColor);						
 					
 					newPoint = getMousePointOnImage();
 					
-					if(newPoint == null)
+					if(newPoint == null || cordArrayIndex == -1)
 						continue;
 					
-					g.drawLine(oldPoint.x, oldPoint.y, newPoint.x, newPoint.y);
+					xCords[cordArrayIndex] = newPoint.x;
+					yCords[cordArrayIndex] = newPoint.y;
 					
-					oldPoint = newPoint;
+					cordArrayIndex++;
 					
-					callForRepaint();									
+					g.drawPolyline(xCords, yCords, cordArrayIndex);
+					
+					g.setColor(invertedColor);
+					g.setStroke(new BasicStroke(1));
+					g.drawOval(newPoint.x - (drawSize.getValue() / 2), newPoint.y - (drawSize.getValue() / 2), drawSize.getValue(), drawSize.getValue());	
+					
+					
+					drawClearImageOnImagePreview(clearLayer);
+					
+					callForRepaint();
 				}
-			} catch (InterruptedException e) {
-
-			}
+				
+				
+			} catch (InterruptedException e) {}
 			
-			logUndoableChange();
-		}
-		
+			removeClearImageFromImagePreview();
+		}		
 	}
 
 	private class DrawPreview extends JComponent {

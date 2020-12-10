@@ -1,4 +1,4 @@
-package com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools;
+
 
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
@@ -61,7 +61,7 @@ public class LayerManipulatorTool extends ImageEditorTool {
 				largestHeight = layer.getHeight();
 		}
 		
-		BufferedImage combinedLayer = new BufferedImage(largestWidth, largestHeight, Constants.IMAGE_TYPE);
+		BufferedImage combinedLayer = new BufferedImage(largestWidth, largestHeight, Constants.ALPHA_IMAGE_TYPE);
 		Graphics imageGraphics = combinedLayer.getGraphics();
 		BufferedImage layer;
 		

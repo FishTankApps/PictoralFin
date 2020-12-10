@@ -60,7 +60,7 @@ public class Frame extends UndoAndRedoable<Frame> {
 	public Frame(BufferedImage image, int duration) {
 		this(duration);
 
-		layers.add(BufferedImageUtil.setBufferedImageType(image, Constants.IMAGE_TYPE));
+		layers.add(BufferedImageUtil.setBufferedImageType(image, Constants.ALPHA_IMAGE_TYPE));
 		new Thread(()->logUndoableChange()).start();
 	}
 
@@ -73,13 +73,13 @@ public class Frame extends UndoAndRedoable<Frame> {
 	}
 
 	public void addLayer(BufferedImage layer) {
-		layers.add(BufferedImageUtil.setBufferedImageType(layer, Constants.IMAGE_TYPE));
+		layers.add(BufferedImageUtil.setBufferedImageType(layer, Constants.ALPHA_IMAGE_TYPE));
 	
 		new Thread(()->logUndoableChange()).start();
 	}
 	
 	public void addLayerAtIndex(BufferedImage layer, int index) {
-		layers.add(index, BufferedImageUtil.setBufferedImageType(layer, Constants.IMAGE_TYPE));
+		layers.add(index, BufferedImageUtil.setBufferedImageType(layer, Constants.ALPHA_IMAGE_TYPE));
 		
 		new Thread(()->logUndoableChange()).start();
 	}
@@ -425,6 +425,9 @@ public class Frame extends UndoAndRedoable<Frame> {
 						}
 		
 						frame.addLayer(image);
+						
+						pictoralFin.repaint();
+						pictoralFin.getImageEditor().getLayerSelecter().refresh();
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(null, "Error adding layer from file: " + newLayer.getName()
 								+ "\nException Message: \n" + e.getMessage(), "Error Adding Layer", JOptionPane.ERROR_MESSAGE);

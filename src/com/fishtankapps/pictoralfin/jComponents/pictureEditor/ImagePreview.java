@@ -195,6 +195,16 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 			g.drawImage(layer, ((getWidth() - adjustedImageWidth) / 2) + imageX, ((getHeight() - adjustedImageHeight) / 2) + imageY,
 					adjustedImageWidth, adjustedImageHeight, null);
 			
+			g.setColor(Color.WHITE);
+			
+			g.drawRect(((getWidth() - adjustedImageWidth) / 2) + imageX - 2, ((getHeight() - adjustedImageHeight) / 2) + imageY - 2,
+					adjustedImageWidth + 4, adjustedImageHeight + 4);
+			
+			g.setColor(Color.BLACK);
+			
+			g.drawRect(((getWidth() - adjustedImageWidth) / 2) + imageX - 3, ((getHeight() - adjustedImageHeight) / 2) + imageY - 3,
+					adjustedImageWidth + 6, adjustedImageHeight + 6);
+			
 			if(clearLayer != null)
 				g.drawImage(clearLayer, ((getWidth() - adjustedImageWidth) / 2) + imageX, ((getHeight() - adjustedImageHeight) / 2) + imageY,
 						adjustedImageWidth, adjustedImageHeight, null);

@@ -35,10 +35,10 @@ public class JColorChooser extends JFrame{
 	private ColorPreview colorPreview;
 	private JButton done;
 	
-	private JLabel redLabel, greenLabel, blueLabel;
-	private JSlider red, green, blue;
-	private JLabel hueLabel, saturationLabel, brightnessLabel;
-	private JSlider hue, saturation, brightness;
+	private JLabel redLabel, greenLabel, blueLabel, rgbAlphaLabel;
+	private JSlider red, green, blue, rgbAlpha;
+	private JLabel hueLabel, saturationLabel, brightnessLabel, hsbAlphaLabel;
+	private JSlider hue, saturation, brightness, hsbAlpha;
 	
 	private Color color;
 	
@@ -50,22 +50,25 @@ public class JColorChooser extends JFrame{
 	
 	private ChangeListener rgbListener = e->{
 		if(!IChangedIt)
-			color = new Color(red.getValue(), green.getValue(), blue.getValue());
+			color = new Color(red.getValue(), green.getValue(), blue.getValue(), rgbAlpha.getValue());
 		
 		redLabel  .setText("Red (" + color.getRed() + "):");
 		greenLabel.setText("Green (" + color.getGreen() + "):");
 		blueLabel .setText("Blue (" + color.getBlue() + "):");
+		rgbAlphaLabel.setText("Alpha (" + color.getAlpha() + "):");
 		
 		repaint();		
 	};
 	
 	private ChangeListener hsbListener = e->{
-		if(!IChangedIt)
+		if(!IChangedIt) {
 			color = new Color(Color.HSBtoRGB(hue.getValue() / HSB_DIVISOR, saturation.getValue() / HSB_DIVISOR, brightness.getValue() / HSB_DIVISOR));
-		
+			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (((hsbAlpha.getValue()) / 100.0) * 255));
+		}
 		hueLabel       .setText("Hue ("        + String.format("%.1f", (hue.getValue() / HSB_DIVISOR) * 360)        + "/360):");
 		saturationLabel.setText("Saturation (" + String.format("%.1f", (saturation.getValue() / HSB_DIVISOR) * 100) + "/100):");
 		brightnessLabel.setText("Brightness (" + String.format("%.1f", (brightness.getValue() / HSB_DIVISOR) * 100) + "/100):");
+		hsbAlphaLabel.setText("Transparency: (" +  hsbAlpha.getValue() + "/100):");
 		
 		repaint();		
 	};
@@ -113,6 +116,7 @@ public class JColorChooser extends JFrame{
 					red.setValue(color.getRed());
 					blue.setValue(color.getBlue());
 					green.setValue(color.getGreen());
+					rgbAlpha.setValue(color.getAlpha());
 					IChangedIt = false;
 				} else {
 					float[] hsbValues = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
@@ -120,6 +124,7 @@ public class JColorChooser extends JFrame{
 					hue.setValue((int) (hsbValues[0] * HSB_DIVISOR));
 					saturation.setValue((int) (hsbValues[1] * HSB_DIVISOR));
 					brightness.setValue((int) (hsbValues[2] * HSB_DIVISOR));
+					hsbAlpha.setValue((int) ((color.getAlpha() / 255.0) * 100));
 					IChangedIt = false;
 				}
 			});
@@ -128,20 +133,25 @@ public class JColorChooser extends JFrame{
 		redLabel = new JLabel("Red (" + color.getRed() + "):", JLabel.RIGHT);
 		greenLabel = new JLabel("Green (" + color.getGreen() + "):", JLabel.RIGHT);
 		blueLabel = new JLabel("Blue (" + color.getBlue() + "):", JLabel.RIGHT);
-		red =   new JSlider(0,255,color.getRed());
-		green = new JSlider(0,255,color.getGreen());
-		blue =  new JSlider(0,255,color.getBlue());
+		rgbAlphaLabel = new JLabel("Alpha (" + color.getAlpha() + "):", JLabel.RIGHT);
+		red =      new JSlider(0,255,color.getRed());
+		green =    new JSlider(0,255,color.getGreen());
+		blue =     new JSlider(0,255,color.getBlue());
+		rgbAlpha = new JSlider(0,255,color.getAlpha());
 		red.addChangeListener(rgbListener);
 		green.addChangeListener(rgbListener);
 		blue.addChangeListener(rgbListener);
+		rgbAlpha.addChangeListener(rgbListener);
 		
 		rgbPanel.setBackground(theme.getSecondaryBaseColor());
-		rgbPanel.add(redLabel,   new ChainGBC(0,0).setFill(false, false).setPadding(5));
-		rgbPanel.add(red,        new ChainGBC(1,0).setFill(true,  false).setPadding(5));
-		rgbPanel.add(greenLabel, new ChainGBC(0,1).setFill(false, false).setPadding(5));
-		rgbPanel.add(green,      new ChainGBC(1,1).setFill(true,  false).setPadding(5));
-		rgbPanel.add(blueLabel,  new ChainGBC(0,2).setFill(false, false).setPadding(5));
-		rgbPanel.add(blue,       new ChainGBC(1,2).setFill(true,  false).setPadding(5));
+		rgbPanel.add(redLabel,       new ChainGBC(0,0).setFill(false, false).setPadding(5));
+		rgbPanel.add(red,            new ChainGBC(1,0).setFill(true,  false).setPadding(5));
+		rgbPanel.add(greenLabel,     new ChainGBC(0,1).setFill(false, false).setPadding(5));
+		rgbPanel.add(green,          new ChainGBC(1,1).setFill(true,  false).setPadding(5));
+		rgbPanel.add(blueLabel,      new ChainGBC(0,2).setFill(false, false).setPadding(5));
+		rgbPanel.add(blue,           new ChainGBC(1,2).setFill(true,  false).setPadding(5));
+		rgbPanel.add(rgbAlphaLabel,  new ChainGBC(0,3).setFill(false, false).setPadding(5));
+		rgbPanel.add(rgbAlpha,       new ChainGBC(1,3).setFill(true,  false).setPadding(5));
 		
 		
 		float[] hsbValues = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
@@ -150,10 +160,13 @@ public class JColorChooser extends JFrame{
 		hueLabel =        new JLabel("Hue ("        + String.format("%.1f", hsbValues[0] * 360) + "/360):", JLabel.RIGHT);
 		saturationLabel = new JLabel("Saturation (" + String.format("%.1f", hsbValues[1] * 100) + "/100):", JLabel.RIGHT);
 		brightnessLabel = new JLabel("Brightness (" + String.format("%.1f", hsbValues[2] * 100) + "/100):", JLabel.RIGHT);
+		hsbAlphaLabel   = new JLabel("Transparency: (" +  String.format("%.1f", (color.getAlpha() / 255.0) * 100) + "/100):");
 		hue =         new JSlider(0, (int) HSB_DIVISOR, (int) (hsbValues[0] * HSB_DIVISOR));
 		saturation =  new JSlider(0, (int) HSB_DIVISOR, (int) (hsbValues[1] * HSB_DIVISOR));
 		brightness =  new JSlider(0, (int) HSB_DIVISOR, (int) (hsbValues[2] * HSB_DIVISOR));
+		hsbAlpha = new JSlider(0, 100, (int) ((color.getAlpha() / 255.0) * 100));
 		hue.addChangeListener(hsbListener);
+		hsbAlpha.addChangeListener(hsbListener);
 		saturation.addChangeListener(hsbListener);
 		brightness.addChangeListener(hsbListener);
 		
@@ -164,6 +177,8 @@ public class JColorChooser extends JFrame{
 		hsbPanel.add(saturation,      new ChainGBC(1,1).setFill(true,  false).setPadding(5));
 		hsbPanel.add(brightnessLabel,  new ChainGBC(0,2).setFill(false, false).setPadding(5));
 		hsbPanel.add(brightness,       new ChainGBC(1,2).setFill(true,  false).setPadding(5));
+		hsbPanel.add(hsbAlphaLabel,    new ChainGBC(0,3).setFill(false, false).setPadding(5));
+		hsbPanel.add(hsbAlpha,         new ChainGBC(1,3).setFill(true,  false).setPadding(5));
 		
 		selectionTypePane.addTab("Red-Green-Blue", rgbPanel);
 		selectionTypePane.addTab("Hue-Saturation-Brightness", hsbPanel);
@@ -173,7 +188,7 @@ public class JColorChooser extends JFrame{
 		
 		mainPanel.add(colorPreview,      new ChainGBC(0,0).setFill(true, true).setPadding(5));	
 		mainPanel.add(selectionTypePane, new ChainGBC(0,1).setFill(true, true).setPadding(5));
-		mainPanel.add(done,              new ChainGBC(0,2).setFill(true, false).setPadding(5));
+		mainPanel.add(done,              new ChainGBC(0,3).setFill(true, false).setPadding(5));
 		
 		add(mainPanel);
 	}

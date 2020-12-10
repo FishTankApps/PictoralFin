@@ -42,6 +42,12 @@ public class AudioUtil {
 			
 			if(ffmpeg.exitValue() != 0) {
 				System.err.println("FFmpeg Finished with a code of: " + ffmpeg.exitValue());
+				
+				System.err.println("Previous Causes:");
+				
+				if(ffmpeg.exitValue() == 1)
+					System.err.println("- Had no audio stream (no big deal, just return null, but sometimes null is not expected)");
+				
 				System.err.println("\n\n-----{StdErr Out}------");
 				
 				BufferedReader stdOutput = new BufferedReader(new InputStreamReader(ffmpeg.getInputStream()));
@@ -65,7 +71,8 @@ public class AudioUtil {
 					if (outTemp != null)
 						System.err.println(outTemp);
 				} while (outTemp != null);
-
+				
+				return null;
 			}
 			
 			return target;

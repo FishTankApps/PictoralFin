@@ -1,4 +1,4 @@
-package com.fishtankapps.pictoralfin.jComponents.pictureEditor.imageEditorTools;
+
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -181,7 +181,7 @@ public class GreenScreenTool extends ImageEditorTool {
 		
 		
 		ChangeListener sliderChangeListener = e -> {
-			if(currentLayer == null)
+			if(currentLayer == null || greenScreenColor == null)
 				return;
 			
 			removeClearImageFromImagePreview();
@@ -255,7 +255,7 @@ public class GreenScreenTool extends ImageEditorTool {
 		
 		
 		ChangeListener sliderChangeListener = e -> {
-			if(currentLayer == null)
+			if(currentLayer == null || greenScreenColor == null)
 				return;
 			
 			removeClearImageFromImagePreview();

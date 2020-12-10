@@ -36,5 +36,6 @@ public final class Constants {
 	public static final int JUST_THE_KEY = 16;
 	
 	
-	public static final int IMAGE_TYPE = BufferedImage.TYPE_4BYTE_ABGR; // Used to set the type of all images in memory.
+	public static final int ALPHA_IMAGE_TYPE = BufferedImage.TYPE_4BYTE_ABGR; // Used to set the type of all images in memory.
+	public static final int OPAQUE_IMAGE_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 }

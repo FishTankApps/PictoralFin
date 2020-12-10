@@ -46,10 +46,22 @@ public class VideoUtil {
 
 	public static void generateAndSaveVideoThreaded(PictoralFin pictoralFin) {
 		
+		if(pictoralFin.getTimeLine().isEmpty()) {
+			Utilities.showMessage("Your project is currently empty!\nAnd audio and/or images to create a video.", "Empty Project", true);
+			return;
+		}
+		
 		File videoFile = getFileToExportTo(pictoralFin.getConfiguration().getDataFile());
 
 		if (videoFile == null)
 			return;
+		
+		if(!pictoralFin.getConfiguration().getMessagesToNotShow().contains("Transparency Will be Lost")) {
+			boolean dontShowAgain = Utilities.showDoNotShowAgainDialog("Transparency will be removed when video is created", "Transparency Will be Lost", false);
+			
+			if(dontShowAgain)
+				pictoralFin.getConfiguration().addMessageToNotShow("Transparency Will be Lost");
+		}
 
 		outputFile = videoFile;
 		
@@ -204,7 +216,7 @@ public class VideoUtil {
 		ArrayList<BufferedImage> resizedImages = new ArrayList<>();
 
 		for (com.fishtankapps.pictoralfin.objectBinders.Frame f : pictoralFin.getTimeLine().getFrames()) {
-			BufferedImage i = new BufferedImage((int) newSize.getWidth(), (int) newSize.getHeight(), Constants.IMAGE_TYPE);
+			BufferedImage i = new BufferedImage((int) newSize.getWidth(), (int) newSize.getHeight(), Constants.OPAQUE_IMAGE_TYPE);
 			BufferedImage frame = f.getLayer(0);
 			i.getGraphics().drawImage(frame, i.getWidth() / 2 - frame.getWidth() / 2,
 					i.getHeight() / 2 - frame.getHeight() / 2, frame.getWidth(), frame.getHeight(), null);

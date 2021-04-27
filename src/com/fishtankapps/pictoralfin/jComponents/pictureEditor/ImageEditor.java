@@ -1,10 +1,8 @@
 package com.fishtankapps.pictoralfin.jComponents.pictureEditor;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import com.fishtankapps.pictoralfin.mainFrame.PictoralFin;
@@ -31,12 +29,6 @@ public class ImageEditor extends JPanel {
 		layerSelecter = new LayerSelecter(pictoralFin);
 		toolkitPanel = new ImageEditorToolKitPanel(pictoralFin, this);
 		
-		JScrollPane toolKitScrollPane = new JScrollPane(toolkitPanel);
-		toolKitScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		toolKitScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		toolKitScrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		toolKitScrollPane.setMinimumSize(new Dimension(250, 100));
-		
 		JSplitPane leftAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		JSplitPane rightAndCenterSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		
@@ -49,7 +41,7 @@ public class ImageEditor extends JPanel {
 		layerSelecter.setButtonWidth(((int) leftAndCenterSplit.getDividerLocation()) - 40);
 		
 		rightAndCenterSplit.setLeftComponent(leftAndCenterSplit);
-		rightAndCenterSplit.setRightComponent(toolKitScrollPane);
+		rightAndCenterSplit.setRightComponent(toolkitPanel);
 		rightAndCenterSplit.setBackground(pictoralFin.getConfiguration().getTheme().getPrimaryBaseColor());
 		
 		rightAndCenterSplit.setResizeWeight(0.80);		

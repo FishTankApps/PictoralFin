@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import com.fishtankapps.pictoralfin.objectBinders.Frame;
 import com.fishtankapps.pictoralfin.objectBinders.ImageToolDrawableShape;
 import com.fishtankapps.pictoralfin.objectBinders.Theme;
+import com.fishtankapps.pictoralfin.utilities.Constants;
 import com.fishtankapps.pictoralfin.utilities.Utilities;
 
 public abstract class ImageEditorTool extends JPanel implements MouseListener {
@@ -27,10 +28,12 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 	
 	public boolean isFocusedTool = false;
 	protected boolean collapsible, collapsed = true;
+	private String name;
 	
 	public ImageEditorTool(String name, ImageEditor editor, Theme theme, boolean collapsible) {
 		this.editor = editor;
 		this.theme = theme;
+		this.name = name;
 		
 		this.collapsible = collapsible;
 		
@@ -41,6 +44,10 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 		editor.getLayerSelecter().addOnSelectionLayerChangedListener((oldFrame, newFrame)->onLayerSelectionChanged(oldFrame, newFrame));
 	}
 
+	public String getToolName() {
+		return name;
+	}
+	
 	public void requestToolFocus() {
 		editor.getImageEditorToolkitPanel().requestToolFocus(this);
 	}
@@ -122,7 +129,10 @@ public abstract class ImageEditorTool extends JPanel implements MouseListener {
 	}
 	
  	public void mouseClicked(MouseEvent e) {
-		requestToolFocus();
+ 		requestToolFocus();
+ 		
+ 		if (e.getButton() == Constants.RIGHT_MOUSE_BUTTON) 
+ 			new ImageEditorToolPopUpMenu(this, e.getX(), e.getY());
 	}
 
 	public void mousePressed(MouseEvent e) {

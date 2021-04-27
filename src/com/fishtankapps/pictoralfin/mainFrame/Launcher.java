@@ -13,6 +13,7 @@ import com.fishtankapps.pictoralfin.utilities.AudioUtil;
 import com.fishtankapps.pictoralfin.utilities.Constants;
 import com.fishtankapps.pictoralfin.utilities.FileImporter;
 import com.fishtankapps.pictoralfin.utilities.JokeFactory;
+import com.fishtankapps.pictoralfin.utilities.Utilities;
 import com.fishtankapps.pictoralfin.utilities.VideoUtil;
 
 import javafx.embed.swing.JFXPanel;
@@ -24,11 +25,11 @@ public class Launcher {
 		try {			
 			setUpUIStuff();
 			
+			loadFonts();
+			
 			setUpPictoralFin(filePaths);
 			
-			setUpFFmpegPaths();
-			
-			loadFonts();			
+			setUpFFmpegPaths();						
 			
 			System.out.println("-- Launch Complete --");
 			StatusLogger.logPrimaryStatus("Launch Complete!");
@@ -37,6 +38,11 @@ public class Launcher {
 			JOptionPane.showMessageDialog(null,
 					"There was an error at start up:\n" + e.getMessage() + "\n" + e.getStackTrace(), "FATAL ERROR",
 					JOptionPane.ERROR_MESSAGE);
+			
+			Utilities.writeToLogFile("StartUp Error", "--- Error durring start up ---\nExeception Message: " + e.getMessage() + 
+					"\nException Localized Message: " + e.getMessage() + "\n\nStack Trace:" + Utilities.stackTraceToString(e));
+			
+			System.exit(-1);
 		}
 	}
 	
@@ -86,18 +92,10 @@ public class Launcher {
 		
 		StatusLogger.logPrimaryStatus("Importing Selected File(s)...");
 		System.out.println("-- Importing Files --");
-		if (filePaths.length > 0) {
-			File file = new File(filePaths[0]);
-
-			if (file.exists()) {
-				if (file.getName().contains(".pfp")) {
-					pictoralFin.openProject(file.getAbsolutePath());
-				} else if (file.getName().contains(".pff")) {
-					pictoralFin.openFrameFile(file);
-				}
-			}
-		}
 		
+		
+		if(filePaths != null)
+			FileImporter.importFiles(filePaths);
 		
 		
 		if(pictoralFin.getConfiguration().getShowJokeOnStartUp()) {
@@ -123,7 +121,6 @@ public class Launcher {
 	
 	public static void loadFonts() {
 		System.out.println("-- Loading Fonts --");
-		StatusLogger.logPrimaryStatus("Loading Fonts...");
 		
 		try {
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();

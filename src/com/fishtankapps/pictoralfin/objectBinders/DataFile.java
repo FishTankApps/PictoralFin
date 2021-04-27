@@ -1,6 +1,7 @@
 package com.fishtankapps.pictoralfin.objectBinders;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.fishtankapps.pictoralfin.utilities.Constants;
 
@@ -12,6 +13,7 @@ public class DataFile implements Serializable {
 	private String lastOpenAudioLocation;
 	private String lastOpenVideoLocation;
 	private String lastOpenProjectLocation;
+	private ArrayList<String> favoriteImageEditorTools;
 	
 	private int jokeIndex;
 	
@@ -39,6 +41,7 @@ public class DataFile implements Serializable {
 		}
 		
 		jokeIndex = -1;
+		favoriteImageEditorTools = new ArrayList<>();
 	}
 	
 	public String getLastOpenedPictureLocation() {
@@ -74,5 +77,15 @@ public class DataFile implements Serializable {
 	}
 	public void setJokeIndex(int jokeIndex) {
 		this.jokeIndex = jokeIndex;
+	}
+
+	public void addFavoriteImageEditorTool(String toolName) {
+		favoriteImageEditorTools.add(toolName);
+	}
+	public void removeFavoriteImageEditorTool(String toolName) {
+		favoriteImageEditorTools.remove(toolName);
+	}
+	public boolean isImageEditorToolAFavorite(String toolName) {
+		return favoriteImageEditorTools.contains(toolName);
 	}
 }

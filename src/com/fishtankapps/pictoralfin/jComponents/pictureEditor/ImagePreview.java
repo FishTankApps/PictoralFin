@@ -42,7 +42,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	
 	private Thread dragThread;
 	
-	private JLabel magnificationLabel;
+	private JLabel magnificationLabel, cordsLabel;
 	private JSlider magnificationSlider;
 	
 	private boolean dragging = false;
@@ -52,7 +52,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	private ArrayList<LayerMouseListener> layerMouseListeners;
 	private BufferedImage pictoralFinIcon, layer, clearLayer;
 	private Theme theme;
-	private JPanel bottomPanel;
+	private JPanel bottomPanel, topPanel;
 	
 	public ImagePreview(PictoralFin pictoralFin) {
 		super(new BorderLayout());
@@ -61,6 +61,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		shapesDrawnByTools = new ArrayList<>();
 		
 		pictoralFinIcon = GlobalImageKit.pictoralFinIcon;
+				
 		
 		magnificationLabel = new JLabel("Magnification (100%): ");
 		magnificationSlider = new JSlider(1, 1000, 100);
@@ -99,12 +100,45 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		bottomPanel.setVisible(false);
 		
 		bottomPanel.add(magnificationLabel);
-		bottomPanel.add(magnificationSlider);		
+		bottomPanel.add(magnificationSlider);	
+		
+		
+		cordsLabel = new JLabel("Mouse Cordinates: (--,--)");
+		
+		topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)){
+
+			private static final long serialVersionUID = 1L;
+			
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				
+				g.setColor(theme.getPrimaryHighlightColor());
+				
+				if(theme.isSharp()) {
+					Polygon p = new Polygon();
+					
+					p.addPoint(0, getHeight());
+					p.addPoint(0, 0);					
+					p.addPoint(cordsLabel.getWidth() + 60, 0);
+					p.addPoint(cordsLabel.getWidth() + 20, getHeight());
+					
+					g.fillPolygon(p);
+				} else {					
+					g.fillRoundRect(-40, -getHeight(), cordsLabel.getWidth() + 100, getHeight() * 2, 60, getHeight() * 2);
+				}
+			}
+		};
+		topPanel.setBackground(new Color(0,0,0,0));
+		topPanel.setCursor(Cursor.getDefaultCursor());
+		topPanel.setVisible(false);
+		
+		topPanel.add(cordsLabel);
 		
 		addMouseListener(this);
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		add(bottomPanel, BorderLayout.SOUTH);
+		add(topPanel, BorderLayout.NORTH);
 		setMinimumSize(new Dimension(800, 100));	
 		setBackground(theme.getPrimaryBaseColor());
 	}
@@ -113,6 +147,7 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		this.layer = layer;
 		
 		bottomPanel.setVisible(layer != null);
+		topPanel.setVisible(layer != null);
 		repaint();
 		
 		centerAndFitImage();
@@ -252,6 +287,8 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 	}
 		
 	public void mousePressed(MouseEvent e) {
+		System.out.println("Mouse Button: " + e.getButton());
+		
 		if(e.getButton() == 3 && layer != null) {
 			clickStartX = e.getXOnScreen();
 			clickStartY = e.getYOnScreen();					
@@ -321,6 +358,13 @@ public class ImagePreview extends JPanel implements MouseListener, MouseWheelLis
 		} else if(!dragging)
 			this.setCursor(Cursor.getDefaultCursor());
 			
+		Point mousePointOnImage = getMousePointOnImage();
+		
+		if(mousePointOnImage != null && mousePointOnImage.x >= 0 && mousePointOnImage.x < layer.getWidth()
+			&& mousePointOnImage.y >= 0 && mousePointOnImage.y < layer.getHeight())
+				cordsLabel.setText("Mouse Cordinates: (" + mousePointOnImage.x + "," + mousePointOnImage.y + ")");
+		else 
+			cordsLabel.setText("Mouse Cordinates: (--,--)");
 	}	
 	
 	public void onRightClick(int x, int y) {

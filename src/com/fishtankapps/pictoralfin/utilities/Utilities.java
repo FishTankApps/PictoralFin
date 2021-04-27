@@ -2,7 +2,11 @@ package com.fishtankapps.pictoralfin.utilities;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -23,6 +27,35 @@ public class Utilities {
 			System.out.println(message);
 	}
 
+	public static final void writeToLogFile(String logName, String logText) {
+		Calendar calendar = new GregorianCalendar();
+		File file = new File("resources/logs/" + logName + " " + calendar.get(Calendar.MONTH) + "." 
+				+ calendar.get(Calendar.DATE) + "." + calendar.get(Calendar.YEAR) + " " 
+				+ calendar.get(Calendar.HOUR_OF_DAY) + "." + calendar.get(Calendar.MINUTE) 
+				+ "." + calendar.get(Calendar.SECOND) + ".txt");
+		
+		try {
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+			
+			PrintWriter writer = new PrintWriter(file);
+			writer.print(logText);
+			
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	public static final String stackTraceToString(Exception e) {
+		String returnString = "";
+		
+		for(StackTraceElement element : e.getStackTrace())
+			returnString += "\n" + element.toString();
+		
+		return returnString;
+	}
+	
 	public static final ArrayList<Component> getAllSubComponents(Container toSearch) {
 		ArrayList<Component> arrayListOfComponents = new ArrayList<>();
 

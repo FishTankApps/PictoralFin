@@ -1,5 +1,3 @@
-
-
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -48,7 +46,7 @@ public class DrawingTool extends ImageEditorTool {
 	private byte drawShape = CIRCLE;
 	
 	public DrawingTool(ImageEditor editor, Theme theme) {
-		super("Drawing Tool", editor, theme, false);	
+		super("Drawing Tool", editor, theme, true);	
 		this.theme = theme;
 		
 		setLayout(new GridBagLayout());
@@ -84,17 +82,23 @@ public class DrawingTool extends ImageEditorTool {
 		drawPreview.setBorder(BorderFactory.createTitledBorder("Preview"));
 		
 		add(drawSizeLabel, new ChainGBC(0,0).setFill(false, false).setPadding(5));
-		add(drawSize,      new ChainGBC(1,0).setFill(true,  false).setPadding(5).setWidthAndHeight(2, 1));
+		add(drawSize,      new ChainGBC(1,0).setFill(true,  false).setPadding(5, 20, 5, 5).setWidthAndHeight(2, 1));
 		
 		add(drawPreview, new ChainGBC(0,1).setFill(true, true).setPadding(5).setWidthAndHeight(1, 2));
 		add(changeColor, new ChainGBC(1,1).setFill(false, false).setPadding(5).setWidthAndHeight(2, 1));
 		add(changeShape, new ChainGBC(1,2).setFill(false, false).setPadding(5));
 		add(drawOverOrReplace, new ChainGBC(2,2).setFill(false, false).setPadding(5));
 		
-
+		updateCollapsedState(true);
 	}
 	
 	
+	protected void updateCollapsedState(boolean collapsed) {
+		changeShape.setVisible(!collapsed);
+		changeColor.setVisible(!collapsed);
+		drawPreview.setVisible(!collapsed);
+		drawOverOrReplace.setVisible(!collapsed);
+	}
 	
 	
 	private int[] xCords; // Allow you to draw for approx. 2 minutes.
@@ -126,6 +130,8 @@ public class DrawingTool extends ImageEditorTool {
 		drawThread = new Thread(new DrawRunnable(layer));
 		drawThread.start();
 	}
+	
+		
 	
 	private class DrawRunnable implements Runnable {
 

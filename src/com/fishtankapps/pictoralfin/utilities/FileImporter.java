@@ -50,6 +50,8 @@ public class FileImporter {
 	}
 	
 	public static void importFiles(Collection<File> files) {
+		if(files.size() == 0)
+			return;
 		
 		int failedCount = 0, importedFilesCount = 0, numOfFrames, frameCount;
 		
@@ -62,20 +64,21 @@ public class FileImporter {
 				"Importing Files...", getNumberOfSteps(files));
 		
 		try {
-			for(File fileToImport : files) {	
+			for(File fileToImport : files) {
+				
 				MediaFileType fileType = FileUtils.getMediaFileType(fileToImport);
 						
 				StatusLogger.logPrimaryStatus("Importing File(s): (" + importedFilesCount++ + "/" + files.size() + ")          ");
-				
-				
-				
 				
 				if(fileType == MediaFileType.NONE) {
 					errorMessages += "\n-" + fileToImport.getName() + " (Not a image/video/audio/ffmpeg compatible)"; failedCount++;
 					progressDialog.moveForward();
 				}
 				
-				
+				else if(fileType == MediaFileType.PROJECT) {
+					pictoralFin.openProject(fileToImport.getAbsolutePath());
+					progressDialog.moveForward();
+				}
 				
 				else if(fileType == MediaFileType.FRAME) {
 					try {

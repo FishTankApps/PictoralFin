@@ -112,6 +112,9 @@ public class FileUtils {
 		if(fileExtension.equalsIgnoreCase("pff"))
 			return MediaFileType.FRAME;
 		
+		if(fileExtension.equalsIgnoreCase("pfp"))
+			return MediaFileType.PROJECT;
+		
 		try {
 			if(isVideoFile(file))
 				return MediaFileType.VIDEO;
